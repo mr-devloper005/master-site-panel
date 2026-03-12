@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SiteFramework {
+  NEXT_JS
+  REACT
+  HTML_CSS_JS
+  OTHER
+}
+
+enum SiteCategory {
+  ARTICLE
+  SBM
+  IMAGE_SHARING
+  LOCAL_LISTING
+  PROFILE
+  CUSTOM
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum SiteConnectionStatus {
+  ONLINE
+  DEGRADED
+  OFFLINE
+}
+
+model Site {
+  id          String      @id @default(cuid())
+  code        String      @unique
+  name        String
+  framework   SiteFramework
+  category    SiteCategory
+  theme       String?
+  config      Json?
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  posts       Post[]
+  permissions ApiKeySitePermission[]
+  runtimeStatuses SiteRuntimeStatus[]
+}
+
+model Post {
+  id                String     @id @default(cuid())
+  siteId            String
+  site              Site       @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  externalPostId    String?
+  title             String
+  slug              String?
+  summary           String?
+  content           Json
+  media             Json?
+  tags              String[]
+  authorName        String?
+  status            PostStatus @default(PUBLISHED)
+  publishedAt       DateTime?
+  createdByApiKeyId String?
+  createdByApiKey   ApiKey?    @relation(fields: [createdByApiKeyId], references: [id], onDelete: SetNull)
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  @@index([siteId, status, publishedAt])
+}
+
+model ApiKey {
+  id          String                 @id @default(cuid())
+  name        String
+  keyHash     String                 @unique
+  scopes      String[]
+  isActive    Boolean                @default(true)
+  lastUsedAt  DateTime?
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+  posts       Post[]
+  permissions ApiKeySitePermission[]
+}
+
+model ApiKeySitePermission {
+  id       String @id @default(cuid())
+  apiKeyId String
+  siteId   String
+  canPost  Boolean @default(true)
+  canRead  Boolean @default(true)
+
+  apiKey ApiKey @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+  site   Site   @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@unique([apiKeyId, siteId])
+}
+
+model SiteRuntimeStatus {
+  id               String               @id @default(cuid())
+  siteId           String
+  site             Site                 @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  environment      String               @default("production")
+  status           SiteConnectionStatus @default(OFFLINE)
+  frontendUrl      String?
+  sdkVersion       String?
+  connectorVersion String?
+  responseTimeMs   Int?
+  supportedTasks   String[]
+  capabilities     Json?
+  meta             Json?
+  lastError        String?
+  lastHeartbeatAt  DateTime             @default(now())
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  @@unique([siteId, environment])
+  @@index([status, lastHeartbeatAt])
+}
