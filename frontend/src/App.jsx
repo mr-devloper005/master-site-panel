@@ -10,6 +10,7 @@ import TableSkeleton from "./components/common/TableSkeleton";
 const Login = lazy(() => import("./pages/Login"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Sites = lazy(() => import("./pages/Sites"));
+const Tasks = lazy(() => import("./pages/Tasks"));
 const Posts = lazy(() => import("./pages/Posts"));
 const RecentActivity = lazy(() => import("./pages/RecentActivity"));
 const Analytics = lazy(() => import("./pages/Analytics"));
@@ -44,6 +45,7 @@ export default function App() {
           <Route element={<ProtectedRoutes />}>
             <Route index element={<Dashboard />} />
             <Route path="/sites" element={<Sites />} />
+            <Route path="/tasks" element={<Tasks />} />
             <Route path="/posts" element={<Posts />} />
             <Route path="/activity" element={<RecentActivity />} />
             <Route path="/analytics" element={<Analytics />} />

@@ -1,4 +1,4 @@
-import { Pencil, Trash2, Eye } from "lucide-react";
+import { Pencil, Trash2, Eye, KeyRound } from "lucide-react";
 
 export default function SiteTable({
   sites,
@@ -8,6 +8,7 @@ export default function SiteTable({
   onEdit,
   onDelete,
   onViewPosts,
+  onManageTasks,
   sortBy,
   setSortBy
 }) {
@@ -75,6 +76,7 @@ export default function SiteTable({
                 <td className="px-3 py-2">
                   <div className="flex justify-end gap-2">
                     <button className="rounded-md border border-[var(--border-color)] p-1.5" onClick={() => onViewPosts(site)} aria-label="View posts"><Eye size={16} /></button>
+                    <button className="rounded-md border border-[var(--border-color)] p-1.5" onClick={() => onManageTasks(site)} aria-label="Manage tasks"><KeyRound size={16} /></button>
                     <button className="rounded-md border border-[var(--border-color)] p-1.5" onClick={() => onEdit(site)} aria-label="Edit site"><Pencil size={16} /></button>
                     <button className="rounded-md border border-red-300 p-1.5 text-red-500" onClick={() => onDelete(site.id)} aria-label="Delete site"><Trash2 size={16} /></button>
                   </div>
@@ -105,6 +107,7 @@ export default function SiteTable({
             </div>
             <div className="mt-3 flex gap-2">
               <button className="min-h-11 flex-1 rounded-lg border border-[var(--border-color)]" onClick={() => onViewPosts(site)}>View</button>
+              <button className="min-h-11 flex-1 rounded-lg border border-[var(--border-color)]" onClick={() => onManageTasks(site)}>Tasks</button>
               <button className="min-h-11 flex-1 rounded-lg border border-[var(--border-color)]" onClick={() => onEdit(site)}>Edit</button>
               <button className="min-h-11 flex-1 rounded-lg border border-red-300 text-red-500" onClick={() => onDelete(site.id)}>Delete</button>
             </div>

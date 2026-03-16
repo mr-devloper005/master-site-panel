@@ -13,7 +13,7 @@ export default function Modal({ title, open, onClose, children, width = "max-w-2
       <motion.div
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`glass w-full ${width} rounded-panel bg-[var(--bg-secondary)] p-4 shadow-panel`}
+        className={`glass w-full ${width} max-h-[90vh] overflow-hidden rounded-panel bg-[var(--bg-secondary)] p-4 shadow-panel`}
       >
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{title}</h2>
@@ -25,7 +25,9 @@ export default function Modal({ title, open, onClose, children, width = "max-w-2
             Close
           </button>
         </div>
-        {children}
+        <div className="scrollbar-thin max-h-[calc(90vh-5.5rem)] overflow-y-auto pr-1">
+          {children}
+        </div>
       </motion.div>
     </div>
   );

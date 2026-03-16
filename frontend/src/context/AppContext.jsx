@@ -5,7 +5,9 @@ import {
   addSite,
   bulkPostAction,
   bulkSiteAction,
+  deleteSiteTask,
   fetchDashboardData,
+  provisionSiteTask,
   reorderSites,
   resetMockDb,
   updatePost,
@@ -41,14 +43,30 @@ export const AppProvider = ({ children }) => {
 
   const createSite = async (payload) => {
     const created = await addSite(payload);
-    setSites((prev) => [...prev, created]);
+    setSites((prev) => [...prev, created.site]);
     toast.success("Site added successfully");
+    return created;
   };
 
   const editSite = async (siteId, payload) => {
     const updated = await updateSite(siteId, payload);
     setSites((prev) => prev.map((site) => (site.id === siteId ? updated : site)));
     toast.success("Site updated");
+    return updated;
+  };
+
+  const addTaskToSite = async (siteId, task) => {
+    const provisioned = await provisionSiteTask(siteId, task);
+    setSites((prev) => prev.map((site) => (site.id === siteId ? provisioned.site : site)));
+    toast.success(`${task} task enabled`);
+    return provisioned;
+  };
+
+  const removeTaskFromSite = async (siteId, task) => {
+    const updated = await deleteSiteTask(siteId, task);
+    setSites((prev) => prev.map((site) => (site.id === siteId ? updated.site : site)));
+    toast.success(`${task} task removed`);
+    return updated;
   };
 
   const runSiteBulkAction = async (siteIds, action) => {
@@ -117,6 +135,8 @@ export const AppProvider = ({ children }) => {
       hydrate,
       createSite,
       editSite,
+      addTaskToSite,
+      removeTaskFromSite,
       runSiteBulkAction,
       editPost,
       runPostBulkAction,

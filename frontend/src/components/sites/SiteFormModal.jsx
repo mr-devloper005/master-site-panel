@@ -16,7 +16,7 @@ const initial = {
   description: "",
   siteType: "listing",
   feedPath: "/listings",
-  supportedTasks: ["listing"],
+  supportedTasks: [],
   metrics: "posts,published,impressions",
 };
 
@@ -36,7 +36,7 @@ export default function SiteFormModal({ open, onClose, onSubmit, editing }) {
         description: editing.description || "",
         siteType: editing.siteType || "listing",
         feedPath: editing.feedPath || "/listings",
-        supportedTasks: editing.supportedTasks?.length ? editing.supportedTasks : ["listing"],
+        supportedTasks: editing.supportedTasks?.length ? editing.supportedTasks : [],
         metrics: editing.metrics?.join(",") || "posts,published,impressions",
       });
     } else {
@@ -51,7 +51,6 @@ export default function SiteFormModal({ open, onClose, onSubmit, editing }) {
     if (!form.name.trim()) nextErrors.name = "Site name is required";
     if (!form.frontendUrl.trim()) nextErrors.frontendUrl = "Frontend URL is required";
     if (!form.description.trim()) nextErrors.description = "Description is required";
-    if (!form.supportedTasks.length) nextErrors.supportedTasks = "At least one task is required";
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
@@ -148,7 +147,7 @@ export default function SiteFormModal({ open, onClose, onSubmit, editing }) {
         </div>
 
         <div>
-          <label className="mb-2 block text-sm">Supported Tasks</label>
+          <label className="mb-2 block text-sm">Enabled Tasks (optional)</label>
           <div className="flex flex-wrap gap-2">
             {taskOptions.map((task) => (
               <label key={task} className="inline-flex items-center gap-2 rounded-full border border-[var(--border-color)] px-3 py-1.5 text-sm">
@@ -157,7 +156,9 @@ export default function SiteFormModal({ open, onClose, onSubmit, editing }) {
               </label>
             ))}
           </div>
-          {errors.supportedTasks && <p className="text-xs text-red-500">{errors.supportedTasks}</p>}
+          <p className="mt-2 text-xs text-[var(--text-secondary)]">
+            You can also add tasks later from the site row and get task-specific API docs with the token.
+          </p>
         </div>
 
         <div>

@@ -6,10 +6,14 @@ import { prisma } from "../../config/db";
 import { requireApiKey } from "../../middleware/auth";
 import { ApiError } from "../../utils/api-error";
 import { asyncHandler } from "../../utils/async-handler";
+import { createApiKeyWithPermissions } from "../auth/api-key-service";
 import { getLatestRuntimeStatusMap, getRuntimeStatusesForSite } from "../runtime/runtime-store";
-import { buildSiteBlueprint, sanitizeSiteConfig } from "./site-contract";
+import { getBaseUrl } from "../../utils/base-url";
+import { buildTaskProvisioningGuide } from "./task-catalog";
+import { buildSiteBlueprint, isSiteTask, sanitizeSiteConfig } from "./site-contract";
 
 const router = Router();
+const backendBaseUrl = () => getBaseUrl();
 
 router.get("/", requireApiKey("sites:read"), asyncHandler(async (req, res) => {
   const search = req.query.search?.toString().trim();
@@ -56,7 +60,10 @@ router.get("/", requireApiKey("sites:read"), asyncHandler(async (req, res) => {
       ...site,
       runtimeStatuses: runtimeMap.get(site.id) ? [runtimeMap.get(site.id)] : [],
       config: sanitizeSiteConfig(site.config),
-      blueprint: buildSiteBlueprint(site.code, site.config),
+      blueprint: buildSiteBlueprint(site.code, site.config, {
+        backendBaseUrl: backendBaseUrl(),
+        includeTaskCatalog: true,
+      }),
     })),
     meta: { page, limit, total, totalPages: Math.max(Math.ceil(total / limit), 1) },
   });
@@ -94,7 +101,10 @@ router.get("/:siteId", requireApiKey("sites:read"), asyncHandler(async (req, res
       ...site,
       runtimeStatuses,
       config: sanitizeSiteConfig(site.config),
-      blueprint: buildSiteBlueprint(site.code, site.config),
+      blueprint: buildSiteBlueprint(site.code, site.config, {
+        backendBaseUrl: backendBaseUrl(),
+        includeTaskCatalog: true,
+      }),
     },
   });
 }));
@@ -128,12 +138,32 @@ router.post("/", requireApiKey("sites:write"), asyncHandler(async (req, res) => 
       },
     });
 
+    const siteMasterKey = await createApiKeyWithPermissions({
+      name: `${created.code}-site-master`,
+      task: "siteMaster",
+      siteIds: [created.id],
+      canPost: true,
+      canRead: true,
+    });
+
     res.status(201).json({
       success: true,
       data: {
-        ...created,
-        config: sanitizeSiteConfig(created.config),
-        blueprint: buildSiteBlueprint(created.code, created.config),
+        site: {
+          ...created,
+          config: sanitizeSiteConfig(created.config),
+          blueprint: buildSiteBlueprint(created.code, created.config, {
+            backendBaseUrl: backendBaseUrl(),
+            includeTaskCatalog: true,
+          }),
+        },
+        provisioning: {
+          siteMasterKey,
+          usage: [
+            "Store this site master key securely. It can publish across enabled tasks for this site.",
+            "Use task-specific tokens for external posting tools so access stays narrow and easier to rotate.",
+          ],
+        },
       },
     });
 }));
@@ -159,6 +189,140 @@ router.post(
       res.status(201).json({ success: true, data: permission });
     })
 );
+
+router.post("/:siteId/tasks", requireApiKey("sites:write"), asyncHandler(async (req, res) => {
+  const siteId = String(req.params.siteId);
+  const task = String(req.body.task || "").trim().toLowerCase();
+
+  if (!isSiteTask(task)) {
+    throw new ApiError(400, "A valid task is required.");
+  }
+
+  const site = await prisma.site.findUnique({
+    where: { id: siteId },
+    select: {
+      id: true,
+      code: true,
+      name: true,
+      framework: true,
+      category: true,
+      theme: true,
+      config: true,
+      isActive: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  if (!site) {
+    throw new ApiError(404, "Site not found.");
+  }
+
+  const config = sanitizeSiteConfig(site.config);
+  const nextConfig = {
+    ...config,
+    supportedTasks: Array.from(new Set([...(config.supportedTasks || []), task])),
+  };
+
+  const updated = await prisma.site.update({
+    where: { id: siteId },
+    data: { config: nextConfig },
+  });
+
+  const taskKey = await createApiKeyWithPermissions({
+    name: `${site.code}-${task}-publisher`,
+    task,
+    siteIds: [site.id],
+    canPost: true,
+    canRead: true,
+  });
+
+  const guide = buildTaskProvisioningGuide(task, site.code, backendBaseUrl());
+
+  res.status(201).json({
+    success: true,
+    data: {
+      site: {
+        ...updated,
+        config: sanitizeSiteConfig(updated.config),
+        blueprint: buildSiteBlueprint(updated.code, updated.config, {
+          backendBaseUrl: backendBaseUrl(),
+          includeTaskCatalog: true,
+        }),
+      },
+      task: {
+        ...guide,
+        key: taskKey,
+        token: taskKey.rawApiKey,
+      },
+    },
+  });
+}));
+
+router.delete("/:siteId/tasks/:task", requireApiKey("sites:write"), asyncHandler(async (req, res) => {
+  const siteId = String(req.params.siteId);
+  const task = String(req.params.task || "").trim().toLowerCase();
+
+  if (!isSiteTask(task)) {
+    throw new ApiError(400, "A valid task is required.");
+  }
+
+  const site = await prisma.site.findUnique({
+    where: { id: siteId },
+    select: { id: true, code: true, config: true },
+  });
+
+  if (!site) {
+    throw new ApiError(404, "Site not found.");
+  }
+
+  const config = sanitizeSiteConfig(site.config);
+  const nextConfig = {
+    ...config,
+    supportedTasks: (config.supportedTasks || []).filter((item) => item !== task),
+  };
+
+  const updated = await prisma.site.update({
+    where: { id: siteId },
+    data: { config: nextConfig },
+  });
+
+  const taskScope = `task:${task}`;
+  const keys = await prisma.apiKey.findMany({
+    where: {
+      scopes: { has: taskScope },
+      permissions: { some: { siteId } },
+    },
+    select: { id: true },
+  });
+  const keyIds = keys.map((key) => key.id);
+
+  if (keyIds.length > 0) {
+    await prisma.apiKey.updateMany({
+      where: { id: { in: keyIds } },
+      data: { isActive: false },
+    });
+    await prisma.apiKeySitePermission.deleteMany({
+      where: { siteId, apiKeyId: { in: keyIds } },
+    });
+  }
+
+  res.json({
+    success: true,
+    data: {
+      site: {
+        ...updated,
+        config: sanitizeSiteConfig(updated.config),
+        blueprint: buildSiteBlueprint(updated.code, updated.config, {
+          backendBaseUrl: backendBaseUrl(),
+          includeTaskCatalog: true,
+        }),
+      },
+      task,
+      revokedKeys: keyIds.length,
+    },
+  });
+}));
 
 router.patch("/:siteId/archive", requireApiKey("sites:write"), asyncHandler(async (req, res) => {
   const site = await prisma.site.update({
@@ -201,7 +365,10 @@ router.patch("/:siteId", requireApiKey("sites:write"), asyncHandler(async (req, 
     data: {
       ...site,
       config: sanitizeSiteConfig(site.config),
-      blueprint: buildSiteBlueprint(site.code, site.config),
+      blueprint: buildSiteBlueprint(site.code, site.config, {
+        backendBaseUrl: backendBaseUrl(),
+        includeTaskCatalog: true,
+      }),
     },
   });
 }));
@@ -232,7 +399,10 @@ router.get("/:siteId/blueprint", requireApiKey("sites:read"), asyncHandler(async
         ...site,
         config,
       },
-      blueprint: buildSiteBlueprint(site.code, site.config),
+      blueprint: buildSiteBlueprint(site.code, site.config, {
+        backendBaseUrl: backendBaseUrl(),
+        includeTaskCatalog: true,
+      }),
       integrationSteps: [
         "Set backend URL and site code in the frontend environment.",
         "Use the public bootstrap endpoint to hydrate site metadata and supported tasks.",

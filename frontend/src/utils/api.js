@@ -156,7 +156,10 @@ export const addSite = async (payload) => {
     method: "POST",
     body: JSON.stringify(payload),
   });
-  return mapSite(response.data);
+  return {
+    site: mapSite(response.data.site),
+    provisioning: response.data.provisioning,
+  };
 };
 
 export const updateSite = async (siteId, payload) => {
@@ -250,6 +253,29 @@ export const createTaskApiKey = async (payload) => {
     body: JSON.stringify(payload),
   });
   return response.data;
+};
+
+export const provisionSiteTask = async (siteId, task) => {
+  const response = await request(`/api/v1/sites/${siteId}/tasks`, {
+    method: "POST",
+    body: JSON.stringify({ task }),
+  });
+
+  return {
+    site: mapSite(response.data.site),
+    task: response.data.task,
+  };
+};
+
+export const deleteSiteTask = async (siteId, task) => {
+  const response = await request(`/api/v1/sites/${siteId}/tasks/${task}`, {
+    method: "DELETE",
+  });
+  return {
+    site: mapSite(response.data.site),
+    task: response.data.task,
+    revokedKeys: response.data.revokedKeys,
+  };
 };
 
 export const fetchSiteBlueprint = async (siteId) => {

@@ -3,9 +3,9 @@ import { Router } from "express";
 
 import { prisma } from "../../config/db";
 import { ensureSiteAccess, getAllowedSiteIds, requireApiKey } from "../../middleware/auth";
-import { getSiteFrontendBaseUrl } from "../sites/site-contract";
 import { ApiError } from "../../utils/api-error";
 import { asyncHandler } from "../../utils/async-handler";
+import { createPublishedPost, triggerRevalidate } from "./post-service";
 
 const router = Router();
 
@@ -19,93 +19,32 @@ const mapStatus = (status?: string): PostStatus | undefined => {
 
 const canBypassSitePermissions = (scopes: string[]): boolean => scopes.includes("*");
 
-const REVALIDATE_SECRET = process.env.NEXT_REVALIDATE_SECRET || "";
-const REVALIDATE_ENABLED = process.env.NEXT_REVALIDATE_ENABLED !== "false";
-
-const shouldRevalidate = (): boolean => Boolean(REVALIDATE_SECRET) && REVALIDATE_ENABLED;
-
-const triggerRevalidate = async (siteConfig: unknown, slug?: string | null) => {
-  if (!shouldRevalidate()) return;
-  const frontendBaseUrl = getSiteFrontendBaseUrl(siteConfig);
-  if (!frontendBaseUrl) return;
-
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 3000);
-
-  try {
-    await fetch(`${frontendBaseUrl}/api/revalidate`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-revalidate-secret": REVALIDATE_SECRET,
-      },
-      body: JSON.stringify({ slug }),
-      signal: controller.signal,
-    });
-  } catch (error) {
-    console.warn("Revalidate request failed", error);
-  } finally {
-    clearTimeout(timeout);
-  }
-};
-const buildPostLiveUrl = (
-  frontendBaseUrl: string | null,
-  slug: string | null | undefined
-): string | null => {
-  if (!frontendBaseUrl || !slug) return null;
-  return `${frontendBaseUrl}/posts/${slug}`;
-};
-
 router.post("/", requireApiKey("posts:write"), asyncHandler(async (req, res) => {
-    const { siteCode, title, slug, summary, content, media, tags, authorName, externalPostId } =
-      req.body;
-
-    if (!siteCode || !title || !content) {
-      throw new ApiError(400, "siteCode, title and content are required.");
-    }
-
-    const site = await prisma.site.findUnique({ where: { code: siteCode } });
-    if (!site || !site.isActive) {
-      throw new ApiError(404, "Site not found or inactive.");
-    }
-
     const apiKey = req.apiKey;
     if (!apiKey) {
       throw new ApiError(401, "API key context missing.");
     }
 
-    const allowed = await ensureSiteAccess(apiKey.id, site.id, "post");
-    if (!allowed && !apiKey.scopes.includes("*")) {
-      throw new ApiError(403, "API key is not allowed to post on this site.");
-    }
-
-    const post = await prisma.post.create({
-      data: {
-        siteId: site.id,
-        title,
-        slug,
-        summary,
-        content,
-        media,
-        tags: Array.isArray(tags) ? tags : [],
-        authorName,
-        externalPostId,
-        status: PostStatus.PUBLISHED,
-        publishedAt: new Date(),
-        createdByApiKeyId: apiKey.id,
-      },
+    const { siteCode, title, slug, summary, content, media, tags, authorName, externalPostId } =
+      req.body;
+    const created = await createPublishedPost({
+      apiKey,
+      siteCode,
+      title,
+      slug,
+      summary,
+      content,
+      media,
+      tags,
+      authorName,
+      externalPostId,
     });
-
-    const frontendBaseUrl = getSiteFrontendBaseUrl(site.config);
-    const liveUrl = buildPostLiveUrl(frontendBaseUrl, post.slug);
-
-    void triggerRevalidate(site.config, post.slug);
 
     res.status(201).json({
       success: true,
       data: {
-        ...post,
-        liveUrl,
+        ...created.post,
+        liveUrl: created.liveUrl,
       },
     });
 }));

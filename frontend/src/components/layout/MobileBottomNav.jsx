@@ -1,11 +1,11 @@
-import { Activity, BarChart3, Files, Globe2, Home, Settings } from "lucide-react";
+import { BarChart3, Files, Globe2, Home, Settings, KeyRound } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 const tabs = [
   { to: "/", label: "Home", icon: Home },
   { to: "/sites", label: "Sites", icon: Globe2 },
+  { to: "/tasks", label: "Tasks", icon: KeyRound },
   { to: "/posts", label: "Posts", icon: Files },
-  { to: "/activity", label: "Activity", icon: Activity },
   { to: "/analytics", label: "Charts", icon: BarChart3 },
   { to: "/settings", label: "Settings", icon: Settings }
 ];

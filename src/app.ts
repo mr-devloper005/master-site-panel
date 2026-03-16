@@ -8,6 +8,7 @@ import postsRoutes from "./modules/posts/posts.routes";
 import publicRoutes from "./modules/public/public.routes";
 import runtimeRoutes from "./modules/runtime/runtime.routes";
 import sitesRoutes from "./modules/sites/sites.routes";
+import tasksRoutes, { siteTaskRouter } from "./modules/tasks/tasks.routes";
 import { errorHandler, notFoundHandler } from "./middleware/error-handler";
 
 export const app = express();
@@ -28,6 +29,8 @@ app.get("/health", (_req, res) => {
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/sites", sitesRoutes);
 app.use("/api/v1/posts", postsRoutes);
+app.use("/api/v1/tasks", tasksRoutes);
+app.use("/", siteTaskRouter);
 app.use("/api/v1/public", publicRoutes);
 app.use("/api/v1/runtime", runtimeRoutes);
 

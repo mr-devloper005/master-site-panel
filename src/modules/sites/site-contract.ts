@@ -1,3 +1,5 @@
+import { buildTaskCatalog } from "./task-catalog";
+
 export const SITE_TASKS = [
   "listing",
   "article",
@@ -20,6 +22,7 @@ export type SiteConnectorConfig = {
   supportedTasks?: SiteTask[];
   taskViews?: Partial<Record<SiteTask, string>>;
   metrics?: string[];
+  description?: string;
 };
 
 export const DEFAULT_CONNECTOR_VERSION = "2026-03-connector-v1";
@@ -70,6 +73,7 @@ export const sanitizeSiteConfig = (value: unknown): SiteConnectorConfig => {
     supportedTasks,
     taskViews,
     metrics,
+    description: typeof source.description === "string" ? source.description : undefined,
   };
 };
 
@@ -78,7 +82,14 @@ export const getSiteFrontendBaseUrl = (siteConfig: unknown): string | null => {
   return config.frontendUrl || config.liveUrl || config.siteUrl || null;
 };
 
-export const buildSiteBlueprint = (siteCode: string, siteConfig: unknown) => {
+export const buildSiteBlueprint = (
+  siteCode: string,
+  siteConfig: unknown,
+  options?: {
+    backendBaseUrl?: string | null;
+    includeTaskCatalog?: boolean;
+  }
+) => {
   const config = sanitizeSiteConfig(siteConfig);
 
   return {
@@ -94,5 +105,10 @@ export const buildSiteBlueprint = (siteCode: string, siteConfig: unknown) => {
       taskViews: config.taskViews || {},
       metrics: config.metrics || [],
     },
+    ...(options?.includeTaskCatalog
+      ? {
+          taskCatalog: buildTaskCatalog(siteCode, options.backendBaseUrl),
+        }
+      : {}),
   };
 };

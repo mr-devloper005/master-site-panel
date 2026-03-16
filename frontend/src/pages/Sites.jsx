@@ -4,15 +4,19 @@ import toast from "react-hot-toast";
 
 import SiteTable from "../components/sites/SiteTable";
 import SiteFormModal from "../components/sites/SiteFormModal";
+import SiteProvisioningModal from "../components/sites/SiteProvisioningModal";
+import SiteTaskModal from "../components/sites/SiteTaskModal";
 import { useAppData } from "../context/AppContext";
 
 export default function Sites() {
-  const { sites, posts, createSite, editSite, runSiteBulkAction } = useAppData();
+  const { sites, posts, createSite, editSite, addTaskToSite, runSiteBulkAction } = useAppData();
   const [query, setQuery] = useState("");
   const [sortBy, setSortBy] = useState("name");
   const [selected, setSelected] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [taskSite, setTaskSite] = useState(null);
+  const [packageData, setPackageData] = useState(null);
   const navigate = useNavigate();
 
   const rows = useMemo(() => {
@@ -85,6 +89,7 @@ export default function Sites() {
             toast.success("Site deleted");
           }}
           onViewPosts={(site) => navigate(`/posts?site=${site.id}`)}
+          onManageTasks={(site) => setTaskSite(site)}
           sortBy={sortBy}
           setSortBy={setSortBy}
         />
@@ -98,10 +103,29 @@ export default function Sites() {
           if (editing) {
             await editSite(editing.id, form);
           } else {
-            await createSite(form);
+            const created = await createSite(form);
+            setPackageData({ type: "site", ...created });
           }
           setOpenModal(false);
         }}
+      />
+
+      <SiteTaskModal
+        open={Boolean(taskSite)}
+        site={taskSite}
+        onClose={() => setTaskSite(null)}
+        onSubmit={async (task) => {
+          if (!taskSite) return;
+          const provisioned = await addTaskToSite(taskSite.id, task);
+          setPackageData({ type: "task", ...provisioned });
+          setTaskSite(null);
+        }}
+      />
+
+      <SiteProvisioningModal
+        open={Boolean(packageData)}
+        packageData={packageData}
+        onClose={() => setPackageData(null)}
       />
     </div>
   );
