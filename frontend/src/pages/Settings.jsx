@@ -5,14 +5,10 @@ import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { useAppData } from "../context/AppContext";
 import {
-  createTaskApiKey,
-  fetchApiKeys,
   fetchSiteBlueprint,
   getIntegrationSettings,
   saveIntegrationSettings,
 } from "../utils/api";
-
-const taskOptions = ["listing", "article", "image", "profile", "classified", "social", "runtime"];
 
 export default function Settings() {
   const { user } = useAuth();
@@ -23,58 +19,22 @@ export default function Settings() {
   const [profile, setProfile] = useState({ name: user?.name || "", email: user?.email || "" });
   const [backendUrl, setBackendUrl] = useState(integration.backendUrl);
   const [apiKey, setApiKey] = useState(integration.apiKey);
-  const [keys, setKeys] = useState([]);
-  const [selectedSiteId, setSelectedSiteId] = useState("");
-  const [selectedTask, setSelectedTask] = useState("listing");
-  const [generatedKey, setGeneratedKey] = useState(null);
   const [blueprint, setBlueprint] = useState(null);
+  const [selectedBlueprintSiteId, setSelectedBlueprintSiteId] = useState("");
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        const result = await fetchApiKeys();
-        setKeys(result);
-      } catch (_error) {
-        setKeys([]);
-      }
-    };
-
-    load();
+    return undefined;
   }, []);
-
-  const refreshKeys = async () => {
-    const result = await fetchApiKeys();
-    setKeys(result);
-  };
 
   const saveIntegration = async () => {
     saveIntegrationSettings({ backendUrl, apiKey });
     await hydrate();
-    await refreshKeys();
     toast.success("Backend integration saved");
-  };
-
-  const generateKey = async () => {
-    if (!selectedSiteId) {
-      toast.error("Select a site first");
-      return;
-    }
-
-    const selectedSite = sites.find((site) => site.id === selectedSiteId);
-    const result = await createTaskApiKey({
-      name: `${selectedSite?.code || "site"}-${selectedTask}-publisher`,
-      task: selectedTask,
-      siteIds: [selectedSiteId],
-      canPost: true,
-      canRead: true,
-    });
-    setGeneratedKey(result);
-    await refreshKeys();
-    toast.success("Task API key created");
   };
 
   const loadBlueprint = async (siteId) => {
     if (!siteId) return;
+    setSelectedBlueprintSiteId(siteId);
     const result = await fetchSiteBlueprint(siteId);
     setBlueprint(result);
   };
@@ -151,42 +111,22 @@ export default function Settings() {
         </section>
 
         <section className="glass rounded-panel p-4">
-          <h2 className="text-sm font-semibold">Task API Keys</h2>
-          <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-3">
-            <select className="rounded-lg border border-[var(--border-color)] px-3 py-2" value={selectedSiteId} onChange={(e) => { setSelectedSiteId(e.target.value); loadBlueprint(e.target.value); }}>
-              <option value="">Select site</option>
-              {sites.map((site) => <option key={site.id} value={site.id}>{site.name}</option>)}
-            </select>
-            <select className="rounded-lg border border-[var(--border-color)] px-3 py-2" value={selectedTask} onChange={(e) => setSelectedTask(e.target.value)}>
-              {taskOptions.map((task) => <option key={task} value={task}>{task}</option>)}
-            </select>
-            <button className="rounded-lg bg-blue-600 px-4 py-2 text-white" onClick={generateKey}>
-              Generate Task Key
-            </button>
-          </div>
-
-          {generatedKey && (
-            <div className="mt-3 rounded-lg border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-800">
-              <p className="font-medium">Raw API key</p>
-              <p className="mt-1 break-all font-mono text-xs">{generatedKey.rawApiKey}</p>
-            </div>
-          )}
-
-          <div className="mt-4 space-y-2">
-            {keys.map((key) => (
-              <div key={key.id} className="rounded-lg border border-[var(--border-color)] p-3 text-sm">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="font-medium">{key.name}</p>
-                  <span className="text-xs text-[var(--text-secondary)]">{key.task}</span>
-                </div>
-                <p className="mt-1 text-xs text-[var(--text-secondary)]">{key.sitePermissions.map((site) => site.siteCode).join(", ") || "No site binding"}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="glass rounded-panel p-4">
           <h2 className="text-sm font-semibold">Connector Blueprint</h2>
+          <div className="mt-3">
+            <label className="mb-1 block text-sm">Select site</label>
+            <select
+              className="w-full rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
+              value={selectedBlueprintSiteId}
+              onChange={(e) => loadBlueprint(e.target.value)}
+            >
+              <option value="">Choose a site</option>
+              {sites.map((site) => (
+                <option key={site.id} value={site.id}>
+                  {site.name}
+                </option>
+              ))}
+            </select>
+          </div>
           {blueprint ? (
             <div className="mt-3 space-y-3 text-sm">
               <div>

@@ -33,9 +33,11 @@ export default function Posts() {
     const q = query.toLowerCase();
 
     let result = posts.filter((post) => {
-      const matchTab = tab === "all"
-        ? true
-        : post.siteId === siteFilter || (selectedSite ? post.siteName === selectedSite.name : false);
+      const matchTab =
+        tab === "all" ||
+        siteFilter === "all" ||
+        post.siteId === siteFilter ||
+        (selectedSite ? post.siteName === selectedSite.name : false);
       const matchStatus = statusFilter === "all" ? true : post.status === statusFilter;
       const matchSearch = !query.trim()
         ? true

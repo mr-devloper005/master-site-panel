@@ -138,14 +138,6 @@ router.post("/", requireApiKey("sites:write"), asyncHandler(async (req, res) => 
       },
     });
 
-    const siteMasterKey = await createApiKeyWithPermissions({
-      name: `${created.code}-site-master`,
-      task: "siteMaster",
-      siteIds: [created.id],
-      canPost: true,
-      canRead: true,
-    });
-
     res.status(201).json({
       success: true,
       data: {
@@ -158,10 +150,9 @@ router.post("/", requireApiKey("sites:write"), asyncHandler(async (req, res) => 
           }),
         },
         provisioning: {
-          siteMasterKey,
           usage: [
-            "Store this site master key securely. It can publish across enabled tasks for this site.",
-            "Use task-specific tokens for external posting tools so access stays narrow and easier to rotate.",
+            "Add tasks from the Tasks panel to generate posting tokens.",
+            "Task tokens are required for posting. Each task has its own API endpoint and payload template.",
           ],
         },
       },

@@ -3,10 +3,11 @@ import { Prisma, PostStatus } from "@prisma/client";
 import { prisma } from "../../config/db";
 import { ensureSiteAccess } from "../../middleware/auth";
 import { ApiError } from "../../utils/api-error";
-import { getTaskScope, SITE_MASTER_SCOPE } from "../auth/api-key-service";
+import { getTaskScope } from "../auth/api-key-service";
 import { getSiteFrontendBaseUrl, isSiteTask, sanitizeSiteConfig, type SiteTask } from "../sites/site-contract";
 
-const REVALIDATE_SECRET = process.env.NEXT_REVALIDATE_SECRET || "";
+const REVALIDATE_SECRET =
+  process.env.REVALIDATE_SECRET || process.env.NEXT_REVALIDATE_SECRET || "";
 const REVALIDATE_ENABLED = process.env.NEXT_REVALIDATE_ENABLED !== "false";
 
 const shouldRevalidate = (): boolean => Boolean(REVALIDATE_SECRET) && REVALIDATE_ENABLED;
@@ -94,6 +95,10 @@ export const createPublishedPost = async ({
   const contentTask = typeof contentRecord?.type === "string" ? contentRecord.type : null;
   const resolvedTask = requestedTask || (contentTask && isSiteTask(contentTask) ? contentTask : null);
 
+  if (!resolvedTask) {
+    throw new ApiError(400, "Task is required. Set content.type or use the task-specific endpoint.");
+  }
+
   if (requestedTask && contentTask && contentTask !== requestedTask) {
     throw new ApiError(400, `Payload content.type must match task "${requestedTask}".`);
   }
@@ -102,16 +107,15 @@ export const createPublishedPost = async ({
     throw new ApiError(400, `Task "${resolvedTask}" is not enabled for this site.`);
   }
 
-  if (resolvedTask && !apiKey.scopes.includes("*")) {
-    const canUseTask =
-      apiKey.scopes.includes(SITE_MASTER_SCOPE) || apiKey.scopes.includes(getTaskScope(resolvedTask));
+  if (!apiKey.scopes.includes("*")) {
+    const canUseTask = apiKey.scopes.includes(getTaskScope(resolvedTask));
     if (!canUseTask) {
       throw new ApiError(403, `API key is not allowed to post ${resolvedTask} content.`);
     }
   }
 
-  if (requestedTask && contentRecord && !contentRecord.type) {
-    contentRecord.type = requestedTask;
+  if (contentRecord && !contentRecord.type) {
+    contentRecord.type = resolvedTask;
   }
 
   const post = await prisma.post.create({

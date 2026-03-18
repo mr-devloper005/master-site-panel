@@ -15,7 +15,7 @@ export default function SiteProvisioningModal({ open, onClose, packageData }) {
     if (packageData.type === "site") {
       return {
         heading: "Site master key ready",
-        token: packageData.provisioning?.siteMasterKey?.rawApiKey || "",
+        token: "",
         apiTitle: "Recommended APIs",
         api: [
           "/api/v1/sites/:siteId/tasks",
@@ -52,23 +52,29 @@ export default function SiteProvisioningModal({ open, onClose, packageData }) {
   return (
     <Modal title={details.heading} open={open} onClose={onClose} width="max-w-4xl">
       <div className="space-y-4">
-        <div className="rounded-2xl border border-[var(--border-color)] bg-slate-50 p-4 dark:bg-slate-900/40">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-secondary)]">
-                Token
-              </p>
-              <p className="mt-1 break-all font-mono text-sm">{details.token || "Not available"}</p>
+        {details.token ? (
+          <div className="rounded-2xl border border-[var(--border-color)] bg-slate-50 p-4 dark:bg-slate-900/40">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-secondary)]">
+                  Token
+                </p>
+                <p className="mt-1 break-all font-mono text-sm">{details.token}</p>
+              </div>
+              <button
+                type="button"
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm text-white"
+                onClick={() => handleCopy(details.token, "Token")}
+              >
+                {copied === "Token" ? "Copied" : "Copy token"}
+              </button>
             </div>
-            <button
-              type="button"
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm text-white"
-              onClick={() => handleCopy(details.token, "Token")}
-            >
-              {copied === "Token" ? "Copied" : "Copy token"}
-            </button>
           </div>
-        </div>
+        ) : (
+          <div className="rounded-2xl border border-[var(--border-color)] bg-slate-50 p-4 text-sm text-[var(--text-secondary)] dark:bg-slate-900/40">
+            Task tokens are generated from the Tasks panel. Posting requires a task token.
+          </div>
+        )}
 
         {details.api?.length > 0 && (
           <section className="space-y-2">
