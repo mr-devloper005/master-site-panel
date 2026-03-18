@@ -267,6 +267,16 @@ export const provisionSiteTask = async (siteId, task) => {
   };
 };
 
+export const issueSiteTaskToken = async (siteId, task) => {
+  const response = await request(`/api/v1/sites/${siteId}/tasks/${task}/issue`, {
+    method: "POST",
+  });
+  return {
+    site: mapSite(response.data.site),
+    task: response.data.task,
+  };
+};
+
 export const deleteSiteTask = async (siteId, task) => {
   const response = await request(`/api/v1/sites/${siteId}/tasks/${task}`, {
     method: "DELETE",

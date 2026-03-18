@@ -12,7 +12,40 @@ const REVALIDATE_ENABLED = process.env.NEXT_REVALIDATE_ENABLED !== "false";
 
 const shouldRevalidate = (): boolean => Boolean(REVALIDATE_SECRET) && REVALIDATE_ENABLED;
 
-export const triggerRevalidate = async (siteConfig: unknown, slug?: string | null) => {
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+const getTaskViewPath = (siteConfig: unknown, task: SiteTask | null) => {
+  if (!task) return "/posts";
+  const config = sanitizeSiteConfig(siteConfig);
+  const view = config.taskViews?.[task];
+  if (typeof view === "string" && view.trim()) {
+    return view.startsWith("/") ? view : `/${view}`;
+  }
+  return "/posts";
+};
+
+const buildRevalidatePaths = (siteConfig: unknown, slug?: string | null, task?: SiteTask | null) => {
+  if (!slug) return [];
+  const paths = new Set<string>();
+  const taskPath = getTaskViewPath(siteConfig, task || null);
+  paths.add(`${taskPath.replace(/\/$/, "")}/${slug}`);
+  paths.add(`/posts/${slug}`);
+  paths.add("/listings");
+  paths.add("/posts");
+  paths.add("/search");
+  return Array.from(paths);
+};
+
+export const triggerRevalidate = async (
+  siteConfig: unknown,
+  slug?: string | null,
+  task?: SiteTask | null
+) => {
   if (!shouldRevalidate()) return;
   const frontendBaseUrl = getSiteFrontendBaseUrl(siteConfig);
   if (!frontendBaseUrl) return;
@@ -21,13 +54,14 @@ export const triggerRevalidate = async (siteConfig: unknown, slug?: string | nul
   const timeout = setTimeout(() => controller.abort(), 3000);
 
   try {
+    const paths = buildRevalidatePaths(siteConfig, slug, task);
     await fetch(`${frontendBaseUrl}/api/revalidate`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "x-revalidate-secret": REVALIDATE_SECRET,
       },
-      body: JSON.stringify({ slug }),
+      body: JSON.stringify({ slug, paths }),
       signal: controller.signal,
     });
   } catch (error) {
@@ -39,10 +73,13 @@ export const triggerRevalidate = async (siteConfig: unknown, slug?: string | nul
 
 export const buildPostLiveUrl = (
   frontendBaseUrl: string | null,
-  slug: string | null | undefined
+  slug: string | null | undefined,
+  siteConfig: unknown,
+  task: SiteTask | null
 ): string | null => {
   if (!frontendBaseUrl || !slug) return null;
-  return `${frontendBaseUrl}/posts/${slug}`;
+  const path = getTaskViewPath(siteConfig, task);
+  return `${frontendBaseUrl}${path}/${slug}`;
 };
 
 type CreatePublishedPostInput = {
@@ -118,11 +155,34 @@ export const createPublishedPost = async ({
     contentRecord.type = resolvedTask;
   }
 
+  const baseSlug = slugify(String(slug || title || "post")) || "post";
+  const existing = await prisma.post.findMany({
+    where: {
+      siteId: site.id,
+      slug: { startsWith: baseSlug },
+    },
+    select: { slug: true },
+  });
+
+  const existingSlugs = new Set(existing.map((item) => item.slug).filter(Boolean) as string[]);
+  let resolvedSlug = baseSlug;
+  if (existingSlugs.has(baseSlug)) {
+    let max = 1;
+    existingSlugs.forEach((value) => {
+      const match = value.match(new RegExp(`^${baseSlug}-(\\d+)$`));
+      if (match) {
+        const num = Number(match[1]);
+        if (Number.isFinite(num)) max = Math.max(max, num);
+      }
+    });
+    resolvedSlug = `${baseSlug}-${max + 1}`;
+  }
+
   const post = await prisma.post.create({
     data: {
       siteId: site.id,
       title,
-      slug,
+      slug: resolvedSlug,
       summary,
       content: (contentRecord || content) as Prisma.InputJsonValue,
       media: (media ?? Prisma.JsonNull) as Prisma.InputJsonValue | typeof Prisma.JsonNull,
@@ -136,9 +196,9 @@ export const createPublishedPost = async ({
   });
 
   const frontendBaseUrl = getSiteFrontendBaseUrl(site.config);
-  const liveUrl = buildPostLiveUrl(frontendBaseUrl, post.slug);
+  const liveUrl = buildPostLiveUrl(frontendBaseUrl, post.slug, site.config, resolvedTask);
 
-  void triggerRevalidate(site.config, post.slug);
+  void triggerRevalidate(site.config, post.slug, resolvedTask);
 
   return {
     post,

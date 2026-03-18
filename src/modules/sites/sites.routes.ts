@@ -15,6 +15,24 @@ import { buildSiteBlueprint, isSiteTask, sanitizeSiteConfig } from "./site-contr
 const router = Router();
 const backendBaseUrl = () => getBaseUrl();
 
+const provisionTaskToken = async (site: { id: string; code: string }, task: string) => {
+  const taskKey = await createApiKeyWithPermissions({
+    name: `${site.code}-${task}-publisher`,
+    task,
+    siteIds: [site.id],
+    canPost: true,
+    canRead: true,
+  });
+
+  const guide = buildTaskProvisioningGuide(task, site.code, backendBaseUrl());
+
+  return {
+    ...guide,
+    key: taskKey,
+    token: taskKey.rawApiKey,
+  };
+};
+
 router.get("/", requireApiKey("sites:read"), asyncHandler(async (req, res) => {
   const search = req.query.search?.toString().trim();
   const framework = req.query.framework?.toString();
@@ -127,6 +145,7 @@ router.post("/", requireApiKey("sites:write"), asyncHandler(async (req, res) => 
       throw new ApiError(400, "Invalid category value.");
     }
 
+    const sanitizedConfig = sanitizeSiteConfig(config);
     const created = await prisma.site.create({
       data: {
         code,
@@ -134,9 +153,17 @@ router.post("/", requireApiKey("sites:write"), asyncHandler(async (req, res) => 
         framework,
         category,
         theme,
-        config: sanitizeSiteConfig(config),
+        config: sanitizedConfig,
       },
     });
+
+    const requestedTasks = Array.isArray(sanitizedConfig.supportedTasks)
+      ? sanitizedConfig.supportedTasks.filter(isSiteTask)
+      : [];
+
+    const taskPackages = requestedTasks.length
+      ? await Promise.all(requestedTasks.map((task) => provisionTaskToken(created, task)))
+      : [];
 
     res.status(201).json({
       success: true,
@@ -151,9 +178,12 @@ router.post("/", requireApiKey("sites:write"), asyncHandler(async (req, res) => 
         },
         provisioning: {
           usage: [
-            "Add tasks from the Tasks panel to generate posting tokens.",
             "Task tokens are required for posting. Each task has its own API endpoint and payload template.",
+            requestedTasks.length
+              ? `Provisioned ${requestedTasks.length} task token(s) from your selected tasks.`
+              : "Add tasks from the Tasks panel to generate posting tokens.",
           ],
+          tasks: taskPackages,
         },
       },
     });
@@ -220,15 +250,7 @@ router.post("/:siteId/tasks", requireApiKey("sites:write"), asyncHandler(async (
     data: { config: nextConfig },
   });
 
-  const taskKey = await createApiKeyWithPermissions({
-    name: `${site.code}-${task}-publisher`,
-    task,
-    siteIds: [site.id],
-    canPost: true,
-    canRead: true,
-  });
-
-  const guide = buildTaskProvisioningGuide(task, site.code, backendBaseUrl());
+  const taskPackage = await provisionTaskToken(site, task);
 
   res.status(201).json({
     success: true,
@@ -242,9 +264,66 @@ router.post("/:siteId/tasks", requireApiKey("sites:write"), asyncHandler(async (
         }),
       },
       task: {
-        ...guide,
-        key: taskKey,
-        token: taskKey.rawApiKey,
+        ...taskPackage,
+      },
+    },
+  });
+}));
+
+router.post("/:siteId/tasks/:task/issue", requireApiKey("sites:write"), asyncHandler(async (req, res) => {
+  const siteId = String(req.params.siteId);
+  const task = String(req.params.task || "").trim().toLowerCase();
+
+  if (!isSiteTask(task)) {
+    throw new ApiError(400, "A valid task is required.");
+  }
+
+  const site = await prisma.site.findUnique({
+    where: { id: siteId },
+    select: {
+      id: true,
+      code: true,
+      name: true,
+      framework: true,
+      category: true,
+      theme: true,
+      config: true,
+      isActive: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  if (!site) {
+    throw new ApiError(404, "Site not found.");
+  }
+
+  const config = sanitizeSiteConfig(site.config);
+  const nextConfig = {
+    ...config,
+    supportedTasks: Array.from(new Set([...(config.supportedTasks || []), task])),
+  };
+
+  const updated = await prisma.site.update({
+    where: { id: siteId },
+    data: { config: nextConfig },
+  });
+
+  const taskPackage = await provisionTaskToken(site, task);
+
+  res.status(201).json({
+    success: true,
+    data: {
+      site: {
+        ...updated,
+        config: sanitizeSiteConfig(updated.config),
+        blueprint: buildSiteBlueprint(updated.code, updated.config, {
+          backendBaseUrl: backendBaseUrl(),
+          includeTaskCatalog: true,
+        }),
+      },
+      task: {
+        ...taskPackage,
       },
     },
   });

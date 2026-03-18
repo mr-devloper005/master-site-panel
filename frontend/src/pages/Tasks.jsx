@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import SiteProvisioningModal from "../components/sites/SiteProvisioningModal";
 import SiteTaskModal from "../components/sites/SiteTaskModal";
 import { useAppData } from "../context/AppContext";
-import { fetchApiKeys } from "../utils/api";
+import { fetchApiKeys, issueSiteTaskToken } from "../utils/api";
 
 const badgeClass =
   "inline-flex items-center rounded-full border border-[var(--border-color)] bg-slate-50 px-2.5 py-1 text-xs dark:bg-slate-900/40";
@@ -73,6 +73,8 @@ export default function Tasks() {
         endpoint: `/${selectedSiteCode}/post/v1/${task}`,
         keyName: taskKey?.name || "Not generated",
         token: cachedToken || "Token hidden (generate again)",
+        hasToken: Boolean(cachedToken),
+        isGenerated: Boolean(taskKey),
         catalog,
       };
     });
@@ -176,6 +178,33 @@ export default function Tasks() {
                               >
                                 View
                               </button>
+                              {!row.hasToken && (
+                                <button
+                                  type="button"
+                                  className="rounded-lg border border-blue-200 px-3 py-1.5 text-xs text-blue-600"
+                                  onClick={async () => {
+                                    if (!selectedSite) return;
+                                    try {
+                                      const issued = await issueSiteTaskToken(selectedSite.id, row.task);
+                                      const tokenKey = `${selectedSite.id}:${row.task}`;
+                                      const nextCache = {
+                                        ...tokenCache,
+                                        [tokenKey]: issued.task?.token || "",
+                                      };
+                                      setTokenCache(nextCache);
+                                      saveTokenCache(nextCache);
+                                      const result = await fetchApiKeys();
+                                      setKeys(result);
+                                      setPackageData({ type: "task", ...issued });
+                                      toast.success("New task token generated");
+                                    } catch (error) {
+                                      toast.error(error.message || "Failed to generate token");
+                                    }
+                                  }}
+                                >
+                                  Generate token
+                                </button>
+                              )}
                               <button
                                 type="button"
                                 className="rounded-lg border border-red-300 px-3 py-1.5 text-xs text-red-600"

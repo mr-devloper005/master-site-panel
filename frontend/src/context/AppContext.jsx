@@ -15,6 +15,20 @@ import {
 } from "../utils/api";
 
 const AppContext = createContext(null);
+const TOKEN_CACHE_KEY = "site-master-task-tokens";
+
+const loadTokenCache = () => {
+  try {
+    const raw = localStorage.getItem(TOKEN_CACHE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+};
+
+const saveTokenCache = (cache) => {
+  localStorage.setItem(TOKEN_CACHE_KEY, JSON.stringify(cache));
+};
 
 export const AppProvider = ({ children }) => {
   const [sites, setSites] = useState([]);
@@ -44,6 +58,17 @@ export const AppProvider = ({ children }) => {
   const createSite = async (payload) => {
     const created = await addSite(payload);
     setSites((prev) => [...prev, created.site]);
+
+    if (created?.provisioning?.tasks?.length) {
+      const cache = loadTokenCache();
+      created.provisioning.tasks.forEach((taskPackage) => {
+        if (!taskPackage?.task || !taskPackage?.token) return;
+        const tokenKey = `${created.site.id}:${taskPackage.task}`;
+        cache[tokenKey] = taskPackage.token;
+      });
+      saveTokenCache(cache);
+    }
+
     toast.success("Site added successfully");
     return created;
   };

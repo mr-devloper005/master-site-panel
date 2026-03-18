@@ -14,7 +14,7 @@ export default function SiteProvisioningModal({ open, onClose, packageData }) {
 
     if (packageData.type === "site") {
       return {
-        heading: "Site master key ready",
+        heading: "Site provisioning ready",
         token: "",
         apiTitle: "Recommended APIs",
         api: [
@@ -24,6 +24,7 @@ export default function SiteProvisioningModal({ open, onClose, packageData }) {
         payload: null,
         curl: null,
         usage: packageData.provisioning?.usage || [],
+        tasks: packageData.provisioning?.tasks || [],
       };
     }
 
@@ -136,6 +137,38 @@ export default function SiteProvisioningModal({ open, onClose, packageData }) {
                 </li>
               ))}
             </ul>
+          </section>
+        ) : null}
+
+        {details.tasks?.length > 0 ? (
+          <section className="space-y-2">
+            <h3 className="font-semibold">Provisioned tasks</h3>
+            <div className="space-y-3">
+              {details.tasks.map((task) => (
+                <div key={task.task} className="rounded-xl border border-[var(--border-color)] p-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <p className="text-sm font-medium">{task.label || task.task}</p>
+                      <p className="text-xs text-[var(--text-secondary)]">{task.endpoint}</p>
+                    </div>
+                    {task.token ? (
+                      <button
+                        type="button"
+                        className="rounded-lg border border-[var(--border-color)] px-3 py-1.5 text-xs"
+                        onClick={() => handleCopy(task.token, "Token")}
+                      >
+                        Copy token
+                      </button>
+                    ) : null}
+                  </div>
+                  {task.token ? (
+                    <p className="mt-2 break-all font-mono text-xs text-[var(--text-secondary)]">{task.token}</p>
+                  ) : (
+                    <p className="mt-2 text-xs text-[var(--text-secondary)]">Token hidden</p>
+                  )}
+                </div>
+              ))}
+            </div>
           </section>
         ) : null}
       </div>

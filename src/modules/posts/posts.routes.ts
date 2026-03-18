@@ -6,6 +6,7 @@ import { ensureSiteAccess, getAllowedSiteIds, requireApiKey } from "../../middle
 import { ApiError } from "../../utils/api-error";
 import { asyncHandler } from "../../utils/async-handler";
 import { createPublishedPost, triggerRevalidate } from "./post-service";
+import { isSiteTask } from "../sites/site-contract";
 
 const router = Router();
 
@@ -135,7 +136,7 @@ router.patch("/:postId", requireApiKey("posts:write"), asyncHandler(async (req, 
 
   const current = await prisma.post.findUnique({
     where: { id: postId },
-    select: { siteId: true, slug: true },
+    select: { siteId: true, slug: true, content: true },
   });
   if (!current) {
     throw new ApiError(404, "Post not found.");
@@ -177,7 +178,15 @@ router.patch("/:postId", requireApiKey("posts:write"), asyncHandler(async (req, 
     select: { config: true },
   });
   if (site) {
-    void triggerRevalidate(site.config, updated.slug);
+    const contentRecord =
+      updated.content && typeof updated.content === "object" && !Array.isArray(updated.content)
+        ? (updated.content as Record<string, unknown>)
+        : null;
+    const task =
+      typeof contentRecord?.type === "string" && isSiteTask(contentRecord.type)
+        ? contentRecord.type
+        : null;
+    void triggerRevalidate(site.config, updated.slug, task);
   }
 
   res.json({ success: true, data: updated });
@@ -192,7 +201,7 @@ router.delete("/:postId", requireApiKey("posts:write"), asyncHandler(async (req,
 
   const current = await prisma.post.findUnique({
     where: { id: postId },
-    select: { siteId: true, slug: true },
+    select: { siteId: true, slug: true, content: true },
   });
   if (!current) throw new ApiError(404, "Post not found.");
 
@@ -210,7 +219,15 @@ router.delete("/:postId", requireApiKey("posts:write"), asyncHandler(async (req,
     select: { config: true },
   });
   if (site) {
-    void triggerRevalidate(site.config, current.slug);
+    const contentRecord =
+      current.content && typeof current.content === "object" && !Array.isArray(current.content)
+        ? (current.content as Record<string, unknown>)
+        : null;
+    const task =
+      typeof contentRecord?.type === "string" && isSiteTask(contentRecord.type)
+        ? contentRecord.type
+        : null;
+    void triggerRevalidate(site.config, current.slug, task);
   }
 
   res.json({ success: true, message: "Post deleted." });
