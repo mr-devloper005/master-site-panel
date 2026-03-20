@@ -5,6 +5,7 @@ import { ensureSiteAccess } from "../../middleware/auth";
 import { ApiError } from "../../utils/api-error";
 import { getTaskScope } from "../auth/api-key-service";
 import { getSiteFrontendBaseUrl, isSiteTask, sanitizeSiteConfig, type SiteTask } from "../sites/site-contract";
+import { isValidCategory, normalizeCategory } from "./category-constants";
 
 const REVALIDATE_SECRET =
   process.env.REVALIDATE_SECRET || process.env.NEXT_REVALIDATE_SECRET || "";
@@ -26,7 +27,19 @@ const getTaskViewPath = (siteConfig: unknown, task: SiteTask | null) => {
   if (typeof view === "string" && view.trim()) {
     return view.startsWith("/") ? view : `/${view}`;
   }
-  return "/posts";
+  const defaultViews: Record<SiteTask, string> = {
+    listing: "/listings",
+    classified: "/classifieds",
+    article: "/articles",
+    image: "/image-sharing",
+    profile: "/profile",
+    social: "/community",
+    sbm: "/sbm",
+    comment: "/blog",
+    pdf: "/developers",
+    org: "/team",
+  };
+  return defaultViews[task] || "/posts";
 };
 
 const buildRevalidatePaths = (siteConfig: unknown, slug?: string | null, task?: SiteTask | null) => {
@@ -131,6 +144,9 @@ export const createPublishedPost = async ({
 
   const contentTask = typeof contentRecord?.type === "string" ? contentRecord.type : null;
   const resolvedTask = requestedTask || (contentTask && isSiteTask(contentTask) ? contentTask : null);
+  const rawCategory =
+    typeof contentRecord?.category === "string" ? contentRecord.category : null;
+  const normalizedCategory = rawCategory ? normalizeCategory(rawCategory) : null;
 
   if (!resolvedTask) {
     throw new ApiError(400, "Task is required. Set content.type or use the task-specific endpoint.");
@@ -138,6 +154,10 @@ export const createPublishedPost = async ({
 
   if (requestedTask && contentTask && contentTask !== requestedTask) {
     throw new ApiError(400, `Payload content.type must match task "${requestedTask}".`);
+  }
+
+  if (rawCategory && !isValidCategory(rawCategory)) {
+    throw new ApiError(400, "Category is not available. Please try with different category.");
   }
 
   if (resolvedTask && siteConfig.supportedTasks?.length && !siteConfig.supportedTasks.includes(resolvedTask)) {
@@ -154,12 +174,21 @@ export const createPublishedPost = async ({
   if (contentRecord && !contentRecord.type) {
     contentRecord.type = resolvedTask;
   }
+  if (contentRecord && normalizedCategory) {
+    contentRecord.category = normalizedCategory;
+  }
 
   const baseSlug = slugify(String(slug || title || "post")) || "post";
   const existing = await prisma.post.findMany({
     where: {
       siteId: site.id,
       slug: { startsWith: baseSlug },
+      AND: [
+        { content: { path: ["type"], equals: resolvedTask } },
+        ...(normalizedCategory
+          ? [{ content: { path: ["category"], equals: normalizedCategory } }]
+          : []),
+      ],
     },
     select: { slug: true },
   });
