@@ -10,12 +10,12 @@ import { createApiKeyWithPermissions } from "../auth/api-key-service";
 import { getLatestRuntimeStatusMap, getRuntimeStatusesForSite } from "../runtime/runtime-store";
 import { getBaseUrl } from "../../utils/base-url";
 import { buildTaskProvisioningGuide } from "./task-catalog";
-import { buildSiteBlueprint, isSiteTask, sanitizeSiteConfig } from "./site-contract";
+import { buildSiteBlueprint, isSiteTask, sanitizeSiteConfig, type SiteTask } from "./site-contract";
 
 const router = Router();
 const backendBaseUrl = () => getBaseUrl();
 
-const provisionTaskToken = async (site: { id: string; code: string }, task: string) => {
+const provisionTaskToken = async (site: { id: string; code: string }, task: SiteTask) => {
   const taskKey = await createApiKeyWithPermissions({
     name: `${site.code}-${task}-publisher`,
     task,

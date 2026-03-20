@@ -7,6 +7,10 @@ export const SITE_TASKS = [
   "profile",
   "classified",
   "social",
+  "sbm",
+  "comment",
+  "pdf",
+  "org",
 ] as const;
 
 export type SiteTask = (typeof SITE_TASKS)[number];

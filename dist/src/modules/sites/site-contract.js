@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildSiteBlueprint = exports.getSiteFrontendBaseUrl = exports.sanitizeSiteConfig = exports.normalizeBaseUrl = exports.isSiteTask = exports.DEFAULT_CONNECTOR_VERSION = exports.SITE_TASKS = void 0;
+const task_catalog_1 = require("./task-catalog");
 exports.SITE_TASKS = [
     "listing",
     "article",
@@ -8,6 +9,10 @@ exports.SITE_TASKS = [
     "profile",
     "classified",
     "social",
+    "sbm",
+    "comment",
+    "pdf",
+    "org",
 ];
 exports.DEFAULT_CONNECTOR_VERSION = "2026-03-connector-v1";
 const isSiteTask = (value) => typeof value === "string" && exports.SITE_TASKS.includes(value);
@@ -47,6 +52,7 @@ const sanitizeSiteConfig = (value) => {
         supportedTasks,
         taskViews,
         metrics,
+        description: typeof source.description === "string" ? source.description : undefined,
     };
 };
 exports.sanitizeSiteConfig = sanitizeSiteConfig;
@@ -55,7 +61,7 @@ const getSiteFrontendBaseUrl = (siteConfig) => {
     return config.frontendUrl || config.liveUrl || config.siteUrl || null;
 };
 exports.getSiteFrontendBaseUrl = getSiteFrontendBaseUrl;
-const buildSiteBlueprint = (siteCode, siteConfig) => {
+const buildSiteBlueprint = (siteCode, siteConfig, options) => {
     const config = (0, exports.sanitizeSiteConfig)(siteConfig);
     return {
         connectorVersion: config.connectorVersion || exports.DEFAULT_CONNECTOR_VERSION,
@@ -70,6 +76,11 @@ const buildSiteBlueprint = (siteCode, siteConfig) => {
             taskViews: config.taskViews || {},
             metrics: config.metrics || [],
         },
+        ...(options?.includeTaskCatalog
+            ? {
+                taskCatalog: (0, task_catalog_1.buildTaskCatalog)(siteCode, options.backendBaseUrl),
+            }
+            : {}),
     };
 };
 exports.buildSiteBlueprint = buildSiteBlueprint;

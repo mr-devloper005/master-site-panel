@@ -90,6 +90,48 @@ const taskPayloads: Record<SiteTask, Record<string, unknown>> = {
     },
     media: [{ url: "https://example.com/social-post.jpg", type: "IMAGE" }],
   },
+  sbm: {
+    ...baseExample,
+    content: {
+      type: "sbm",
+      category: "Research",
+      description: "Bookmark-style entry with link metadata.",
+      sourceUrl: "https://example.com/resource",
+    },
+    media: [{ url: "https://example.com/bookmark-cover.jpg", type: "IMAGE" }],
+  },
+  comment: {
+    ...baseExample,
+    content: {
+      type: "comment",
+      category: "Blog",
+      description: "Contextual response or commentary for a blog post.",
+      parentUrl: "https://example.com/original-post",
+    },
+    media: [{ url: "https://example.com/comment-cover.jpg", type: "IMAGE" }],
+  },
+  pdf: {
+    ...baseExample,
+    content: {
+      type: "pdf",
+      category: "Education",
+      description: "Downloadable PDF resource with summary and metadata.",
+      fileUrl: "https://example.com/resource.pdf",
+    },
+    media: [{ url: "https://example.com/pdf-cover.jpg", type: "IMAGE" }],
+  },
+  org: {
+    ...baseExample,
+    content: {
+      type: "org",
+      category: "Business",
+      description: "Organization profile with services and contact info.",
+      website: "https://example.com",
+      phone: "+91-9999999999",
+      address: "Mumbai, India",
+    },
+    media: [{ url: "https://example.com/org-cover.jpg", type: "IMAGE" }],
+  },
 };
 
 const taskDescriptions: Record<SiteTask, string> = {
@@ -99,6 +141,10 @@ const taskDescriptions: Record<SiteTask, string> = {
   profile: "Profile and business identity pages.",
   classified: "Classified or short offer-style content.",
   social: "Short-form social or campaign posts.",
+  sbm: "Bookmarking or curated resource posts.",
+  comment: "Commentary or response posts linked to other content.",
+  pdf: "PDF resources, downloads, or document listings.",
+  org: "Organization or company profile posts.",
 };
 
 const taskUsage: Record<SiteTask, string[]> = {
@@ -131,6 +177,26 @@ const taskUsage: Record<SiteTask, string[]> = {
     "Use this for short social-style content and campaigns.",
     "Keep CTA and destination URL inside content for reuse across site themes.",
     "This token is scoped to the selected site and social task only.",
+  ],
+  sbm: [
+    "Use this for social bookmarking entries.",
+    "Send the sourceUrl inside content for the original resource.",
+    "This token is scoped to the selected site and sbm task only.",
+  ],
+  comment: [
+    "Use this for blog commentary or response posts.",
+    "Include parentUrl to link back to the original post.",
+    "This token is scoped to the selected site and comment task only.",
+  ],
+  pdf: [
+    "Use this for PDF resources and document listings.",
+    "Include fileUrl to the PDF asset.",
+    "This token is scoped to the selected site and pdf task only.",
+  ],
+  org: [
+    "Use this for organization profiles and business identity pages.",
+    "Include contact details in content for reuse across themes.",
+    "This token is scoped to the selected site and org task only.",
   ],
 };
 

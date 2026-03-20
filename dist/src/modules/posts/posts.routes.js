@@ -4,9 +4,10 @@ const client_1 = require("@prisma/client");
 const express_1 = require("express");
 const db_1 = require("../../config/db");
 const auth_1 = require("../../middleware/auth");
-const site_contract_1 = require("../sites/site-contract");
 const api_error_1 = require("../../utils/api-error");
 const async_handler_1 = require("../../utils/async-handler");
+const post_service_1 = require("./post-service");
+const site_contract_1 = require("../sites/site-contract");
 const router = (0, express_1.Router)();
 const mapStatus = (status) => {
     if (!status)
@@ -17,81 +18,29 @@ const mapStatus = (status) => {
     return status;
 };
 const canBypassSitePermissions = (scopes) => scopes.includes("*");
-const REVALIDATE_SECRET = process.env.NEXT_REVALIDATE_SECRET || "";
-const REVALIDATE_ENABLED = process.env.NEXT_REVALIDATE_ENABLED !== "false";
-const shouldRevalidate = () => Boolean(REVALIDATE_SECRET) && REVALIDATE_ENABLED;
-const triggerRevalidate = async (siteConfig, slug) => {
-    if (!shouldRevalidate())
-        return;
-    const frontendBaseUrl = (0, site_contract_1.getSiteFrontendBaseUrl)(siteConfig);
-    if (!frontendBaseUrl)
-        return;
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 3000);
-    try {
-        await fetch(`${frontendBaseUrl}/api/revalidate`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "x-revalidate-secret": REVALIDATE_SECRET,
-            },
-            body: JSON.stringify({ slug }),
-            signal: controller.signal,
-        });
-    }
-    catch (error) {
-        console.warn("Revalidate request failed", error);
-    }
-    finally {
-        clearTimeout(timeout);
-    }
-};
-const buildPostLiveUrl = (frontendBaseUrl, slug) => {
-    if (!frontendBaseUrl || !slug)
-        return null;
-    return `${frontendBaseUrl}/posts/${slug}`;
-};
 router.post("/", (0, auth_1.requireApiKey)("posts:write"), (0, async_handler_1.asyncHandler)(async (req, res) => {
-    const { siteCode, title, slug, summary, content, media, tags, authorName, externalPostId } = req.body;
-    if (!siteCode || !title || !content) {
-        throw new api_error_1.ApiError(400, "siteCode, title and content are required.");
-    }
-    const site = await db_1.prisma.site.findUnique({ where: { code: siteCode } });
-    if (!site || !site.isActive) {
-        throw new api_error_1.ApiError(404, "Site not found or inactive.");
-    }
     const apiKey = req.apiKey;
     if (!apiKey) {
         throw new api_error_1.ApiError(401, "API key context missing.");
     }
-    const allowed = await (0, auth_1.ensureSiteAccess)(apiKey.id, site.id, "post");
-    if (!allowed && !apiKey.scopes.includes("*")) {
-        throw new api_error_1.ApiError(403, "API key is not allowed to post on this site.");
-    }
-    const post = await db_1.prisma.post.create({
-        data: {
-            siteId: site.id,
-            title,
-            slug,
-            summary,
-            content,
-            media,
-            tags: Array.isArray(tags) ? tags : [],
-            authorName,
-            externalPostId,
-            status: client_1.PostStatus.PUBLISHED,
-            publishedAt: new Date(),
-            createdByApiKeyId: apiKey.id,
-        },
+    const { siteCode, title, slug, summary, content, media, tags, authorName, externalPostId } = req.body;
+    const created = await (0, post_service_1.createPublishedPost)({
+        apiKey,
+        siteCode,
+        title,
+        slug,
+        summary,
+        content,
+        media,
+        tags,
+        authorName,
+        externalPostId,
     });
-    const frontendBaseUrl = (0, site_contract_1.getSiteFrontendBaseUrl)(site.config);
-    const liveUrl = buildPostLiveUrl(frontendBaseUrl, post.slug);
-    void triggerRevalidate(site.config, post.slug);
     res.status(201).json({
         success: true,
         data: {
-            ...post,
-            liveUrl,
+            ...created.post,
+            liveUrl: created.liveUrl,
         },
     });
 }));
@@ -173,7 +122,7 @@ router.patch("/:postId", (0, auth_1.requireApiKey)("posts:write"), (0, async_han
     }
     const current = await db_1.prisma.post.findUnique({
         where: { id: postId },
-        select: { siteId: true, slug: true },
+        select: { siteId: true, slug: true, content: true },
     });
     if (!current) {
         throw new api_error_1.ApiError(404, "Post not found.");
@@ -218,7 +167,13 @@ router.patch("/:postId", (0, auth_1.requireApiKey)("posts:write"), (0, async_han
         select: { config: true },
     });
     if (site) {
-        void triggerRevalidate(site.config, updated.slug);
+        const contentRecord = updated.content && typeof updated.content === "object" && !Array.isArray(updated.content)
+            ? updated.content
+            : null;
+        const task = typeof contentRecord?.type === "string" && (0, site_contract_1.isSiteTask)(contentRecord.type)
+            ? contentRecord.type
+            : null;
+        void (0, post_service_1.triggerRevalidate)(site.config, updated.slug, task);
     }
     res.json({ success: true, data: updated });
 }));
@@ -230,7 +185,7 @@ router.delete("/:postId", (0, auth_1.requireApiKey)("posts:write"), (0, async_ha
     }
     const current = await db_1.prisma.post.findUnique({
         where: { id: postId },
-        select: { siteId: true, slug: true },
+        select: { siteId: true, slug: true, content: true },
     });
     if (!current)
         throw new api_error_1.ApiError(404, "Post not found.");
@@ -246,7 +201,13 @@ router.delete("/:postId", (0, auth_1.requireApiKey)("posts:write"), (0, async_ha
         select: { config: true },
     });
     if (site) {
-        void triggerRevalidate(site.config, current.slug);
+        const contentRecord = current.content && typeof current.content === "object" && !Array.isArray(current.content)
+            ? current.content
+            : null;
+        const task = typeof contentRecord?.type === "string" && (0, site_contract_1.isSiteTask)(contentRecord.type)
+            ? contentRecord.type
+            : null;
+        void (0, post_service_1.triggerRevalidate)(site.config, current.slug, task);
     }
     res.json({ success: true, message: "Post deleted." });
 }));
