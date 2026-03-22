@@ -30,4 +30,3 @@ CREATE INDEX IF NOT EXISTS "SiteRuntimeStatus_status_lastHeartbeatAt_idx"
   ON "SiteRuntimeStatus"("status", "lastHeartbeatAt");
 
 
-
