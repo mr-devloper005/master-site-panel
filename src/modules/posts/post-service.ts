@@ -225,7 +225,19 @@ export const createPublishedPost = async ({
   });
 
   const frontendBaseUrl = getSiteFrontendBaseUrl(site.config);
-  const liveUrl = buildPostLiveUrl(frontendBaseUrl, post.slug, site.config, resolvedTask);
+  let liveUrl = buildPostLiveUrl(frontendBaseUrl, post.slug, site.config, resolvedTask);
+
+  if (resolvedTask === "pdf" && contentRecord) {
+    const rawFileUrl =
+      typeof contentRecord.fileUrl === "string"
+        ? contentRecord.fileUrl
+        : typeof contentRecord.pdfUrl === "string"
+        ? contentRecord.pdfUrl
+        : null;
+    if (rawFileUrl && /^https?:\/\//i.test(rawFileUrl)) {
+      liveUrl = rawFileUrl;
+    }
+  }
 
   void triggerRevalidate(site.config, post.slug, resolvedTask);
 
