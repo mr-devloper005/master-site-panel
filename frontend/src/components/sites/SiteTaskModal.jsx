@@ -2,7 +2,18 @@ import { useMemo, useState } from "react";
 
 import Modal from "../common/Modal";
 
-const ALL_TASKS = ["listing", "article", "image", "profile", "classified", "social"];
+const ALL_TASKS = [
+  "listing",
+  "article",
+  "image",
+  "profile",
+  "classified",
+  "social",
+  "sbm",
+  "comment",
+  "pdf",
+  "org",
+];
 
 export default function SiteTaskModal({ open, onClose, site, onSubmit }) {
   const [task, setTask] = useState("");
