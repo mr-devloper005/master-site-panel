@@ -47,6 +47,8 @@ router.get("/:siteCode/bootstrap", asyncHandler(async (req, res) => {
 router.get("/:siteCode/feed", asyncHandler(async (req, res) => {
   const siteCode = String(req.params.siteCode);
   const limit = Math.min(Number(req.query.limit) || 20, 100);
+  const categoryParam = typeof req.query.category === "string" ? req.query.category.trim() : "";
+  const category = categoryParam ? categoryParam.toLowerCase() : "";
 
   const site = await prisma.site.findUnique({
     where: { code: siteCode },
@@ -68,7 +70,18 @@ router.get("/:siteCode/feed", asyncHandler(async (req, res) => {
   }
 
   const posts = await prisma.post.findMany({
-    where: { siteId: site.id, status: PostStatus.PUBLISHED },
+    where: {
+      siteId: site.id,
+      status: PostStatus.PUBLISHED,
+      ...(category
+        ? {
+            content: {
+              path: ["category"],
+              equals: category,
+            },
+          }
+        : {}),
+    },
     orderBy: { publishedAt: "desc" },
     take: limit,
     select: {
