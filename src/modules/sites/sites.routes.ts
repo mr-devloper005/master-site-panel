@@ -15,6 +15,14 @@ import { buildSiteBlueprint, isSiteTask, sanitizeSiteConfig, type SiteTask } fro
 const router = Router();
 const backendBaseUrl = () => getBaseUrl();
 
+const normalizeTaskValue = (value?: string | null): string => {
+  const normalized = String(value || "").trim().toLowerCase();
+  if (normalized === "blog-commenting" || normalized === "blog_commenting") {
+    return "comment";
+  }
+  return normalized;
+};
+
 const provisionTaskToken = async (site: { id: string; code: string }, task: SiteTask) => {
   const taskKey = await createApiKeyWithPermissions({
     name: `${site.code}-${task}-publisher`,
@@ -213,7 +221,7 @@ router.post(
 
 router.post("/:siteId/tasks", requireApiKey("sites:write"), asyncHandler(async (req, res) => {
   const siteId = String(req.params.siteId);
-  const task = String(req.body.task || "").trim().toLowerCase();
+  const task = normalizeTaskValue(req.body.task);
 
   if (!isSiteTask(task)) {
     throw new ApiError(400, "A valid task is required.");
@@ -272,7 +280,7 @@ router.post("/:siteId/tasks", requireApiKey("sites:write"), asyncHandler(async (
 
 router.post("/:siteId/tasks/:task/issue", requireApiKey("sites:write"), asyncHandler(async (req, res) => {
   const siteId = String(req.params.siteId);
-  const task = String(req.params.task || "").trim().toLowerCase();
+  const task = normalizeTaskValue(req.params.task);
 
   if (!isSiteTask(task)) {
     throw new ApiError(400, "A valid task is required.");
@@ -331,7 +339,7 @@ router.post("/:siteId/tasks/:task/issue", requireApiKey("sites:write"), asyncHan
 
 router.delete("/:siteId/tasks/:task", requireApiKey("sites:write"), asyncHandler(async (req, res) => {
   const siteId = String(req.params.siteId);
-  const task = String(req.params.task || "").trim().toLowerCase();
+  const task = normalizeTaskValue(req.params.task);
 
   if (!isSiteTask(task)) {
     throw new ApiError(400, "A valid task is required.");

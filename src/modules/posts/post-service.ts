@@ -20,6 +20,15 @@ const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
+const normalizeTaskValue = (value?: string | null): string | null => {
+  if (!value) return null;
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "blog-commenting" || normalized === "blog_commenting") {
+    return "comment";
+  }
+  return normalized;
+};
+
 const getTaskViewPath = (siteConfig: unknown, task: SiteTask | null) => {
   if (!task) return "/posts";
   const config = sanitizeSiteConfig(siteConfig);
@@ -142,8 +151,12 @@ export const createPublishedPost = async ({
       ? ({ ...(content as Record<string, unknown>) } as Record<string, unknown>)
       : null;
 
+  const normalizedRequestedTask = normalizeTaskValue(requestedTask);
   const contentTask = typeof contentRecord?.type === "string" ? contentRecord.type : null;
-  const resolvedTask = requestedTask || (contentTask && isSiteTask(contentTask) ? contentTask : null);
+  const normalizedContentTask = normalizeTaskValue(contentTask);
+  const resolvedTask =
+    normalizedRequestedTask ||
+    (normalizedContentTask && isSiteTask(normalizedContentTask) ? normalizedContentTask : null);
   const rawCategory =
     typeof contentRecord?.category === "string" ? contentRecord.category : null;
   const normalizedCategory = rawCategory ? normalizeCategory(rawCategory) : null;
@@ -152,8 +165,8 @@ export const createPublishedPost = async ({
     throw new ApiError(400, "Task is required. Set content.type or use the task-specific endpoint.");
   }
 
-  if (requestedTask && contentTask && contentTask !== requestedTask) {
-    throw new ApiError(400, `Payload content.type must match task "${requestedTask}".`);
+  if (normalizedRequestedTask && normalizedContentTask && normalizedContentTask !== normalizedRequestedTask) {
+    throw new ApiError(400, `Payload content.type must match task "${normalizedRequestedTask}".`);
   }
 
   if (rawCategory && !isValidCategory(rawCategory)) {
@@ -171,6 +184,9 @@ export const createPublishedPost = async ({
     }
   }
 
+  if (contentRecord && normalizedContentTask && contentRecord.type !== normalizedContentTask) {
+    contentRecord.type = normalizedContentTask;
+  }
   if (contentRecord && !contentRecord.type) {
     contentRecord.type = resolvedTask;
   }

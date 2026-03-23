@@ -9,6 +9,14 @@ import { isSiteTask } from "../sites/site-contract";
 const router = Router();
 export const siteTaskRouter = Router();
 
+const normalizeTaskValue = (value?: string | null): string => {
+  const normalized = String(value || "").trim().toLowerCase();
+  if (normalized === "blog-commenting" || normalized === "blog_commenting") {
+    return "comment";
+  }
+  return normalized;
+};
+
 const handleTaskPost = async ({
   task,
   siteCode,
@@ -58,12 +66,12 @@ const handleTaskPost = async ({
 };
 
 router.post("/:task/posts", requireApiKey("posts:write"), asyncHandler(async (req, res) => {
-  const task = String(req.params.task || "").trim().toLowerCase();
+  const task = normalizeTaskValue(req.params.task);
   await handleTaskPost({ task, req, res });
 }));
 
 siteTaskRouter.post("/:siteCode/post/v1/:task", requireApiKey("posts:write"), asyncHandler(async (req, res) => {
-  const task = String(req.params.task || "").trim().toLowerCase();
+  const task = normalizeTaskValue(req.params.task);
   const siteCode = String(req.params.siteCode || "").trim();
   await handleTaskPost({ task, siteCode, req, res });
 }));

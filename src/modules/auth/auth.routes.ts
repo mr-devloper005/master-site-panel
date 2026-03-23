@@ -14,6 +14,15 @@ import {
 
 const router = Router();
 
+const normalizeTaskValue = (value?: string | null): string | null => {
+  if (!value) return null;
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "blog-commenting" || normalized === "blog_commenting") {
+    return "comment";
+  }
+  return normalized;
+};
+
 router.get("/keys", requireApiKey("keys:write"), asyncHandler(async (_req, res) => {
   const keys = await prisma.apiKey.findMany({
     orderBy: { createdAt: "desc" },
@@ -56,8 +65,13 @@ router.get("/keys", requireApiKey("keys:write"), asyncHandler(async (_req, res) 
 router.post("/keys", requireApiKey("keys:write"), asyncHandler(async (req, res) => {
     const { name, scopes, task, siteIds, canPost = true, canRead = true } = req.body;
 
+    const normalizedTaskValue = normalizeTaskValue(task);
     const normalizedTask: KeyPreset | null =
-      task === "runtime" || task === "siteMaster" ? task : task && isSiteTask(task) ? task : null;
+      normalizedTaskValue === "runtime" || normalizedTaskValue === "siteMaster"
+        ? normalizedTaskValue
+        : normalizedTaskValue && isSiteTask(normalizedTaskValue)
+          ? normalizedTaskValue
+          : null;
     const resolvedScopes = resolveScopesForPreset(normalizedTask, scopes);
 
     if (!name || resolvedScopes.length === 0) {
