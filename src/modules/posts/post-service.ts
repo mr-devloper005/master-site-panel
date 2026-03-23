@@ -241,6 +241,23 @@ export const createPublishedPost = async ({
       if (typeof contentRecord.articleTitle === "string") {
         commentTargetTitle = contentRecord.articleTitle;
       }
+
+      if (!commentTargetSlug && typeof contentRecord.articleId === "string") {
+        const target = await prisma.post.findFirst({
+          where: {
+            id: contentRecord.articleId,
+            siteId: site.id,
+            content: { path: ["type"], equals: "article" },
+          },
+          select: { slug: true, title: true },
+        });
+        if (target) {
+          commentTargetSlug = target.slug;
+          commentTargetTitle = target.title;
+          contentRecord.articleSlug = target.slug;
+          contentRecord.articleTitle = target.title;
+        }
+      }
     }
 
     if (!contentRecord.parentUrl && commentTargetSlug) {
