@@ -9,8 +9,9 @@ import { isSiteTask } from "../sites/site-contract";
 const router = Router();
 export const siteTaskRouter = Router();
 
-const normalizeTaskValue = (value?: string | null): string => {
-  const normalized = String(value || "").trim().toLowerCase();
+const normalizeTaskValue = (value?: string | string[] | null): string => {
+  const raw = Array.isArray(value) ? value[0] : value;
+  const normalized = String(raw || "").trim().toLowerCase();
   if (normalized === "blog-commenting" || normalized === "blog_commenting") {
     return "comment";
   }

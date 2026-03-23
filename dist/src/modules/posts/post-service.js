@@ -16,6 +16,15 @@ const slugify = (value) => value
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+const normalizeTaskValue = (value) => {
+    if (!value)
+        return null;
+    const normalized = value.trim().toLowerCase();
+    if (normalized === "blog-commenting" || normalized === "blog_commenting") {
+        return "comment";
+    }
+    return normalized;
+};
 const getTaskViewPath = (siteConfig, task) => {
     if (!task)
         return "/posts";
@@ -101,15 +110,21 @@ const createPublishedPost = async ({ apiKey, siteCode, title, slug, summary, con
     const contentRecord = content && typeof content === "object" && !Array.isArray(content)
         ? { ...content }
         : null;
+    const normalizedRequestedTask = normalizeTaskValue(requestedTask);
     const contentTask = typeof contentRecord?.type === "string" ? contentRecord.type : null;
-    const resolvedTask = requestedTask || (contentTask && (0, site_contract_1.isSiteTask)(contentTask) ? contentTask : null);
+    const normalizedContentTask = normalizeTaskValue(contentTask);
+    const resolvedTask = normalizedRequestedTask && (0, site_contract_1.isSiteTask)(normalizedRequestedTask)
+        ? normalizedRequestedTask
+        : normalizedContentTask && (0, site_contract_1.isSiteTask)(normalizedContentTask)
+            ? normalizedContentTask
+            : null;
     const rawCategory = typeof contentRecord?.category === "string" ? contentRecord.category : null;
     const normalizedCategory = rawCategory ? (0, category_constants_1.normalizeCategory)(rawCategory) : null;
     if (!resolvedTask) {
         throw new api_error_1.ApiError(400, "Task is required. Set content.type or use the task-specific endpoint.");
     }
-    if (requestedTask && contentTask && contentTask !== requestedTask) {
-        throw new api_error_1.ApiError(400, `Payload content.type must match task "${requestedTask}".`);
+    if (normalizedRequestedTask && normalizedContentTask && normalizedContentTask !== normalizedRequestedTask) {
+        throw new api_error_1.ApiError(400, `Payload content.type must match task "${normalizedRequestedTask}".`);
     }
     if (rawCategory && !(0, category_constants_1.isValidCategory)(rawCategory)) {
         throw new api_error_1.ApiError(400, "Category is not available. Please try with different category.");
@@ -123,11 +138,60 @@ const createPublishedPost = async ({ apiKey, siteCode, title, slug, summary, con
             throw new api_error_1.ApiError(403, `API key is not allowed to post ${resolvedTask} content.`);
         }
     }
+    if (contentRecord && normalizedContentTask && contentRecord.type !== normalizedContentTask) {
+        contentRecord.type = normalizedContentTask;
+    }
     if (contentRecord && !contentRecord.type) {
         contentRecord.type = resolvedTask;
     }
     if (contentRecord && normalizedCategory) {
         contentRecord.category = normalizedCategory;
+    }
+    let commentTargetSlug = null;
+    let commentTargetTitle = null;
+    if (resolvedTask === "comment" && contentRecord) {
+        const hasTarget = typeof contentRecord.articleSlug === "string" ||
+            typeof contentRecord.articleId === "string";
+        if (!hasTarget) {
+            const recentArticles = await db_1.prisma.post.findMany({
+                where: {
+                    siteId: site.id,
+                    AND: [
+                        { content: { path: ["type"], equals: "article" } },
+                        ...(normalizedCategory
+                            ? [{ content: { path: ["category"], equals: normalizedCategory } }]
+                            : []),
+                    ],
+                },
+                orderBy: { publishedAt: "desc" },
+                take: 20,
+                select: { id: true, slug: true, title: true },
+            });
+            if (!recentArticles.length) {
+                throw new api_error_1.ApiError(400, "No recent articles available for comments in this category.");
+            }
+            const selected = recentArticles[Math.floor(Math.random() * recentArticles.length)];
+            contentRecord.articleId = selected.id;
+            contentRecord.articleSlug = selected.slug;
+            contentRecord.articleTitle = selected.title;
+            commentTargetSlug = selected.slug;
+            commentTargetTitle = selected.title;
+        }
+        else {
+            if (typeof contentRecord.articleSlug === "string") {
+                commentTargetSlug = contentRecord.articleSlug;
+            }
+            if (typeof contentRecord.articleTitle === "string") {
+                commentTargetTitle = contentRecord.articleTitle;
+            }
+        }
+        if (!contentRecord.parentUrl && commentTargetSlug) {
+            const frontendBaseUrl = (0, site_contract_1.getSiteFrontendBaseUrl)(site.config);
+            const articlePath = getTaskViewPath(site.config, "article");
+            if (frontendBaseUrl) {
+                contentRecord.parentUrl = `${frontendBaseUrl}${articlePath}/${commentTargetSlug}`;
+            }
+        }
     }
     const baseSlug = slugify(String(slug || title || "post")) || "post";
     const existing = await db_1.prisma.post.findMany({
@@ -174,8 +238,17 @@ const createPublishedPost = async ({ apiKey, siteCode, title, slug, summary, con
         },
     });
     const frontendBaseUrl = (0, site_contract_1.getSiteFrontendBaseUrl)(site.config);
-    const liveUrl = (0, exports.buildPostLiveUrl)(frontendBaseUrl, post.slug, site.config, resolvedTask);
+    let liveUrl = (0, exports.buildPostLiveUrl)(frontendBaseUrl, post.slug, site.config, resolvedTask);
+    if (resolvedTask === "comment" && commentTargetSlug) {
+        const articlePath = getTaskViewPath(site.config, "article");
+        if (frontendBaseUrl) {
+            liveUrl = `${frontendBaseUrl}${articlePath}/${commentTargetSlug}#comment-${post.id}`;
+        }
+    }
     void (0, exports.triggerRevalidate)(site.config, post.slug, resolvedTask);
+    if (resolvedTask === "comment" && commentTargetSlug) {
+        void (0, exports.triggerRevalidate)(site.config, commentTargetSlug, "article");
+    }
     return {
         post,
         liveUrl,

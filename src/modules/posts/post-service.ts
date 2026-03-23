@@ -155,8 +155,11 @@ export const createPublishedPost = async ({
   const contentTask = typeof contentRecord?.type === "string" ? contentRecord.type : null;
   const normalizedContentTask = normalizeTaskValue(contentTask);
   const resolvedTask =
-    normalizedRequestedTask ||
-    (normalizedContentTask && isSiteTask(normalizedContentTask) ? normalizedContentTask : null);
+    normalizedRequestedTask && isSiteTask(normalizedRequestedTask)
+      ? normalizedRequestedTask
+      : normalizedContentTask && isSiteTask(normalizedContentTask)
+        ? normalizedContentTask
+        : null;
   const rawCategory =
     typeof contentRecord?.category === "string" ? contentRecord.category : null;
   const normalizedCategory = rawCategory ? normalizeCategory(rawCategory) : null;

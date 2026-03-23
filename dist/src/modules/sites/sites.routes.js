@@ -13,6 +13,14 @@ const task_catalog_1 = require("./task-catalog");
 const site_contract_1 = require("./site-contract");
 const router = (0, express_1.Router)();
 const backendBaseUrl = () => (0, base_url_1.getBaseUrl)();
+const normalizeTaskValue = (value) => {
+    const raw = Array.isArray(value) ? value[0] : value;
+    const normalized = String(raw || "").trim().toLowerCase();
+    if (normalized === "blog-commenting" || normalized === "blog_commenting") {
+        return "comment";
+    }
+    return normalized;
+};
 const provisionTaskToken = async (site, task) => {
     const taskKey = await (0, api_key_service_1.createApiKeyWithPermissions)({
         name: `${site.code}-${task}-publisher`,
@@ -181,7 +189,7 @@ router.post("/:siteId/permissions", (0, auth_1.requireApiKey)("sites:write"), (0
 }));
 router.post("/:siteId/tasks", (0, auth_1.requireApiKey)("sites:write"), (0, async_handler_1.asyncHandler)(async (req, res) => {
     const siteId = String(req.params.siteId);
-    const task = String(req.body.task || "").trim().toLowerCase();
+    const task = normalizeTaskValue(req.body.task);
     if (!(0, site_contract_1.isSiteTask)(task)) {
         throw new api_error_1.ApiError(400, "A valid task is required.");
     }
@@ -232,7 +240,7 @@ router.post("/:siteId/tasks", (0, auth_1.requireApiKey)("sites:write"), (0, asyn
 }));
 router.post("/:siteId/tasks/:task/issue", (0, auth_1.requireApiKey)("sites:write"), (0, async_handler_1.asyncHandler)(async (req, res) => {
     const siteId = String(req.params.siteId);
-    const task = String(req.params.task || "").trim().toLowerCase();
+    const task = normalizeTaskValue(req.params.task);
     if (!(0, site_contract_1.isSiteTask)(task)) {
         throw new api_error_1.ApiError(400, "A valid task is required.");
     }
@@ -283,7 +291,7 @@ router.post("/:siteId/tasks/:task/issue", (0, auth_1.requireApiKey)("sites:write
 }));
 router.delete("/:siteId/tasks/:task", (0, auth_1.requireApiKey)("sites:write"), (0, async_handler_1.asyncHandler)(async (req, res) => {
     const siteId = String(req.params.siteId);
-    const task = String(req.params.task || "").trim().toLowerCase();
+    const task = normalizeTaskValue(req.params.task);
     if (!(0, site_contract_1.isSiteTask)(task)) {
         throw new api_error_1.ApiError(400, "A valid task is required.");
     }

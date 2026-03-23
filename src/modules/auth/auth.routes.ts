@@ -14,9 +14,10 @@ import {
 
 const router = Router();
 
-const normalizeTaskValue = (value?: string | null): string | null => {
-  if (!value) return null;
-  const normalized = value.trim().toLowerCase();
+const normalizeTaskValue = (value?: string | string[] | null): string | null => {
+  const raw = Array.isArray(value) ? value[0] : value;
+  if (!raw) return null;
+  const normalized = raw.trim().toLowerCase();
   if (normalized === "blog-commenting" || normalized === "blog_commenting") {
     return "comment";
   }

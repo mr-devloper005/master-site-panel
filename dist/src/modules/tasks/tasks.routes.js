@@ -9,6 +9,14 @@ const post_service_1 = require("../posts/post-service");
 const site_contract_1 = require("../sites/site-contract");
 const router = (0, express_1.Router)();
 exports.siteTaskRouter = (0, express_1.Router)();
+const normalizeTaskValue = (value) => {
+    const raw = Array.isArray(value) ? value[0] : value;
+    const normalized = String(raw || "").trim().toLowerCase();
+    if (normalized === "blog-commenting" || normalized === "blog_commenting") {
+        return "comment";
+    }
+    return normalized;
+};
 const handleTaskPost = async ({ task, siteCode, req, res, }) => {
     if (!(0, site_contract_1.isSiteTask)(task)) {
         throw new api_error_1.ApiError(400, "Invalid task value.");
@@ -42,11 +50,11 @@ const handleTaskPost = async ({ task, siteCode, req, res, }) => {
     });
 };
 router.post("/:task/posts", (0, auth_1.requireApiKey)("posts:write"), (0, async_handler_1.asyncHandler)(async (req, res) => {
-    const task = String(req.params.task || "").trim().toLowerCase();
+    const task = normalizeTaskValue(req.params.task);
     await handleTaskPost({ task, req, res });
 }));
 exports.siteTaskRouter.post("/:siteCode/post/v1/:task", (0, auth_1.requireApiKey)("posts:write"), (0, async_handler_1.asyncHandler)(async (req, res) => {
-    const task = String(req.params.task || "").trim().toLowerCase();
+    const task = normalizeTaskValue(req.params.task);
     const siteCode = String(req.params.siteCode || "").trim();
     await handleTaskPost({ task, siteCode, req, res });
 }));

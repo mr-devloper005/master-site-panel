@@ -8,6 +8,16 @@ const async_handler_1 = require("../../utils/async-handler");
 const site_contract_1 = require("../sites/site-contract");
 const api_key_service_1 = require("./api-key-service");
 const router = (0, express_1.Router)();
+const normalizeTaskValue = (value) => {
+    const raw = Array.isArray(value) ? value[0] : value;
+    if (!raw)
+        return null;
+    const normalized = raw.trim().toLowerCase();
+    if (normalized === "blog-commenting" || normalized === "blog_commenting") {
+        return "comment";
+    }
+    return normalized;
+};
 router.get("/keys", (0, auth_1.requireApiKey)("keys:write"), (0, async_handler_1.asyncHandler)(async (_req, res) => {
     const keys = await db_1.prisma.apiKey.findMany({
         orderBy: { createdAt: "desc" },
@@ -47,7 +57,12 @@ router.get("/keys", (0, auth_1.requireApiKey)("keys:write"), (0, async_handler_1
 }));
 router.post("/keys", (0, auth_1.requireApiKey)("keys:write"), (0, async_handler_1.asyncHandler)(async (req, res) => {
     const { name, scopes, task, siteIds, canPost = true, canRead = true } = req.body;
-    const normalizedTask = task === "runtime" || task === "siteMaster" ? task : task && (0, site_contract_1.isSiteTask)(task) ? task : null;
+    const normalizedTaskValue = normalizeTaskValue(task);
+    const normalizedTask = normalizedTaskValue === "runtime" || normalizedTaskValue === "siteMaster"
+        ? normalizedTaskValue
+        : normalizedTaskValue && (0, site_contract_1.isSiteTask)(normalizedTaskValue)
+            ? normalizedTaskValue
+            : null;
     const resolvedScopes = (0, api_key_service_1.resolveScopesForPreset)(normalizedTask, scopes);
     if (!name || resolvedScopes.length === 0) {
         throw new api_error_1.ApiError(400, "name and either scopes[] or a valid task are required.");
