@@ -178,6 +178,61 @@ export const createPublishedPost = async ({
     contentRecord.category = normalizedCategory;
   }
 
+  let commentTargetSlug: string | null = null;
+  let commentTargetTitle: string | null = null;
+  if (resolvedTask === "comment" && contentRecord) {
+    const hasTarget =
+      typeof contentRecord.articleSlug === "string" ||
+      typeof contentRecord.articleId === "string";
+
+    if (!hasTarget) {
+      const recentArticles = await prisma.post.findMany({
+        where: {
+          siteId: site.id,
+          AND: [
+            { content: { path: ["type"], equals: "article" } },
+            ...(normalizedCategory
+              ? [{ content: { path: ["category"], equals: normalizedCategory } }]
+              : []),
+          ],
+        },
+        orderBy: { publishedAt: "desc" },
+        take: 20,
+        select: { id: true, slug: true, title: true },
+      });
+
+      if (!recentArticles.length) {
+        throw new ApiError(
+          400,
+          "No recent articles available for comments in this category."
+        );
+      }
+
+      const selected =
+        recentArticles[Math.floor(Math.random() * recentArticles.length)];
+      contentRecord.articleId = selected.id;
+      contentRecord.articleSlug = selected.slug;
+      contentRecord.articleTitle = selected.title;
+      commentTargetSlug = selected.slug;
+      commentTargetTitle = selected.title;
+    } else {
+      if (typeof contentRecord.articleSlug === "string") {
+        commentTargetSlug = contentRecord.articleSlug;
+      }
+      if (typeof contentRecord.articleTitle === "string") {
+        commentTargetTitle = contentRecord.articleTitle;
+      }
+    }
+
+    if (!contentRecord.parentUrl && commentTargetSlug) {
+      const frontendBaseUrl = getSiteFrontendBaseUrl(site.config);
+      const articlePath = getTaskViewPath(site.config, "article");
+      if (frontendBaseUrl) {
+        contentRecord.parentUrl = `${frontendBaseUrl}${articlePath}/${commentTargetSlug}`;
+      }
+    }
+  }
+
   const baseSlug = slugify(String(slug || title || "post")) || "post";
   const existing = await prisma.post.findMany({
     where: {
@@ -225,9 +280,18 @@ export const createPublishedPost = async ({
   });
 
   const frontendBaseUrl = getSiteFrontendBaseUrl(site.config);
-  const liveUrl = buildPostLiveUrl(frontendBaseUrl, post.slug, site.config, resolvedTask);
+  let liveUrl = buildPostLiveUrl(frontendBaseUrl, post.slug, site.config, resolvedTask);
+  if (resolvedTask === "comment" && commentTargetSlug) {
+    const articlePath = getTaskViewPath(site.config, "article");
+    if (frontendBaseUrl) {
+      liveUrl = `${frontendBaseUrl}${articlePath}/${commentTargetSlug}#comment-${post.id}`;
+    }
+  }
 
   void triggerRevalidate(site.config, post.slug, resolvedTask);
+  if (resolvedTask === "comment" && commentTargetSlug) {
+    void triggerRevalidate(site.config, commentTargetSlug, "article");
+  }
 
   return {
     post,
