@@ -70,6 +70,16 @@ const sanitizeSiteConfig = (value) => {
         bootstrapPath: typeof source.bootstrapPath === "string" ? source.bootstrapPath : undefined,
         sitemapManualUrls,
         sitemapExcludedUrls,
+        indexingLastSitemapSubmitAt: typeof source.indexingLastSitemapSubmitAt === "string"
+            ? source.indexingLastSitemapSubmitAt
+            : undefined,
+        indexingLastSitemapSubmitStatus: source.indexingLastSitemapSubmitStatus === "SUCCESS" ||
+            source.indexingLastSitemapSubmitStatus === "ERROR"
+            ? source.indexingLastSitemapSubmitStatus
+            : undefined,
+        indexingLastSitemapSubmitError: typeof source.indexingLastSitemapSubmitError === "string"
+            ? source.indexingLastSitemapSubmitError
+            : undefined,
         connectorVersion: typeof source.connectorVersion === "string" && source.connectorVersion.trim()
             ? source.connectorVersion
             : exports.DEFAULT_CONNECTOR_VERSION,

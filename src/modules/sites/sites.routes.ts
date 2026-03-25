@@ -581,12 +581,55 @@ router.post("/:siteId/indexing/submit-sitemap", requireApiKey("sites:write"), as
     throw new ApiError(404, "Site not found.");
   }
 
-  const result = await submitSiteSitemapForIndexing(site.config);
+  const config = sanitizeSiteConfig(site.config);
+
+  let result: Awaited<ReturnType<typeof submitSiteSitemapForIndexing>>;
+  try {
+    result = await submitSiteSitemapForIndexing(site.config);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Sitemap submission failed.";
+    await prisma.site.update({
+      where: { id: site.id },
+      data: {
+        config: {
+          ...config,
+          indexingLastSitemapSubmitAt: new Date().toISOString(),
+          indexingLastSitemapSubmitStatus: "ERROR",
+          indexingLastSitemapSubmitError: message,
+        },
+      },
+    });
+    throw new ApiError(400, message);
+  }
+
   if (!result.submitted) {
-    throw new ApiError(400, result.reason || "Sitemap could not be submitted.");
+    const reason = result.reason || "Sitemap could not be submitted.";
+    await prisma.site.update({
+      where: { id: site.id },
+      data: {
+        config: {
+          ...config,
+          indexingLastSitemapSubmitAt: new Date().toISOString(),
+          indexingLastSitemapSubmitStatus: "ERROR",
+          indexingLastSitemapSubmitError: reason,
+        },
+      },
+    });
+    throw new ApiError(400, reason);
   }
 
   await updateSitemapSubmissionForSite(site.id, new Date(result.submittedAt || new Date().toISOString()));
+  await prisma.site.update({
+    where: { id: site.id },
+    data: {
+      config: {
+        ...config,
+        indexingLastSitemapSubmitAt: result.submittedAt || new Date().toISOString(),
+        indexingLastSitemapSubmitStatus: "SUCCESS",
+        indexingLastSitemapSubmitError: "",
+      },
+    },
+  });
 
   res.json({
     success: true,
@@ -665,6 +708,7 @@ router.get("/:siteId/indexing-status", requireApiKey("sites:read"), asyncHandler
         const xml = await response.text();
         const urls = extractSitemapUrls(xml);
         if (urls.length) {
+          const seenAt = new Date();
           await prisma.siteIndexingRecord.updateMany({
             where: {
               siteId: site.id,
@@ -672,8 +716,20 @@ router.get("/:siteId/indexing-status", requireApiKey("sites:read"), asyncHandler
               sitemapSeenAt: null,
             },
             data: {
-              sitemapSeenAt: new Date(),
+              sitemapSeenAt: seenAt,
+              sitemapSubmittedAt: seenAt,
               inspectionStatus: "DISCOVERED",
+            },
+          });
+
+          await prisma.siteIndexingRecord.updateMany({
+            where: {
+              siteId: site.id,
+              url: { in: urls },
+              sitemapSubmittedAt: null,
+            },
+            data: {
+              sitemapSubmittedAt: seenAt,
             },
           });
         }
@@ -683,41 +739,80 @@ router.get("/:siteId/indexing-status", requireApiKey("sites:read"), asyncHandler
     console.warn("Failed to sync sitemap seen URLs", error);
   }
 
-  const records = await prisma.siteIndexingRecord.findMany({
-    where: { siteId: site.id },
-    include: {
-      post: {
-        select: {
-          id: true,
-          title: true,
-          slug: true,
-          publishedAt: true,
-          createdAt: true,
+  const [
+    records,
+    totalRecords,
+    sitemapSubmittedCount,
+    discoveredCount,
+    indexedCount,
+    notIndexedCount,
+    errorCount,
+    groupedStatuses,
+    publishedPostsCount,
+  ] = await Promise.all([
+    prisma.siteIndexingRecord.findMany({
+      where: { siteId: site.id },
+      include: {
+        post: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            publishedAt: true,
+            createdAt: true,
+          },
         },
       },
-    },
-    orderBy: [{ updatedAt: "desc" }],
-    take: limit,
-  });
+      orderBy: [{ updatedAt: "desc" }],
+      take: limit,
+    }),
+    prisma.siteIndexingRecord.count({ where: { siteId: site.id } }),
+    prisma.siteIndexingRecord.count({
+      where: { siteId: site.id, sitemapSubmittedAt: { not: null } },
+    }),
+    prisma.siteIndexingRecord.count({
+      where: { siteId: site.id, sitemapSeenAt: { not: null } },
+    }),
+    prisma.siteIndexingRecord.count({
+      where: { siteId: site.id, inspectionStatus: "INDEXED" },
+    }),
+    prisma.siteIndexingRecord.count({
+      where: { siteId: site.id, inspectionStatus: "NOT_INDEXED" },
+    }),
+    prisma.siteIndexingRecord.count({
+      where: { siteId: site.id, inspectionStatus: "ERROR" },
+    }),
+    prisma.siteIndexingRecord.groupBy({
+      by: ["inspectionStatus"],
+      where: { siteId: site.id },
+      _count: { _all: true },
+    }),
+    prisma.post.count({
+      where: { siteId: site.id, status: "PUBLISHED" },
+    }),
+  ]);
 
-  const summary = records.reduce(
-    (acc, item) => {
-      const key = item.inspectionStatus;
-      acc.total += 1;
-      acc.byStatus[key] = (acc.byStatus[key] || 0) + 1;
-      if (item.sitemapSubmittedAt) acc.sitemapSubmitted += 1;
-      if (item.sitemapSeenAt) acc.discovered += 1;
-      if (item.inspectionStatus === "INDEXED") acc.indexed += 1;
-      return acc;
-    },
-    {
-      total: 0,
-      sitemapSubmitted: 0,
-      discovered: 0,
-      indexed: 0,
-      byStatus: {} as Record<string, number>,
-    }
-  );
+  const byStatus = groupedStatuses.reduce<Record<string, number>>((acc, row) => {
+    acc[row.inspectionStatus] = row._count._all;
+    return acc;
+  }, {});
+
+  const trackingCoverage =
+    publishedPostsCount > 0
+      ? Math.round((totalRecords / publishedPostsCount) * 100)
+      : 0;
+  const untrackedPublishedPosts = Math.max(publishedPostsCount - totalRecords, 0);
+  const siteConfig = sanitizeSiteConfig(site.config);
+
+  const summary = {
+    total: totalRecords,
+    sitemapSubmitted: sitemapSubmittedCount,
+    discovered: discoveredCount,
+    indexed: indexedCount,
+    notIndexed: notIndexedCount,
+    errors: errorCount,
+    byStatus,
+  };
 
   res.json({
     success: true,
@@ -730,6 +825,27 @@ router.get("/:siteId/indexing-status", requireApiKey("sites:read"), asyncHandler
       checkedAt: new Date().toISOString(),
       autoRun: autoRunResult,
       summary,
+      diagnostics: {
+        publishedPosts: publishedPostsCount,
+        trackedPosts: totalRecords,
+        untrackedPublishedPosts,
+        trackingCoveragePercent: trackingCoverage,
+        googleConfigured:
+          Boolean(siteConfig.googleServiceAccountEmail || process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL) &&
+          Boolean(siteConfig.googleServiceAccountPrivateKey || process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY) &&
+          Boolean(siteConfig.googleSearchConsoleSiteUrl || siteConfig.searchConsoleSiteUrl || process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL || siteConfig.frontendUrl || siteConfig.liveUrl || siteConfig.siteUrl),
+        siteProperty:
+          siteConfig.googleSearchConsoleSiteUrl ||
+          siteConfig.searchConsoleSiteUrl ||
+          process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL ||
+          siteConfig.frontendUrl ||
+          siteConfig.liveUrl ||
+          siteConfig.siteUrl ||
+          null,
+        lastSitemapSubmitAt: siteConfig.indexingLastSitemapSubmitAt || null,
+        lastSitemapSubmitStatus: siteConfig.indexingLastSitemapSubmitStatus || null,
+        lastSitemapSubmitError: siteConfig.indexingLastSitemapSubmitError || null,
+      },
       items: records.map((item) => ({
         id: item.id,
         postId: item.postId,

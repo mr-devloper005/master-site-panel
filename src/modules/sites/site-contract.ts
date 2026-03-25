@@ -28,6 +28,9 @@ export type SiteConnectorConfig = {
   bootstrapPath?: string;
   sitemapManualUrls?: string[];
   sitemapExcludedUrls?: string[];
+  indexingLastSitemapSubmitAt?: string;
+  indexingLastSitemapSubmitStatus?: "SUCCESS" | "ERROR";
+  indexingLastSitemapSubmitError?: string;
   connectorVersion?: string;
   supportedTasks?: SiteTask[];
   taskViews?: Partial<Record<SiteTask, string>>;
@@ -106,6 +109,19 @@ export const sanitizeSiteConfig = (value: unknown): SiteConnectorConfig => {
     bootstrapPath: typeof source.bootstrapPath === "string" ? source.bootstrapPath : undefined,
     sitemapManualUrls,
     sitemapExcludedUrls,
+    indexingLastSitemapSubmitAt:
+      typeof source.indexingLastSitemapSubmitAt === "string"
+        ? source.indexingLastSitemapSubmitAt
+        : undefined,
+    indexingLastSitemapSubmitStatus:
+      source.indexingLastSitemapSubmitStatus === "SUCCESS" ||
+      source.indexingLastSitemapSubmitStatus === "ERROR"
+        ? source.indexingLastSitemapSubmitStatus
+        : undefined,
+    indexingLastSitemapSubmitError:
+      typeof source.indexingLastSitemapSubmitError === "string"
+        ? source.indexingLastSitemapSubmitError
+        : undefined,
     connectorVersion:
       typeof source.connectorVersion === "string" && source.connectorVersion.trim()
         ? source.connectorVersion

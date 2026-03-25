@@ -478,11 +478,53 @@ router.post("/:siteId/indexing/submit-sitemap", (0, auth_1.requireApiKey)("sites
     if (!site) {
         throw new api_error_1.ApiError(404, "Site not found.");
     }
-    const result = await (0, google_indexing_1.submitSiteSitemapForIndexing)(site.config);
+    const config = (0, site_contract_1.sanitizeSiteConfig)(site.config);
+    let result;
+    try {
+        result = await (0, google_indexing_1.submitSiteSitemapForIndexing)(site.config);
+    }
+    catch (error) {
+        const message = error instanceof Error ? error.message : "Sitemap submission failed.";
+        await db_1.prisma.site.update({
+            where: { id: site.id },
+            data: {
+                config: {
+                    ...config,
+                    indexingLastSitemapSubmitAt: new Date().toISOString(),
+                    indexingLastSitemapSubmitStatus: "ERROR",
+                    indexingLastSitemapSubmitError: message,
+                },
+            },
+        });
+        throw new api_error_1.ApiError(400, message);
+    }
     if (!result.submitted) {
-        throw new api_error_1.ApiError(400, result.reason || "Sitemap could not be submitted.");
+        const reason = result.reason || "Sitemap could not be submitted.";
+        await db_1.prisma.site.update({
+            where: { id: site.id },
+            data: {
+                config: {
+                    ...config,
+                    indexingLastSitemapSubmitAt: new Date().toISOString(),
+                    indexingLastSitemapSubmitStatus: "ERROR",
+                    indexingLastSitemapSubmitError: reason,
+                },
+            },
+        });
+        throw new api_error_1.ApiError(400, reason);
     }
     await (0, google_indexing_1.updateSitemapSubmissionForSite)(site.id, new Date(result.submittedAt || new Date().toISOString()));
+    await db_1.prisma.site.update({
+        where: { id: site.id },
+        data: {
+            config: {
+                ...config,
+                indexingLastSitemapSubmitAt: result.submittedAt || new Date().toISOString(),
+                indexingLastSitemapSubmitStatus: "SUCCESS",
+                indexingLastSitemapSubmitError: "",
+            },
+        },
+    });
     res.json({
         success: true,
         data: {
@@ -551,6 +593,7 @@ router.get("/:siteId/indexing-status", (0, auth_1.requireApiKey)("sites:read"), 
                 const xml = await response.text();
                 const urls = extractSitemapUrls(xml);
                 if (urls.length) {
+                    const seenAt = new Date();
                     await db_1.prisma.siteIndexingRecord.updateMany({
                         where: {
                             siteId: site.id,
@@ -558,8 +601,19 @@ router.get("/:siteId/indexing-status", (0, auth_1.requireApiKey)("sites:read"), 
                             sitemapSeenAt: null,
                         },
                         data: {
-                            sitemapSeenAt: new Date(),
+                            sitemapSeenAt: seenAt,
+                            sitemapSubmittedAt: seenAt,
                             inspectionStatus: "DISCOVERED",
+                        },
+                    });
+                    await db_1.prisma.siteIndexingRecord.updateMany({
+                        where: {
+                            siteId: site.id,
+                            url: { in: urls },
+                            sitemapSubmittedAt: null,
+                        },
+                        data: {
+                            sitemapSubmittedAt: seenAt,
                         },
                     });
                 }
@@ -569,40 +623,66 @@ router.get("/:siteId/indexing-status", (0, auth_1.requireApiKey)("sites:read"), 
     catch (error) {
         console.warn("Failed to sync sitemap seen URLs", error);
     }
-    const records = await db_1.prisma.siteIndexingRecord.findMany({
-        where: { siteId: site.id },
-        include: {
-            post: {
-                select: {
-                    id: true,
-                    title: true,
-                    slug: true,
-                    publishedAt: true,
-                    createdAt: true,
+    const [records, totalRecords, sitemapSubmittedCount, discoveredCount, indexedCount, notIndexedCount, errorCount, groupedStatuses, publishedPostsCount,] = await Promise.all([
+        db_1.prisma.siteIndexingRecord.findMany({
+            where: { siteId: site.id },
+            include: {
+                post: {
+                    select: {
+                        id: true,
+                        title: true,
+                        slug: true,
+                        publishedAt: true,
+                        createdAt: true,
+                    },
                 },
             },
-        },
-        orderBy: [{ updatedAt: "desc" }],
-        take: limit,
-    });
-    const summary = records.reduce((acc, item) => {
-        const key = item.inspectionStatus;
-        acc.total += 1;
-        acc.byStatus[key] = (acc.byStatus[key] || 0) + 1;
-        if (item.sitemapSubmittedAt)
-            acc.sitemapSubmitted += 1;
-        if (item.sitemapSeenAt)
-            acc.discovered += 1;
-        if (item.inspectionStatus === "INDEXED")
-            acc.indexed += 1;
+            orderBy: [{ updatedAt: "desc" }],
+            take: limit,
+        }),
+        db_1.prisma.siteIndexingRecord.count({ where: { siteId: site.id } }),
+        db_1.prisma.siteIndexingRecord.count({
+            where: { siteId: site.id, sitemapSubmittedAt: { not: null } },
+        }),
+        db_1.prisma.siteIndexingRecord.count({
+            where: { siteId: site.id, sitemapSeenAt: { not: null } },
+        }),
+        db_1.prisma.siteIndexingRecord.count({
+            where: { siteId: site.id, inspectionStatus: "INDEXED" },
+        }),
+        db_1.prisma.siteIndexingRecord.count({
+            where: { siteId: site.id, inspectionStatus: "NOT_INDEXED" },
+        }),
+        db_1.prisma.siteIndexingRecord.count({
+            where: { siteId: site.id, inspectionStatus: "ERROR" },
+        }),
+        db_1.prisma.siteIndexingRecord.groupBy({
+            by: ["inspectionStatus"],
+            where: { siteId: site.id },
+            _count: { _all: true },
+        }),
+        db_1.prisma.post.count({
+            where: { siteId: site.id, status: "PUBLISHED" },
+        }),
+    ]);
+    const byStatus = groupedStatuses.reduce((acc, row) => {
+        acc[row.inspectionStatus] = row._count._all;
         return acc;
-    }, {
-        total: 0,
-        sitemapSubmitted: 0,
-        discovered: 0,
-        indexed: 0,
-        byStatus: {},
-    });
+    }, {});
+    const trackingCoverage = publishedPostsCount > 0
+        ? Math.round((totalRecords / publishedPostsCount) * 100)
+        : 0;
+    const untrackedPublishedPosts = Math.max(publishedPostsCount - totalRecords, 0);
+    const siteConfig = (0, site_contract_1.sanitizeSiteConfig)(site.config);
+    const summary = {
+        total: totalRecords,
+        sitemapSubmitted: sitemapSubmittedCount,
+        discovered: discoveredCount,
+        indexed: indexedCount,
+        notIndexed: notIndexedCount,
+        errors: errorCount,
+        byStatus,
+    };
     res.json({
         success: true,
         data: {
@@ -614,6 +694,25 @@ router.get("/:siteId/indexing-status", (0, auth_1.requireApiKey)("sites:read"), 
             checkedAt: new Date().toISOString(),
             autoRun: autoRunResult,
             summary,
+            diagnostics: {
+                publishedPosts: publishedPostsCount,
+                trackedPosts: totalRecords,
+                untrackedPublishedPosts,
+                trackingCoveragePercent: trackingCoverage,
+                googleConfigured: Boolean(siteConfig.googleServiceAccountEmail || process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL) &&
+                    Boolean(siteConfig.googleServiceAccountPrivateKey || process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY) &&
+                    Boolean(siteConfig.googleSearchConsoleSiteUrl || siteConfig.searchConsoleSiteUrl || process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL || siteConfig.frontendUrl || siteConfig.liveUrl || siteConfig.siteUrl),
+                siteProperty: siteConfig.googleSearchConsoleSiteUrl ||
+                    siteConfig.searchConsoleSiteUrl ||
+                    process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL ||
+                    siteConfig.frontendUrl ||
+                    siteConfig.liveUrl ||
+                    siteConfig.siteUrl ||
+                    null,
+                lastSitemapSubmitAt: siteConfig.indexingLastSitemapSubmitAt || null,
+                lastSitemapSubmitStatus: siteConfig.indexingLastSitemapSubmitStatus || null,
+                lastSitemapSubmitError: siteConfig.indexingLastSitemapSubmitError || null,
+            },
             items: records.map((item) => ({
                 id: item.id,
                 postId: item.postId,

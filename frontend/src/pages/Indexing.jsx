@@ -161,17 +161,41 @@ export default function Indexing() {
     indexed: 0,
     byStatus: {},
   };
+  const diagnostics = indexingStatus?.diagnostics || {
+    publishedPosts: 0,
+    trackedPosts: 0,
+    untrackedPublishedPosts: 0,
+    trackingCoveragePercent: 0,
+    googleConfigured: false,
+    siteProperty: null,
+    lastSitemapSubmitAt: null,
+    lastSitemapSubmitStatus: null,
+    lastSitemapSubmitError: null,
+  };
+  const byStatus = summary.byStatus || {};
   const indexedRate = summary.total ? Math.round((summary.indexed / summary.total) * 100) : 0;
   const discoveredRate = summary.total ? Math.round((summary.discovered / summary.total) * 100) : 0;
+  const trackedUrls = Number(diagnostics.trackedPosts || summary.total || 0);
+  const indexedUrls = Number(summary.indexed || 0);
+  const notIndexedUrls = Number(byStatus.NOT_INDEXED || 0);
+  const submittedUrls = Number(summary.sitemapSubmitted || 0);
+  const discoveredUrls = Number(summary.discovered || 0);
+  const awaitingUrls = Math.max(trackedUrls - indexedUrls - notIndexedUrls, 0);
 
   const googleState = useMemo(() => {
     if (!selectedSiteId) return "Select site";
+    if (!diagnostics.googleConfigured) return "Config Missing";
     if (summary.indexed > 0 || summary.discovered > 0 || summary.sitemapSubmitted > 0) return "Connected";
     return "Waiting for first sync";
-  }, [selectedSiteId, summary.indexed, summary.discovered, summary.sitemapSubmitted]);
+  }, [
+    selectedSiteId,
+    diagnostics.googleConfigured,
+    summary.indexed,
+    summary.discovered,
+    summary.sitemapSubmitted,
+  ]);
 
   const doughnutData = useMemo(() => {
-    const byStatus = summary.byStatus || {};
     const labels = Object.keys(byStatus);
     const values = Object.values(byStatus);
     return {
@@ -187,7 +211,7 @@ export default function Indexing() {
         },
       ],
     };
-  }, [summary.byStatus]);
+  }, [byStatus]);
 
   const pipelineBarData = useMemo(
     () => ({
@@ -197,16 +221,16 @@ export default function Indexing() {
           label: "Count",
           data: [
             Number(sitemapStatus?.urlCount || 0),
-            Number(summary.sitemapSubmitted || 0),
-            Number(summary.discovered || 0),
-            Number(summary.indexed || 0),
+            submittedUrls,
+            discoveredUrls,
+            indexedUrls,
           ],
           backgroundColor: ["#0ea5e9", "#8b5cf6", "#14b8a6", "#22c55e"],
           borderRadius: 10,
         },
       ],
     }),
-    [sitemapStatus?.urlCount, summary.sitemapSubmitted, summary.discovered, summary.indexed]
+    [sitemapStatus?.urlCount, submittedUrls, discoveredUrls, indexedUrls]
   );
 
   const barOptions = {
@@ -316,8 +340,42 @@ export default function Indexing() {
                 Sitemap live: {sitemapStatus?.reachable ? "Reachable" : "Not reachable"}
               </p>
               <p>Last indexing check: {formatDateTime(indexingStatus?.checkedAt)}</p>
+              <p>Last sitemap submit: {formatDateTime(diagnostics.lastSitemapSubmitAt)}</p>
+              <p>
+                Last submit status:{" "}
+                <span
+                  className={
+                    diagnostics.lastSitemapSubmitStatus === "SUCCESS"
+                      ? "font-semibold text-emerald-600"
+                      : diagnostics.lastSitemapSubmitStatus === "ERROR"
+                        ? "font-semibold text-rose-600"
+                        : "font-semibold text-slate-500"
+                  }
+                >
+                  {diagnostics.lastSitemapSubmitStatus || "Not attempted"}
+                </span>
+              </p>
+              {diagnostics.lastSitemapSubmitError ? (
+                <p className="rounded-lg border border-rose-200 bg-rose-50 px-2 py-1 text-xs text-rose-700">
+                  {diagnostics.lastSitemapSubmitError}
+                </p>
+              ) : null}
               <p>Site runtime: {selectedSite?.runtime?.status || "UNKNOWN"}</p>
               <p>Site updated: {formatDateTime(selectedSite?.updatedAt)}</p>
+            </div>
+          </article>
+
+          <article className="glass rounded-panel p-4 xl:col-span-1">
+            <h2 className="text-sm font-semibold">Clear Indexing Snapshot</h2>
+            <div className="mt-3 space-y-2 text-sm">
+              <p>Sitemap URLs: <span className="font-semibold">{Number(sitemapStatus?.urlCount || 0)}</span></p>
+              <p>Published Posts: <span className="font-semibold">{Number(diagnostics.publishedPosts || 0)}</span></p>
+              <p>Tracked URLs (posts): <span className="font-semibold">{trackedUrls}</span></p>
+              <p>Tracking Coverage: <span className="font-semibold">{Number(diagnostics.trackingCoveragePercent || 0)}%</span></p>
+              <p>Untracked Published: <span className="font-semibold text-rose-600">{Number(diagnostics.untrackedPublishedPosts || 0)}</span></p>
+              <p>Indexed URLs (Google confirmed): <span className="font-semibold text-emerald-600">{indexedUrls}</span></p>
+              <p>Not Indexed (Google confirmed): <span className="font-semibold text-rose-600">{notIndexedUrls}</span></p>
+              <p>Awaiting confirmation: <span className="font-semibold text-amber-600">{awaitingUrls}</span></p>
             </div>
           </article>
 
