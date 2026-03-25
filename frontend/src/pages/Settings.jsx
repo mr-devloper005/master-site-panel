@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 
 import { useAuth } from "../context/AuthContext";
@@ -6,13 +6,8 @@ import { useTheme } from "../context/ThemeContext";
 import { useAppData } from "../context/AppContext";
 import {
   fetchSiteBlueprint,
-  fetchSiteIndexingStatus,
-  fetchSiteSeoStatus,
-  fetchSiteSitemapStatus,
   getIntegrationSettings,
-  runSiteIndexingInspections,
   saveIntegrationSettings,
-  submitSiteSitemapForIndexing,
 } from "../utils/api";
 
 export default function Settings() {
@@ -26,16 +21,6 @@ export default function Settings() {
   const [apiKey, setApiKey] = useState(integration.apiKey);
   const [blueprint, setBlueprint] = useState(null);
   const [selectedBlueprintSiteId, setSelectedBlueprintSiteId] = useState("");
-  const [sitemapStatus, setSitemapStatus] = useState(null);
-  const [loadingSitemap, setLoadingSitemap] = useState(false);
-  const [seoStatus, setSeoStatus] = useState(null);
-  const [loadingSeo, setLoadingSeo] = useState(false);
-  const [indexingStatus, setIndexingStatus] = useState(null);
-  const [loadingIndexing, setLoadingIndexing] = useState(false);
-
-  useEffect(() => {
-    return undefined;
-  }, []);
 
   const saveIntegration = async () => {
     saveIntegrationSettings({ backendUrl, apiKey });
@@ -46,67 +31,8 @@ export default function Settings() {
   const loadBlueprint = async (siteId) => {
     if (!siteId) return;
     setSelectedBlueprintSiteId(siteId);
-    const [blueprintResult, sitemapResult, seoResult, indexingResult] = await Promise.all([
-      fetchSiteBlueprint(siteId),
-      (async () => {
-        setLoadingSitemap(true);
-        try {
-          return await fetchSiteSitemapStatus(siteId);
-        } finally {
-          setLoadingSitemap(false);
-        }
-      })(),
-      (async () => {
-        setLoadingSeo(true);
-        try {
-          return await fetchSiteSeoStatus(siteId);
-        } finally {
-          setLoadingSeo(false);
-        }
-      })(),
-      (async () => {
-        setLoadingIndexing(true);
-        try {
-          return await fetchSiteIndexingStatus(siteId, { runDue: true, limit: 100 });
-        } finally {
-          setLoadingIndexing(false);
-        }
-      })(),
-    ]);
+    const blueprintResult = await fetchSiteBlueprint(siteId);
     setBlueprint(blueprintResult);
-    setSitemapStatus(sitemapResult);
-    setSeoStatus(seoResult);
-    setIndexingStatus(indexingResult);
-  };
-
-  const handleSubmitSitemap = async () => {
-    if (!selectedBlueprintSiteId) return;
-    try {
-      setLoadingIndexing(true);
-      await submitSiteSitemapForIndexing(selectedBlueprintSiteId);
-      const refreshed = await fetchSiteIndexingStatus(selectedBlueprintSiteId, { runDue: false, limit: 100 });
-      setIndexingStatus(refreshed);
-      toast.success("Sitemap submitted to Search Console");
-    } catch (error) {
-      toast.error(error.message || "Failed to submit sitemap");
-    } finally {
-      setLoadingIndexing(false);
-    }
-  };
-
-  const handleRunInspections = async () => {
-    if (!selectedBlueprintSiteId) return;
-    try {
-      setLoadingIndexing(true);
-      await runSiteIndexingInspections(selectedBlueprintSiteId, 30);
-      const refreshed = await fetchSiteIndexingStatus(selectedBlueprintSiteId, { runDue: false, limit: 100 });
-      setIndexingStatus(refreshed);
-      toast.success("Indexing inspections completed");
-    } catch (error) {
-      toast.error(error.message || "Failed to run indexing inspections");
-    } finally {
-      setLoadingIndexing(false);
-    }
   };
 
   return (
@@ -209,238 +135,6 @@ export default function Settings() {
             </div>
           ) : (
             <p className="mt-3 text-sm text-[var(--text-secondary)]">Select a site above to inspect the reusable connector contract.</p>
-          )}
-        </section>
-
-        <section className="glass rounded-panel p-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold">Sitemap Live Status</h2>
-            <button
-              className="rounded-lg border border-[var(--border-color)] px-3 py-1.5 text-xs"
-              onClick={() => selectedBlueprintSiteId && loadBlueprint(selectedBlueprintSiteId)}
-              disabled={!selectedBlueprintSiteId || loadingSitemap || loadingSeo}
-            >
-              {loadingSitemap || loadingSeo ? "Checking..." : "Refresh"}
-            </button>
-          </div>
-
-          {!selectedBlueprintSiteId ? (
-            <p className="mt-3 text-sm text-[var(--text-secondary)]">
-              Select a site in Connector Blueprint first to inspect its live sitemap.
-            </p>
-          ) : sitemapStatus ? (
-            <div className="mt-3 space-y-3 text-sm">
-              <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-                <p>
-                  <span className="text-[var(--text-secondary)]">Sitemap URL: </span>
-                  <a
-                    href={sitemapStatus.sitemapUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    {sitemapStatus.sitemapUrl}
-                  </a>
-                </p>
-                <p>
-                  <span className="text-[var(--text-secondary)]">HTTP: </span>
-                  {sitemapStatus.httpStatus ?? "N/A"}
-                </p>
-                <p>
-                  <span className="text-[var(--text-secondary)]">Reachable: </span>
-                  {sitemapStatus.reachable ? "Yes" : "No"}
-                </p>
-                <p>
-                  <span className="text-[var(--text-secondary)]">URLs found: </span>
-                  {sitemapStatus.urlCount}
-                </p>
-                <p>
-                  <span className="text-[var(--text-secondary)]">Host mismatch: </span>
-                  {sitemapStatus.hostMismatchCount}
-                </p>
-                <p>
-                  <span className="text-[var(--text-secondary)]">Checked at: </span>
-                  {new Date(sitemapStatus.checkedAt).toLocaleString()}
-                </p>
-              </div>
-              {sitemapStatus.error ? (
-                <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-red-700">
-                  {sitemapStatus.error}
-                </p>
-              ) : null}
-              <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
-                  Sample URLs
-                </p>
-                {Array.isArray(sitemapStatus.sampleUrls) && sitemapStatus.sampleUrls.length ? (
-                  <div className="space-y-1 rounded-lg border border-[var(--border-color)] p-3 text-xs">
-                    {sitemapStatus.sampleUrls.map((url) => (
-                      <div key={url} className="truncate">
-                        {url}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-xs text-[var(--text-secondary)]">No URLs found.</p>
-                )}
-              </div>
-            </div>
-          ) : (
-            <p className="mt-3 text-sm text-[var(--text-secondary)]">No sitemap status data yet.</p>
-          )}
-        </section>
-
-        <section className="glass rounded-panel p-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold">SEO Live Status</h2>
-            <button
-              className="rounded-lg border border-[var(--border-color)] px-3 py-1.5 text-xs"
-              onClick={() => selectedBlueprintSiteId && loadBlueprint(selectedBlueprintSiteId)}
-              disabled={!selectedBlueprintSiteId || loadingSeo}
-            >
-              {loadingSeo ? "Checking..." : "Refresh"}
-            </button>
-          </div>
-          {!selectedBlueprintSiteId ? (
-            <p className="mt-3 text-sm text-[var(--text-secondary)]">
-              Select a site first to run live SEO checks.
-            </p>
-          ) : seoStatus ? (
-            <div className="mt-3 space-y-3 text-sm">
-              <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
-                <p>
-                  <span className="text-[var(--text-secondary)]">SEO score: </span>
-                  <span className={seoStatus.score >= 80 ? "text-emerald-600 font-semibold" : "text-amber-600 font-semibold"}>
-                    {seoStatus.score}%
-                  </span>
-                </p>
-                <p>
-                  <span className="text-[var(--text-secondary)]">Checks passed: </span>
-                  {seoStatus.summary?.passedChecks ?? 0}/{seoStatus.summary?.totalChecks ?? 0}
-                </p>
-                <p>
-                  <span className="text-[var(--text-secondary)]">Checked at: </span>
-                  {seoStatus.checkedAt ? new Date(seoStatus.checkedAt).toLocaleString() : "N/A"}
-                </p>
-              </div>
-
-              <div className="rounded-lg border border-[var(--border-color)] p-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
-                  Robots & Sitemap
-                </p>
-                <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-2">
-                  <p>robots.txt: {seoStatus.robots?.reachable ? "OK" : "Not reachable"}</p>
-                  <p>sitemap.xml: {seoStatus.sitemap?.reachable ? "OK" : "Not reachable"}</p>
-                  <p>Sitemap URLs: {seoStatus.sitemap?.urlCount ?? 0}</p>
-                  <p>robots has sitemap ref: {seoStatus.robots?.hasSitemapReference ? "Yes" : "No"}</p>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
-                  Page-level checks
-                </p>
-                {Array.isArray(seoStatus.pages) && seoStatus.pages.length ? (
-                  seoStatus.pages.map((page) => (
-                    <div key={page.url} className="rounded-lg border border-[var(--border-color)] p-3">
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <p className="font-medium">{page.page}</p>
-                        <a href={page.url} target="_blank" rel="noreferrer" className="text-xs text-blue-600 hover:underline">
-                          Open
-                        </a>
-                      </div>
-                      <p className="mt-1 text-xs text-[var(--text-secondary)]">
-                        HTTP: {page.httpStatus ?? "N/A"} • Reachable: {page.reachable ? "Yes" : "No"}
-                      </p>
-                      {Array.isArray(page.missing) && page.missing.length ? (
-                        <p className="mt-2 text-xs text-amber-700">
-                          Missing: {page.missing.join(", ")}
-                        </p>
-                      ) : (
-                        <p className="mt-2 text-xs text-emerald-700">All required checks passed.</p>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-xs text-[var(--text-secondary)]">No page checks available.</p>
-                )}
-              </div>
-            </div>
-          ) : (
-            <p className="mt-3 text-sm text-[var(--text-secondary)]">No SEO status data yet.</p>
-          )}
-        </section>
-
-        <section className="glass rounded-panel p-4">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-sm font-semibold">Google Indexing Status</h2>
-            <div className="flex flex-wrap gap-2">
-              <button
-                className="rounded-lg border border-[var(--border-color)] px-3 py-1.5 text-xs"
-                onClick={() => selectedBlueprintSiteId && loadBlueprint(selectedBlueprintSiteId)}
-                disabled={!selectedBlueprintSiteId || loadingIndexing}
-              >
-                {loadingIndexing ? "Loading..." : "Refresh"}
-              </button>
-              <button
-                className="rounded-lg border border-[var(--border-color)] px-3 py-1.5 text-xs"
-                onClick={handleSubmitSitemap}
-                disabled={!selectedBlueprintSiteId || loadingIndexing}
-              >
-                Submit Sitemap
-              </button>
-              <button
-                className="rounded-lg border border-[var(--border-color)] px-3 py-1.5 text-xs"
-                onClick={handleRunInspections}
-                disabled={!selectedBlueprintSiteId || loadingIndexing}
-              >
-                Run Inspection
-              </button>
-            </div>
-          </div>
-
-          {!selectedBlueprintSiteId ? (
-            <p className="mt-3 text-sm text-[var(--text-secondary)]">Select a site first to monitor indexing.</p>
-          ) : indexingStatus ? (
-            <div className="mt-3 space-y-3 text-sm">
-              <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
-                <p><span className="text-[var(--text-secondary)]">Total: </span>{indexingStatus.summary?.total ?? 0}</p>
-                <p><span className="text-[var(--text-secondary)]">Submitted: </span>{indexingStatus.summary?.sitemapSubmitted ?? 0}</p>
-                <p><span className="text-[var(--text-secondary)]">Discovered: </span>{indexingStatus.summary?.discovered ?? 0}</p>
-                <p><span className="text-[var(--text-secondary)]">Indexed: </span>{indexingStatus.summary?.indexed ?? 0}</p>
-                <p><span className="text-[var(--text-secondary)]">Checked: </span>{new Date(indexingStatus.checkedAt).toLocaleString()}</p>
-              </div>
-              <div className="overflow-x-auto rounded-lg border border-[var(--border-color)]">
-                <table className="min-w-full text-xs">
-                  <thead className="bg-[var(--bg-surface)]">
-                    <tr>
-                      <th className="px-3 py-2 text-left">Post</th>
-                      <th className="px-3 py-2 text-left">Status</th>
-                      <th className="px-3 py-2 text-left">Submitted</th>
-                      <th className="px-3 py-2 text-left">Discovered</th>
-                      <th className="px-3 py-2 text-left">Indexed/Last Check</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(indexingStatus.items || []).slice(0, 30).map((row) => (
-                      <tr key={row.id} className="border-t border-[var(--border-color)]">
-                        <td className="px-3 py-2">
-                          <a href={row.url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
-                            {row.postTitle}
-                          </a>
-                        </td>
-                        <td className="px-3 py-2">{row.inspectionStatus}</td>
-                        <td className="px-3 py-2">{row.sitemapSubmittedAt ? new Date(row.sitemapSubmittedAt).toLocaleString() : "-"}</td>
-                        <td className="px-3 py-2">{row.sitemapSeenAt ? new Date(row.sitemapSeenAt).toLocaleString() : "-"}</td>
-                        <td className="px-3 py-2">{row.inspectionLastCheckedAt ? new Date(row.inspectionLastCheckedAt).toLocaleString() : "-"}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          ) : (
-            <p className="mt-3 text-sm text-[var(--text-secondary)]">No indexing data yet.</p>
           )}
         </section>
       </div>

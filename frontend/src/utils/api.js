@@ -293,8 +293,11 @@ export const fetchSiteBlueprint = async (siteId) => {
   return response.data;
 };
 
-export const fetchSiteSitemapStatus = async (siteId) => {
-  const response = await request(`/api/v1/sites/${siteId}/sitemap-status`);
+export const fetchSiteSitemapStatus = async (siteId, options = {}) => {
+  const query = new URLSearchParams();
+  if (options.all) query.set("all", "true");
+  const suffix = query.toString() ? `?${query.toString()}` : "";
+  const response = await request(`/api/v1/sites/${siteId}/sitemap-status${suffix}`);
   return response.data;
 };
 
@@ -323,6 +326,19 @@ export const runSiteIndexingInspections = async (siteId, limit = 20) => {
   const response = await request(`/api/v1/sites/${siteId}/indexing/run-inspections`, {
     method: "POST",
     body: JSON.stringify({ limit }),
+  });
+  return response.data;
+};
+
+export const fetchSiteSitemapConfig = async (siteId) => {
+  const response = await request(`/api/v1/sites/${siteId}/sitemap-config`);
+  return response.data;
+};
+
+export const updateSiteSitemapConfig = async (siteId, payload) => {
+  const response = await request(`/api/v1/sites/${siteId}/sitemap-config`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
   });
   return response.data;
 };

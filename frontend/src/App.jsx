@@ -14,6 +14,7 @@ const Tasks = lazy(() => import("./pages/Tasks"));
 const Posts = lazy(() => import("./pages/Posts"));
 const RecentActivity = lazy(() => import("./pages/RecentActivity"));
 const Analytics = lazy(() => import("./pages/Analytics"));
+const Indexing = lazy(() => import("./pages/Indexing"));
 const Settings = lazy(() => import("./pages/Settings"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -49,6 +50,7 @@ export default function App() {
             <Route path="/posts" element={<Posts />} />
             <Route path="/activity" element={<RecentActivity />} />
             <Route path="/analytics" element={<Analytics />} />
+            <Route path="/indexing" element={<Indexing />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
           <Route path="*" element={<NotFound />} />

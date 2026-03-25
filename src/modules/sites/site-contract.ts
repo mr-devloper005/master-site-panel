@@ -26,6 +26,8 @@ export type SiteConnectorConfig = {
   siteType?: string;
   feedPath?: string;
   bootstrapPath?: string;
+  sitemapManualUrls?: string[];
+  sitemapExcludedUrls?: string[];
   connectorVersion?: string;
   supportedTasks?: SiteTask[];
   taskViews?: Partial<Record<SiteTask, string>>;
@@ -67,6 +69,20 @@ export const sanitizeSiteConfig = (value: unknown): SiteConnectorConfig => {
     ? source.metrics.filter((item): item is string => typeof item === "string" && item.trim().length > 0)
     : [];
 
+  const sitemapManualUrls = Array.isArray(source.sitemapManualUrls)
+    ? source.sitemapManualUrls
+        .filter((item): item is string => typeof item === "string")
+        .map((item) => item.trim())
+        .filter((item) => Boolean(item) && /^https?:\/\//i.test(item))
+    : [];
+
+  const sitemapExcludedUrls = Array.isArray(source.sitemapExcludedUrls)
+    ? source.sitemapExcludedUrls
+        .filter((item): item is string => typeof item === "string")
+        .map((item) => item.trim())
+        .filter((item) => Boolean(item) && /^https?:\/\//i.test(item))
+    : [];
+
   return {
     frontendUrl: normalizeBaseUrl(source.frontendUrl) || undefined,
     liveUrl: normalizeBaseUrl(source.liveUrl) || undefined,
@@ -88,6 +104,8 @@ export const sanitizeSiteConfig = (value: unknown): SiteConnectorConfig => {
     siteType: typeof source.siteType === "string" ? source.siteType : undefined,
     feedPath: typeof source.feedPath === "string" ? source.feedPath : undefined,
     bootstrapPath: typeof source.bootstrapPath === "string" ? source.bootstrapPath : undefined,
+    sitemapManualUrls,
+    sitemapExcludedUrls,
     connectorVersion:
       typeof source.connectorVersion === "string" && source.connectorVersion.trim()
         ? source.connectorVersion

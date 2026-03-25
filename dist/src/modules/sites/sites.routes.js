@@ -52,6 +52,14 @@ const parseHost = (url) => {
         return null;
     }
 };
+const normalizeAbsoluteUrlList = (items) => {
+    if (!Array.isArray(items))
+        return [];
+    return Array.from(new Set(items
+        .filter((item) => typeof item === "string")
+        .map((item) => item.trim())
+        .filter((item) => /^https?:\/\//i.test(item))));
+};
 const hasTag = (html, pattern) => pattern.test(html);
 const inspectSeoTags = (html, options) => {
     const checks = {
@@ -193,10 +201,13 @@ router.get("/:siteId/sitemap-status", (0, auth_1.requireApiKey)("sites:read"), (
     }
     const config = (0, site_contract_1.sanitizeSiteConfig)(site.config);
     const frontendUrl = (config.frontendUrl || config.liveUrl || config.siteUrl || "").replace(/\/+$/, "");
+    const includeAll = req.query.all === "true";
     if (!frontendUrl) {
         throw new api_error_1.ApiError(400, "Site frontend URL is missing. Update site config first.");
     }
     const sitemapUrl = `${frontendUrl}/sitemap.xml`;
+    const manualUrls = normalizeAbsoluteUrlList(config.sitemapManualUrls);
+    const excludedUrls = normalizeAbsoluteUrlList(config.sitemapExcludedUrls);
     const siteHost = parseHost(frontendUrl);
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), SITEMAP_TIMEOUT_MS);
@@ -210,8 +221,9 @@ router.get("/:siteId/sitemap-status", (0, auth_1.requireApiKey)("sites:read"), (
         });
         const body = await response.text();
         const urls = response.ok ? extractSitemapUrls(body) : [];
+        const effectiveUrls = Array.from(new Set([...urls, ...manualUrls].filter((url) => !excludedUrls.includes(url))));
         const mismatched = siteHost
-            ? urls.filter((url) => parseHost(url) && parseHost(url) !== siteHost)
+            ? effectiveUrls.filter((url) => parseHost(url) && parseHost(url) !== siteHost)
             : [];
         res.json({
             success: true,
@@ -223,8 +235,11 @@ router.get("/:siteId/sitemap-status", (0, auth_1.requireApiKey)("sites:read"), (
                 checkedAt,
                 reachable: response.ok,
                 httpStatus: response.status,
-                urlCount: urls.length,
-                sampleUrls: urls.slice(0, 12),
+                urlCount: effectiveUrls.length,
+                sampleUrls: effectiveUrls.slice(0, 12),
+                manualUrlsCount: manualUrls.length,
+                excludedUrlsCount: excludedUrls.length,
+                ...(includeAll ? { urls: effectiveUrls } : {}),
                 hostExpected: siteHost,
                 hostMismatchCount: mismatched.length,
                 hostMismatchSamples: mismatched.slice(0, 5),
@@ -245,6 +260,9 @@ router.get("/:siteId/sitemap-status", (0, auth_1.requireApiKey)("sites:read"), (
                 httpStatus: null,
                 urlCount: 0,
                 sampleUrls: [],
+                manualUrlsCount: manualUrls.length,
+                excludedUrlsCount: excludedUrls.length,
+                ...(includeAll ? { urls: [] } : {}),
                 hostExpected: siteHost,
                 hostMismatchCount: 0,
                 hostMismatchSamples: [],
@@ -256,6 +274,63 @@ router.get("/:siteId/sitemap-status", (0, auth_1.requireApiKey)("sites:read"), (
     finally {
         clearTimeout(timeout);
     }
+}));
+router.get("/:siteId/sitemap-config", (0, auth_1.requireApiKey)("sites:read"), (0, async_handler_1.asyncHandler)(async (req, res) => {
+    const siteId = String(req.params.siteId);
+    const site = await db_1.prisma.site.findUnique({
+        where: { id: siteId },
+        select: { id: true, code: true, name: true, config: true },
+    });
+    if (!site) {
+        throw new api_error_1.ApiError(404, "Site not found.");
+    }
+    const config = (0, site_contract_1.sanitizeSiteConfig)(site.config);
+    res.json({
+        success: true,
+        data: {
+            siteId: site.id,
+            siteCode: site.code,
+            siteName: site.name,
+            sitemapManualUrls: normalizeAbsoluteUrlList(config.sitemapManualUrls),
+            sitemapExcludedUrls: normalizeAbsoluteUrlList(config.sitemapExcludedUrls),
+            frontendUrl: config.frontendUrl || config.liveUrl || config.siteUrl || null,
+            updatedAt: new Date().toISOString(),
+        },
+    });
+}));
+router.patch("/:siteId/sitemap-config", (0, auth_1.requireApiKey)("sites:write"), (0, async_handler_1.asyncHandler)(async (req, res) => {
+    const siteId = String(req.params.siteId);
+    const site = await db_1.prisma.site.findUnique({
+        where: { id: siteId },
+        select: { id: true, code: true, name: true, config: true },
+    });
+    if (!site) {
+        throw new api_error_1.ApiError(404, "Site not found.");
+    }
+    const currentConfig = (0, site_contract_1.sanitizeSiteConfig)(site.config);
+    const manualUrls = normalizeAbsoluteUrlList(req.body?.sitemapManualUrls ?? currentConfig.sitemapManualUrls);
+    const excludedUrls = normalizeAbsoluteUrlList(req.body?.sitemapExcludedUrls ?? currentConfig.sitemapExcludedUrls);
+    const nextConfig = {
+        ...currentConfig,
+        sitemapManualUrls: manualUrls,
+        sitemapExcludedUrls: excludedUrls,
+    };
+    const updated = await db_1.prisma.site.update({
+        where: { id: site.id },
+        data: { config: nextConfig },
+        select: { id: true, code: true, name: true, config: true, updatedAt: true },
+    });
+    res.json({
+        success: true,
+        data: {
+            siteId: updated.id,
+            siteCode: updated.code,
+            siteName: updated.name,
+            sitemapManualUrls: manualUrls,
+            sitemapExcludedUrls: excludedUrls,
+            updatedAt: updated.updatedAt,
+        },
+    });
 }));
 router.get("/:siteId/seo-status", (0, auth_1.requireApiKey)("sites:read"), (0, async_handler_1.asyncHandler)(async (req, res) => {
     const siteId = String(req.params.siteId);

@@ -39,6 +39,18 @@ const sanitizeSiteConfig = (value) => {
     const metrics = Array.isArray(source.metrics)
         ? source.metrics.filter((item) => typeof item === "string" && item.trim().length > 0)
         : [];
+    const sitemapManualUrls = Array.isArray(source.sitemapManualUrls)
+        ? source.sitemapManualUrls
+            .filter((item) => typeof item === "string")
+            .map((item) => item.trim())
+            .filter((item) => Boolean(item) && /^https?:\/\//i.test(item))
+        : [];
+    const sitemapExcludedUrls = Array.isArray(source.sitemapExcludedUrls)
+        ? source.sitemapExcludedUrls
+            .filter((item) => typeof item === "string")
+            .map((item) => item.trim())
+            .filter((item) => Boolean(item) && /^https?:\/\//i.test(item))
+        : [];
     return {
         frontendUrl: (0, exports.normalizeBaseUrl)(source.frontendUrl) || undefined,
         liveUrl: (0, exports.normalizeBaseUrl)(source.liveUrl) || undefined,
@@ -56,6 +68,8 @@ const sanitizeSiteConfig = (value) => {
         siteType: typeof source.siteType === "string" ? source.siteType : undefined,
         feedPath: typeof source.feedPath === "string" ? source.feedPath : undefined,
         bootstrapPath: typeof source.bootstrapPath === "string" ? source.bootstrapPath : undefined,
+        sitemapManualUrls,
+        sitemapExcludedUrls,
         connectorVersion: typeof source.connectorVersion === "string" && source.connectorVersion.trim()
             ? source.connectorVersion
             : exports.DEFAULT_CONNECTOR_VERSION,
