@@ -45,7 +45,7 @@ const getTaskViewPath = (siteConfig: unknown, task: SiteTask | null) => {
     social: "/community",
     sbm: "/sbm",
     comment: "/blog",
-    pdf: "/developers",
+    pdf: "/pdf",
     org: "/team",
   };
   return defaultViews[task] || "/posts";
@@ -58,8 +58,15 @@ const buildRevalidatePaths = (siteConfig: unknown, slug?: string | null, task?: 
   paths.add(`${taskPath.replace(/\/$/, "")}/${slug}`);
   paths.add(`/posts/${slug}`);
   paths.add("/listings");
+  paths.add("/articles");
+  paths.add("/classifieds");
+  paths.add("/image-sharing");
+  paths.add("/profile");
+  paths.add("/sbm");
+  paths.add("/pdf");
   paths.add("/posts");
   paths.add("/search");
+  paths.add("/sitemap.xml");
   return Array.from(paths);
 };
 

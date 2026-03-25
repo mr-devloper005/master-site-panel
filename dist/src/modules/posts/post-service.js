@@ -42,7 +42,7 @@ const getTaskViewPath = (siteConfig, task) => {
         social: "/community",
         sbm: "/sbm",
         comment: "/blog",
-        pdf: "/developers",
+        pdf: "/pdf",
         org: "/team",
     };
     return defaultViews[task] || "/posts";
@@ -55,8 +55,15 @@ const buildRevalidatePaths = (siteConfig, slug, task) => {
     paths.add(`${taskPath.replace(/\/$/, "")}/${slug}`);
     paths.add(`/posts/${slug}`);
     paths.add("/listings");
+    paths.add("/articles");
+    paths.add("/classifieds");
+    paths.add("/image-sharing");
+    paths.add("/profile");
+    paths.add("/sbm");
+    paths.add("/pdf");
     paths.add("/posts");
     paths.add("/search");
+    paths.add("/sitemap.xml");
     return Array.from(paths);
 };
 const triggerRevalidate = async (siteConfig, slug, task) => {
@@ -183,6 +190,22 @@ const createPublishedPost = async ({ apiKey, siteCode, title, slug, summary, con
             }
             if (typeof contentRecord.articleTitle === "string") {
                 commentTargetTitle = contentRecord.articleTitle;
+            }
+            if (!commentTargetSlug && typeof contentRecord.articleId === "string") {
+                const target = await db_1.prisma.post.findFirst({
+                    where: {
+                        id: contentRecord.articleId,
+                        siteId: site.id,
+                        content: { path: ["type"], equals: "article" },
+                    },
+                    select: { slug: true, title: true },
+                });
+                if (target) {
+                    commentTargetSlug = target.slug;
+                    commentTargetTitle = target.title;
+                    contentRecord.articleSlug = target.slug;
+                    contentRecord.articleTitle = target.title;
+                }
             }
         }
         if (!contentRecord.parentUrl && commentTargetSlug) {

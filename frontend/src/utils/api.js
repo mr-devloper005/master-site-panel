@@ -293,6 +293,16 @@ export const fetchSiteBlueprint = async (siteId) => {
   return response.data;
 };
 
+export const fetchSiteSitemapStatus = async (siteId) => {
+  const response = await request(`/api/v1/sites/${siteId}/sitemap-status`);
+  return response.data;
+};
+
+export const fetchSiteSeoStatus = async (siteId) => {
+  const response = await request(`/api/v1/sites/${siteId}/seo-status`);
+  return response.data;
+};
+
 export const getIntegrationSettings = () => ({
   backendUrl: getBackendUrl(),
   apiKey: getApiKey(),

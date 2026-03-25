@@ -14,6 +14,8 @@ import { buildSiteBlueprint, isSiteTask, sanitizeSiteConfig, type SiteTask } fro
 
 const router = Router();
 const backendBaseUrl = () => getBaseUrl();
+const SITEMAP_TIMEOUT_MS = 8000;
+const SEO_TIMEOUT_MS = 9000;
 
 const normalizeTaskValue = (value?: string | string[] | null): string => {
   const raw = Array.isArray(value) ? value[0] : value;
@@ -40,6 +42,105 @@ const provisionTaskToken = async (site: { id: string; code: string }, task: Site
     key: taskKey,
     token: taskKey.rawApiKey,
   };
+};
+
+const extractSitemapUrls = (xml: string): string[] =>
+  [...xml.matchAll(/<loc>(.*?)<\/loc>/gi)]
+    .map((match) => match[1]?.trim())
+    .filter((value): value is string => Boolean(value));
+
+const parseHost = (url?: string | null): string | null => {
+  if (!url) return null;
+  try {
+    return new URL(url).host;
+  } catch {
+    return null;
+  }
+};
+
+const hasTag = (html: string, pattern: RegExp) => pattern.test(html);
+
+const inspectSeoTags = (html: string, options?: { articleDetail?: boolean }) => {
+  const checks: Record<string, boolean> = {
+    metaDescription: hasTag(
+      html,
+      /<meta[^>]+name=["']description["'][^>]*content=["'][^"']+["'][^>]*>/i
+    ),
+    canonical: hasTag(
+      html,
+      /<link[^>]+rel=["'][^"']*canonical[^"']*["'][^>]*href=["'][^"']+["'][^>]*>/i
+    ),
+    robotsMeta: hasTag(
+      html,
+      /<meta[^>]+name=["']robots["'][^>]*content=["'][^"']*(index|follow)[^"']*["'][^>]*>/i
+    ),
+    viewport: hasTag(
+      html,
+      /<meta[^>]+name=["']viewport["'][^>]*content=["'][^"']+["'][^>]*>/i
+    ),
+    ogTitle: hasTag(
+      html,
+      /<meta[^>]+property=["']og:title["'][^>]*content=["'][^"']+["'][^>]*>/i
+    ),
+    ogDescription: hasTag(
+      html,
+      /<meta[^>]+property=["']og:description["'][^>]*content=["'][^"']+["'][^>]*>/i
+    ),
+    ogImage: hasTag(
+      html,
+      /<meta[^>]+property=["']og:image["'][^>]*content=["'][^"']+["'][^>]*>/i
+    ),
+    ogUrl: hasTag(
+      html,
+      /<meta[^>]+property=["']og:url["'][^>]*content=["'][^"']+["'][^>]*>/i
+    ),
+    twitterCard: hasTag(
+      html,
+      /<meta[^>]+name=["']twitter:card["'][^>]*content=["'][^"']+["'][^>]*>/i
+    ),
+    jsonLd: hasTag(
+      html,
+      /<script[^>]+type=["']application\/ld\+json["'][^>]*>/i
+    ),
+    h1: hasTag(html, /<h1[^>]*>[\s\S]*?<\/h1>/i),
+  };
+
+  if (options?.articleDetail) {
+    checks.author = hasTag(
+      html,
+      /(<meta[^>]+name=["']author["'][^>]*content=["'][^"']+["'][^>]*>)|(<span[^>]*>[^<]*by[^<]*<\/span>)/i
+    );
+    checks.publishDate = hasTag(
+      html,
+      /(<meta[^>]+property=["']article:published_time["'][^>]*>)|(<time[^>]*datetime=["'][^"']+["'][^>]*>)/i
+    );
+    checks.category = hasTag(html, /(category|badge|tag)/i);
+    checks.tags = hasTag(html, /(tags?|badge|tag)/i);
+    checks.featuredImage = checks.ogImage;
+  }
+
+  const missing = Object.entries(checks)
+    .filter(([, value]) => !value)
+    .map(([key]) => key);
+
+  return { checks, missing };
+};
+
+const fetchTextWithTimeout = async (url: string, accept: string, timeoutMs: number) => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: { Accept: accept },
+      cache: "no-store",
+      signal: controller.signal,
+    });
+    const body = await response.text();
+    return { response, body };
+  } finally {
+    clearTimeout(timeout);
+  }
 };
 
 router.get("/", requireApiKey("sites:read"), asyncHandler(async (req, res) => {
@@ -132,6 +233,244 @@ router.get("/:siteId", requireApiKey("sites:read"), asyncHandler(async (req, res
         backendBaseUrl: backendBaseUrl(),
         includeTaskCatalog: true,
       }),
+    },
+  });
+}));
+
+router.get("/:siteId/sitemap-status", requireApiKey("sites:read"), asyncHandler(async (req, res) => {
+  const siteId = String(req.params.siteId);
+  const site = await prisma.site.findUnique({
+    where: { id: siteId },
+    select: { id: true, code: true, name: true, config: true, isActive: true },
+  });
+
+  if (!site) {
+    throw new ApiError(404, "Site not found.");
+  }
+
+  const config = sanitizeSiteConfig(site.config);
+  const frontendUrl =
+    (config.frontendUrl || config.liveUrl || config.siteUrl || "").replace(/\/+$/, "");
+
+  if (!frontendUrl) {
+    throw new ApiError(400, "Site frontend URL is missing. Update site config first.");
+  }
+
+  const sitemapUrl = `${frontendUrl}/sitemap.xml`;
+  const siteHost = parseHost(frontendUrl);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), SITEMAP_TIMEOUT_MS);
+  const checkedAt = new Date().toISOString();
+
+  try {
+    const response = await fetch(sitemapUrl, {
+      method: "GET",
+      headers: { Accept: "application/xml,text/xml,*/*" },
+      cache: "no-store",
+      signal: controller.signal,
+    });
+
+    const body = await response.text();
+    const urls = response.ok ? extractSitemapUrls(body) : [];
+    const mismatched = siteHost
+      ? urls.filter((url) => parseHost(url) && parseHost(url) !== siteHost)
+      : [];
+
+    res.json({
+      success: true,
+      data: {
+        siteId: site.id,
+        siteCode: site.code,
+        siteName: site.name,
+        sitemapUrl,
+        checkedAt,
+        reachable: response.ok,
+        httpStatus: response.status,
+        urlCount: urls.length,
+        sampleUrls: urls.slice(0, 12),
+        hostExpected: siteHost,
+        hostMismatchCount: mismatched.length,
+        hostMismatchSamples: mismatched.slice(0, 5),
+      },
+    });
+    return;
+  } catch (error) {
+    res.status(200).json({
+      success: true,
+      data: {
+        siteId: site.id,
+        siteCode: site.code,
+        siteName: site.name,
+        sitemapUrl,
+        checkedAt,
+        reachable: false,
+        httpStatus: null,
+        urlCount: 0,
+        sampleUrls: [],
+        hostExpected: siteHost,
+        hostMismatchCount: 0,
+        hostMismatchSamples: [],
+        error: error instanceof Error ? error.message : "Failed to fetch sitemap.",
+      },
+    });
+    return;
+  } finally {
+    clearTimeout(timeout);
+  }
+}));
+
+router.get("/:siteId/seo-status", requireApiKey("sites:read"), asyncHandler(async (req, res) => {
+  const siteId = String(req.params.siteId);
+  const site = await prisma.site.findUnique({
+    where: { id: siteId },
+    select: { id: true, code: true, name: true, config: true },
+  });
+
+  if (!site) {
+    throw new ApiError(404, "Site not found.");
+  }
+
+  const config = sanitizeSiteConfig(site.config);
+  const frontendUrl =
+    (config.frontendUrl || config.liveUrl || config.siteUrl || "").replace(/\/+$/, "");
+
+  if (!frontendUrl) {
+    throw new ApiError(400, "Site frontend URL is missing. Update site config first.");
+  }
+
+  const checkedAt = new Date().toISOString();
+  const robotsUrl = `${frontendUrl}/robots.txt`;
+  const sitemapUrl = `${frontendUrl}/sitemap.xml`;
+
+  let robotsStatus: Record<string, unknown> = {
+    url: robotsUrl,
+    reachable: false,
+    httpStatus: null,
+    hasAllowAll: false,
+    hasSitemapReference: false,
+  };
+  let sitemapStatus: Record<string, unknown> = {
+    url: sitemapUrl,
+    reachable: false,
+    httpStatus: null,
+    urlCount: 0,
+  };
+  const pageReports: Array<Record<string, unknown>> = [];
+  let articleDetailUrl: string | null = null;
+
+  try {
+    const { response, body } = await fetchTextWithTimeout(
+      robotsUrl,
+      "text/plain,*/*",
+      SEO_TIMEOUT_MS
+    );
+    robotsStatus = {
+      ...robotsStatus,
+      reachable: response.ok,
+      httpStatus: response.status,
+      hasAllowAll: /Allow:\s*\/\s*$/im.test(body) || /User-agent:\s*\*\s*[\s\S]*Allow:\s*\//im.test(body),
+      hasSitemapReference: /Sitemap:\s*https?:\/\//im.test(body),
+    };
+  } catch (error) {
+    robotsStatus = {
+      ...robotsStatus,
+      error: error instanceof Error ? error.message : "Failed to fetch robots.txt",
+    };
+  }
+
+  try {
+    const { response, body } = await fetchTextWithTimeout(
+      sitemapUrl,
+      "application/xml,text/xml,*/*",
+      SEO_TIMEOUT_MS
+    );
+    const urls = response.ok ? extractSitemapUrls(body) : [];
+    articleDetailUrl = urls.find((url) => /\/articles\/[^/]+$/i.test(url)) || null;
+    sitemapStatus = {
+      ...sitemapStatus,
+      reachable: response.ok,
+      httpStatus: response.status,
+      urlCount: urls.length,
+      sampleUrls: urls.slice(0, 12),
+    };
+  } catch (error) {
+    sitemapStatus = {
+      ...sitemapStatus,
+      error: error instanceof Error ? error.message : "Failed to fetch sitemap.xml",
+    };
+  }
+
+  const pagesToInspect: Array<{ key: string; url: string; articleDetail?: boolean }> = [
+    { key: "home", url: `${frontendUrl}/` },
+    { key: "articles", url: `${frontendUrl}/articles` },
+  ];
+  if (articleDetailUrl) {
+    pagesToInspect.push({ key: "articleDetail", url: articleDetailUrl, articleDetail: true });
+  }
+
+  for (const page of pagesToInspect) {
+    try {
+      const { response, body } = await fetchTextWithTimeout(page.url, "text/html,*/*", SEO_TIMEOUT_MS);
+      if (!response.ok) {
+        pageReports.push({
+          page: page.key,
+          url: page.url,
+          reachable: false,
+          httpStatus: response.status,
+          checks: {},
+          missing: [],
+        });
+        continue;
+      }
+
+      const inspected = inspectSeoTags(body, { articleDetail: page.articleDetail });
+      pageReports.push({
+        page: page.key,
+        url: page.url,
+        reachable: true,
+        httpStatus: response.status,
+        checks: inspected.checks,
+        missing: inspected.missing,
+      });
+    } catch (error) {
+      pageReports.push({
+        page: page.key,
+        url: page.url,
+        reachable: false,
+        httpStatus: null,
+        checks: {},
+        missing: [],
+        error: error instanceof Error ? error.message : "Failed to fetch page",
+      });
+    }
+  }
+
+  const totalChecks = pageReports.reduce((sum, item) => {
+    const checks = (item.checks as Record<string, boolean>) || {};
+    return sum + Object.keys(checks).length;
+  }, 0);
+  const passedChecks = pageReports.reduce((sum, item) => {
+    const checks = (item.checks as Record<string, boolean>) || {};
+    return sum + Object.values(checks).filter(Boolean).length;
+  }, 0);
+  const score = totalChecks > 0 ? Math.round((passedChecks / totalChecks) * 100) : 0;
+
+  res.json({
+    success: true,
+    data: {
+      siteId: site.id,
+      siteCode: site.code,
+      siteName: site.name,
+      checkedAt,
+      score,
+      summary: {
+        totalChecks,
+        passedChecks,
+        failedChecks: Math.max(totalChecks - passedChecks, 0),
+      },
+      robots: robotsStatus,
+      sitemap: sitemapStatus,
+      pages: pageReports,
     },
   });
 }));
