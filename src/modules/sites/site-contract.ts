@@ -19,6 +19,10 @@ export type SiteConnectorConfig = {
   frontendUrl?: string;
   liveUrl?: string;
   siteUrl?: string;
+  searchConsoleSiteUrl?: string;
+  googleSearchConsoleSiteUrl?: string;
+  googleServiceAccountEmail?: string;
+  googleServiceAccountPrivateKey?: string;
   siteType?: string;
   feedPath?: string;
   bootstrapPath?: string;
@@ -67,6 +71,20 @@ export const sanitizeSiteConfig = (value: unknown): SiteConnectorConfig => {
     frontendUrl: normalizeBaseUrl(source.frontendUrl) || undefined,
     liveUrl: normalizeBaseUrl(source.liveUrl) || undefined,
     siteUrl: normalizeBaseUrl(source.siteUrl) || undefined,
+    searchConsoleSiteUrl:
+      typeof source.searchConsoleSiteUrl === "string" ? source.searchConsoleSiteUrl : undefined,
+    googleSearchConsoleSiteUrl:
+      typeof source.googleSearchConsoleSiteUrl === "string"
+        ? source.googleSearchConsoleSiteUrl
+        : undefined,
+    googleServiceAccountEmail:
+      typeof source.googleServiceAccountEmail === "string"
+        ? source.googleServiceAccountEmail
+        : undefined,
+    googleServiceAccountPrivateKey:
+      typeof source.googleServiceAccountPrivateKey === "string"
+        ? source.googleServiceAccountPrivateKey
+        : undefined,
     siteType: typeof source.siteType === "string" ? source.siteType : undefined,
     feedPath: typeof source.feedPath === "string" ? source.feedPath : undefined,
     bootstrapPath: typeof source.bootstrapPath === "string" ? source.bootstrapPath : undefined,

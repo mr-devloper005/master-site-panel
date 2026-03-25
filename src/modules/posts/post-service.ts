@@ -4,6 +4,11 @@ import { prisma } from "../../config/db";
 import { ensureSiteAccess } from "../../middleware/auth";
 import { ApiError } from "../../utils/api-error";
 import { getTaskScope } from "../auth/api-key-service";
+import {
+  queuePostForIndexing,
+  submitSiteSitemapForIndexing,
+  updateSitemapSubmissionForSite,
+} from "../sites/google-indexing";
 import { getSiteFrontendBaseUrl, isSiteTask, sanitizeSiteConfig, type SiteTask } from "../sites/site-contract";
 import { isValidCategory, normalizeCategory } from "./category-constants";
 
@@ -330,6 +335,29 @@ export const createPublishedPost = async ({
       liveUrl = `${frontendBaseUrl}${articlePath}/${commentTargetSlug}#comment-${post.id}`;
     }
   }
+
+  if (liveUrl) {
+    void queuePostForIndexing({
+      siteId: site.id,
+      postId: post.id,
+      postUrl: liveUrl,
+      siteConfig: site.config,
+      publishedAt: post.publishedAt || post.createdAt,
+    }).catch((error) => {
+      console.warn("Failed to queue indexing record", error);
+    });
+  }
+
+  void (async () => {
+    try {
+      const submission = await submitSiteSitemapForIndexing(site.config);
+      if (submission.submitted) {
+        await updateSitemapSubmissionForSite(site.id);
+      }
+    } catch (error) {
+      console.warn("Sitemap submit after publish failed", error);
+    }
+  })();
 
   void triggerRevalidate(site.config, post.slug, resolvedTask);
   if (resolvedTask === "comment" && commentTargetSlug) {

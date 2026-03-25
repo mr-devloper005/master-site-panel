@@ -35,6 +35,15 @@ enum SiteConnectionStatus {
   OFFLINE
 }
 
+enum IndexingInspectionStatus {
+  PENDING
+  SUBMITTED
+  DISCOVERED
+  INDEXED
+  NOT_INDEXED
+  ERROR
+}
+
 model Site {
   id          String      @id @default(cuid())
   code        String      @unique
@@ -47,6 +56,7 @@ model Site {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   posts       Post[]
+  indexingRecords SiteIndexingRecord[]
   permissions ApiKeySitePermission[]
   runtimeStatuses SiteRuntimeStatus[]
 }
@@ -69,8 +79,34 @@ model Post {
   createdByApiKey   ApiKey?    @relation(fields: [createdByApiKeyId], references: [id], onDelete: SetNull)
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
+  indexingRecord    SiteIndexingRecord?
 
   @@index([siteId, status, publishedAt])
+}
+
+model SiteIndexingRecord {
+  id                     String                   @id @default(cuid())
+  siteId                 String
+  site                   Site                     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  postId                 String                   @unique
+  post                   Post                     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  url                    String
+  sitemapUrl             String?
+  sitemapSubmittedAt     DateTime?
+  sitemapSeenAt          DateTime?
+  inspectionStatus       IndexingInspectionStatus @default(PENDING)
+  inspectionCoverage     String?
+  inspectionVerdict      String?
+  inspectionLastCheckedAt DateTime?
+  inspectionNextCheckAt  DateTime?
+  inspectionAttempts     Int                      @default(0)
+  lastError              String?
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+
+  @@unique([siteId, postId])
+  @@index([siteId, inspectionStatus, inspectionNextCheckAt])
+  @@index([siteId, createdAt])
 }
 
 model ApiKey {

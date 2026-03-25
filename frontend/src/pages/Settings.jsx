@@ -6,10 +6,13 @@ import { useTheme } from "../context/ThemeContext";
 import { useAppData } from "../context/AppContext";
 import {
   fetchSiteBlueprint,
+  fetchSiteIndexingStatus,
   fetchSiteSeoStatus,
   fetchSiteSitemapStatus,
   getIntegrationSettings,
+  runSiteIndexingInspections,
   saveIntegrationSettings,
+  submitSiteSitemapForIndexing,
 } from "../utils/api";
 
 export default function Settings() {
@@ -27,6 +30,8 @@ export default function Settings() {
   const [loadingSitemap, setLoadingSitemap] = useState(false);
   const [seoStatus, setSeoStatus] = useState(null);
   const [loadingSeo, setLoadingSeo] = useState(false);
+  const [indexingStatus, setIndexingStatus] = useState(null);
+  const [loadingIndexing, setLoadingIndexing] = useState(false);
 
   useEffect(() => {
     return undefined;
@@ -41,7 +46,7 @@ export default function Settings() {
   const loadBlueprint = async (siteId) => {
     if (!siteId) return;
     setSelectedBlueprintSiteId(siteId);
-    const [blueprintResult, sitemapResult, seoResult] = await Promise.all([
+    const [blueprintResult, sitemapResult, seoResult, indexingResult] = await Promise.all([
       fetchSiteBlueprint(siteId),
       (async () => {
         setLoadingSitemap(true);
@@ -59,10 +64,49 @@ export default function Settings() {
           setLoadingSeo(false);
         }
       })(),
+      (async () => {
+        setLoadingIndexing(true);
+        try {
+          return await fetchSiteIndexingStatus(siteId, { runDue: true, limit: 100 });
+        } finally {
+          setLoadingIndexing(false);
+        }
+      })(),
     ]);
     setBlueprint(blueprintResult);
     setSitemapStatus(sitemapResult);
     setSeoStatus(seoResult);
+    setIndexingStatus(indexingResult);
+  };
+
+  const handleSubmitSitemap = async () => {
+    if (!selectedBlueprintSiteId) return;
+    try {
+      setLoadingIndexing(true);
+      await submitSiteSitemapForIndexing(selectedBlueprintSiteId);
+      const refreshed = await fetchSiteIndexingStatus(selectedBlueprintSiteId, { runDue: false, limit: 100 });
+      setIndexingStatus(refreshed);
+      toast.success("Sitemap submitted to Search Console");
+    } catch (error) {
+      toast.error(error.message || "Failed to submit sitemap");
+    } finally {
+      setLoadingIndexing(false);
+    }
+  };
+
+  const handleRunInspections = async () => {
+    if (!selectedBlueprintSiteId) return;
+    try {
+      setLoadingIndexing(true);
+      await runSiteIndexingInspections(selectedBlueprintSiteId, 30);
+      const refreshed = await fetchSiteIndexingStatus(selectedBlueprintSiteId, { runDue: false, limit: 100 });
+      setIndexingStatus(refreshed);
+      toast.success("Indexing inspections completed");
+    } catch (error) {
+      toast.error(error.message || "Failed to run indexing inspections");
+    } finally {
+      setLoadingIndexing(false);
+    }
   };
 
   return (
@@ -324,6 +368,79 @@ export default function Settings() {
             </div>
           ) : (
             <p className="mt-3 text-sm text-[var(--text-secondary)]">No SEO status data yet.</p>
+          )}
+        </section>
+
+        <section className="glass rounded-panel p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-sm font-semibold">Google Indexing Status</h2>
+            <div className="flex flex-wrap gap-2">
+              <button
+                className="rounded-lg border border-[var(--border-color)] px-3 py-1.5 text-xs"
+                onClick={() => selectedBlueprintSiteId && loadBlueprint(selectedBlueprintSiteId)}
+                disabled={!selectedBlueprintSiteId || loadingIndexing}
+              >
+                {loadingIndexing ? "Loading..." : "Refresh"}
+              </button>
+              <button
+                className="rounded-lg border border-[var(--border-color)] px-3 py-1.5 text-xs"
+                onClick={handleSubmitSitemap}
+                disabled={!selectedBlueprintSiteId || loadingIndexing}
+              >
+                Submit Sitemap
+              </button>
+              <button
+                className="rounded-lg border border-[var(--border-color)] px-3 py-1.5 text-xs"
+                onClick={handleRunInspections}
+                disabled={!selectedBlueprintSiteId || loadingIndexing}
+              >
+                Run Inspection
+              </button>
+            </div>
+          </div>
+
+          {!selectedBlueprintSiteId ? (
+            <p className="mt-3 text-sm text-[var(--text-secondary)]">Select a site first to monitor indexing.</p>
+          ) : indexingStatus ? (
+            <div className="mt-3 space-y-3 text-sm">
+              <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
+                <p><span className="text-[var(--text-secondary)]">Total: </span>{indexingStatus.summary?.total ?? 0}</p>
+                <p><span className="text-[var(--text-secondary)]">Submitted: </span>{indexingStatus.summary?.sitemapSubmitted ?? 0}</p>
+                <p><span className="text-[var(--text-secondary)]">Discovered: </span>{indexingStatus.summary?.discovered ?? 0}</p>
+                <p><span className="text-[var(--text-secondary)]">Indexed: </span>{indexingStatus.summary?.indexed ?? 0}</p>
+                <p><span className="text-[var(--text-secondary)]">Checked: </span>{new Date(indexingStatus.checkedAt).toLocaleString()}</p>
+              </div>
+              <div className="overflow-x-auto rounded-lg border border-[var(--border-color)]">
+                <table className="min-w-full text-xs">
+                  <thead className="bg-[var(--bg-surface)]">
+                    <tr>
+                      <th className="px-3 py-2 text-left">Post</th>
+                      <th className="px-3 py-2 text-left">Status</th>
+                      <th className="px-3 py-2 text-left">Submitted</th>
+                      <th className="px-3 py-2 text-left">Discovered</th>
+                      <th className="px-3 py-2 text-left">Indexed/Last Check</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(indexingStatus.items || []).slice(0, 30).map((row) => (
+                      <tr key={row.id} className="border-t border-[var(--border-color)]">
+                        <td className="px-3 py-2">
+                          <a href={row.url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
+                            {row.postTitle}
+                          </a>
+                        </td>
+                        <td className="px-3 py-2">{row.inspectionStatus}</td>
+                        <td className="px-3 py-2">{row.sitemapSubmittedAt ? new Date(row.sitemapSubmittedAt).toLocaleString() : "-"}</td>
+                        <td className="px-3 py-2">{row.sitemapSeenAt ? new Date(row.sitemapSeenAt).toLocaleString() : "-"}</td>
+                        <td className="px-3 py-2">{row.inspectionLastCheckedAt ? new Date(row.inspectionLastCheckedAt).toLocaleString() : "-"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : (
+            <p className="mt-3 text-sm text-[var(--text-secondary)]">No indexing data yet.</p>
           )}
         </section>
       </div>

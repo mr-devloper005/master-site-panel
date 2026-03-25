@@ -6,6 +6,7 @@ const db_1 = require("../../config/db");
 const auth_1 = require("../../middleware/auth");
 const api_error_1 = require("../../utils/api-error");
 const api_key_service_1 = require("../auth/api-key-service");
+const google_indexing_1 = require("../sites/google-indexing");
 const site_contract_1 = require("../sites/site-contract");
 const category_constants_1 = require("./category-constants");
 const REVALIDATE_SECRET = process.env.REVALIDATE_SECRET || process.env.NEXT_REVALIDATE_SECRET || "";
@@ -268,6 +269,28 @@ const createPublishedPost = async ({ apiKey, siteCode, title, slug, summary, con
             liveUrl = `${frontendBaseUrl}${articlePath}/${commentTargetSlug}#comment-${post.id}`;
         }
     }
+    if (liveUrl) {
+        void (0, google_indexing_1.queuePostForIndexing)({
+            siteId: site.id,
+            postId: post.id,
+            postUrl: liveUrl,
+            siteConfig: site.config,
+            publishedAt: post.publishedAt || post.createdAt,
+        }).catch((error) => {
+            console.warn("Failed to queue indexing record", error);
+        });
+    }
+    void (async () => {
+        try {
+            const submission = await (0, google_indexing_1.submitSiteSitemapForIndexing)(site.config);
+            if (submission.submitted) {
+                await (0, google_indexing_1.updateSitemapSubmissionForSite)(site.id);
+            }
+        }
+        catch (error) {
+            console.warn("Sitemap submit after publish failed", error);
+        }
+    })();
     void (0, exports.triggerRevalidate)(site.config, post.slug, resolvedTask);
     if (resolvedTask === "comment" && commentTargetSlug) {
         void (0, exports.triggerRevalidate)(site.config, commentTargetSlug, "article");

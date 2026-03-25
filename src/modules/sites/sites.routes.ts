@@ -10,6 +10,11 @@ import { createApiKeyWithPermissions } from "../auth/api-key-service";
 import { getLatestRuntimeStatusMap, getRuntimeStatusesForSite } from "../runtime/runtime-store";
 import { getBaseUrl } from "../../utils/base-url";
 import { buildTaskProvisioningGuide } from "./task-catalog";
+import {
+  runDueIndexingInspections,
+  submitSiteSitemapForIndexing,
+  updateSitemapSubmissionForSite,
+} from "./google-indexing";
 import { buildSiteBlueprint, isSiteTask, sanitizeSiteConfig, type SiteTask } from "./site-contract";
 
 const router = Router();
@@ -471,6 +476,190 @@ router.get("/:siteId/seo-status", requireApiKey("sites:read"), asyncHandler(asyn
       robots: robotsStatus,
       sitemap: sitemapStatus,
       pages: pageReports,
+    },
+  });
+}));
+
+router.post("/:siteId/indexing/submit-sitemap", requireApiKey("sites:write"), asyncHandler(async (req, res) => {
+  const siteId = String(req.params.siteId);
+  const site = await prisma.site.findUnique({
+    where: { id: siteId },
+    select: { id: true, code: true, name: true, config: true },
+  });
+
+  if (!site) {
+    throw new ApiError(404, "Site not found.");
+  }
+
+  const result = await submitSiteSitemapForIndexing(site.config);
+  if (!result.submitted) {
+    throw new ApiError(400, result.reason || "Sitemap could not be submitted.");
+  }
+
+  await updateSitemapSubmissionForSite(site.id, new Date(result.submittedAt || new Date().toISOString()));
+
+  res.json({
+    success: true,
+    data: {
+      siteId: site.id,
+      siteCode: site.code,
+      siteName: site.name,
+      ...result,
+    },
+  });
+}));
+
+router.post("/:siteId/indexing/run-inspections", requireApiKey("sites:write"), asyncHandler(async (req, res) => {
+  const siteId = String(req.params.siteId);
+  const site = await prisma.site.findUnique({
+    where: { id: siteId },
+    select: { id: true, code: true, name: true, config: true },
+  });
+
+  if (!site) {
+    throw new ApiError(404, "Site not found.");
+  }
+
+  const limit = Math.min(Math.max(Number(req.body?.limit) || 20, 1), 100);
+  const execution = await runDueIndexingInspections({
+    siteId: site.id,
+    siteConfig: site.config,
+    limit,
+  });
+
+  res.json({
+    success: true,
+    data: {
+      siteId: site.id,
+      siteCode: site.code,
+      siteName: site.name,
+      ...execution,
+    },
+  });
+}));
+
+router.get("/:siteId/indexing-status", requireApiKey("sites:read"), asyncHandler(async (req, res) => {
+  const siteId = String(req.params.siteId);
+  const runDue = req.query.runDue === "true";
+  const limit = Math.min(Math.max(Number(req.query.limit) || 100, 10), 500);
+
+  const site = await prisma.site.findUnique({
+    where: { id: siteId },
+    select: { id: true, code: true, name: true, config: true },
+  });
+  if (!site) {
+    throw new ApiError(404, "Site not found.");
+  }
+
+  let autoRunResult: Record<string, unknown> | null = null;
+  if (runDue) {
+    autoRunResult = await runDueIndexingInspections({
+      siteId: site.id,
+      siteConfig: site.config,
+      limit: 20,
+    });
+  }
+
+  try {
+    const config = sanitizeSiteConfig(site.config);
+    const frontendUrl =
+      (config.frontendUrl || config.liveUrl || config.siteUrl || "").replace(/\/+$/, "");
+    if (frontendUrl) {
+      const sitemapUrl = `${frontendUrl}/sitemap.xml`;
+      const response = await fetch(sitemapUrl, {
+        method: "GET",
+        headers: { Accept: "application/xml,text/xml,*/*" },
+        cache: "no-store",
+      });
+      if (response.ok) {
+        const xml = await response.text();
+        const urls = extractSitemapUrls(xml);
+        if (urls.length) {
+          await prisma.siteIndexingRecord.updateMany({
+            where: {
+              siteId: site.id,
+              url: { in: urls },
+              sitemapSeenAt: null,
+            },
+            data: {
+              sitemapSeenAt: new Date(),
+              inspectionStatus: "DISCOVERED",
+            },
+          });
+        }
+      }
+    }
+  } catch (error) {
+    console.warn("Failed to sync sitemap seen URLs", error);
+  }
+
+  const records = await prisma.siteIndexingRecord.findMany({
+    where: { siteId: site.id },
+    include: {
+      post: {
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          publishedAt: true,
+          createdAt: true,
+        },
+      },
+    },
+    orderBy: [{ updatedAt: "desc" }],
+    take: limit,
+  });
+
+  const summary = records.reduce(
+    (acc, item) => {
+      const key = item.inspectionStatus;
+      acc.total += 1;
+      acc.byStatus[key] = (acc.byStatus[key] || 0) + 1;
+      if (item.sitemapSubmittedAt) acc.sitemapSubmitted += 1;
+      if (item.sitemapSeenAt) acc.discovered += 1;
+      if (item.inspectionStatus === "INDEXED") acc.indexed += 1;
+      return acc;
+    },
+    {
+      total: 0,
+      sitemapSubmitted: 0,
+      discovered: 0,
+      indexed: 0,
+      byStatus: {} as Record<string, number>,
+    }
+  );
+
+  res.json({
+    success: true,
+    data: {
+      site: {
+        id: site.id,
+        code: site.code,
+        name: site.name,
+      },
+      checkedAt: new Date().toISOString(),
+      autoRun: autoRunResult,
+      summary,
+      items: records.map((item) => ({
+        id: item.id,
+        postId: item.postId,
+        postTitle: item.post.title,
+        postSlug: item.post.slug,
+        url: item.url,
+        publishedAt: item.post.publishedAt || item.post.createdAt,
+        sitemapUrl: item.sitemapUrl,
+        sitemapSubmittedAt: item.sitemapSubmittedAt,
+        sitemapSeenAt: item.sitemapSeenAt,
+        inspectionStatus: item.inspectionStatus,
+        inspectionCoverage: item.inspectionCoverage,
+        inspectionVerdict: item.inspectionVerdict,
+        inspectionAttempts: item.inspectionAttempts,
+        inspectionLastCheckedAt: item.inspectionLastCheckedAt,
+        inspectionNextCheckAt: item.inspectionNextCheckAt,
+        lastError: item.lastError,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+      })),
     },
   });
 }));

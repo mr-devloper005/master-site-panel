@@ -43,6 +43,16 @@ const sanitizeSiteConfig = (value) => {
         frontendUrl: (0, exports.normalizeBaseUrl)(source.frontendUrl) || undefined,
         liveUrl: (0, exports.normalizeBaseUrl)(source.liveUrl) || undefined,
         siteUrl: (0, exports.normalizeBaseUrl)(source.siteUrl) || undefined,
+        searchConsoleSiteUrl: typeof source.searchConsoleSiteUrl === "string" ? source.searchConsoleSiteUrl : undefined,
+        googleSearchConsoleSiteUrl: typeof source.googleSearchConsoleSiteUrl === "string"
+            ? source.googleSearchConsoleSiteUrl
+            : undefined,
+        googleServiceAccountEmail: typeof source.googleServiceAccountEmail === "string"
+            ? source.googleServiceAccountEmail
+            : undefined,
+        googleServiceAccountPrivateKey: typeof source.googleServiceAccountPrivateKey === "string"
+            ? source.googleServiceAccountPrivateKey
+            : undefined,
         siteType: typeof source.siteType === "string" ? source.siteType : undefined,
         feedPath: typeof source.feedPath === "string" ? source.feedPath : undefined,
         bootstrapPath: typeof source.bootstrapPath === "string" ? source.bootstrapPath : undefined,

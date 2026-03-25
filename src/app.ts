@@ -8,6 +8,7 @@ import postsRoutes from "./modules/posts/posts.routes";
 import publicRoutes from "./modules/public/public.routes";
 import runtimeRoutes from "./modules/runtime/runtime.routes";
 import sitesRoutes from "./modules/sites/sites.routes";
+import { startIndexingScheduler } from "./modules/sites/indexing-scheduler";
 import tasksRoutes, { siteTaskRouter } from "./modules/tasks/tasks.routes";
 import { errorHandler, notFoundHandler } from "./middleware/error-handler";
 
@@ -33,6 +34,8 @@ app.use("/api/v1/tasks", tasksRoutes);
 app.use("/", siteTaskRouter);
 app.use("/api/v1/public", publicRoutes);
 app.use("/api/v1/runtime", runtimeRoutes);
+
+startIndexingScheduler();
 
 app.use(notFoundHandler);
 app.use(errorHandler);

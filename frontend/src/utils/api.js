@@ -303,6 +303,30 @@ export const fetchSiteSeoStatus = async (siteId) => {
   return response.data;
 };
 
+export const fetchSiteIndexingStatus = async (siteId, options = {}) => {
+  const query = new URLSearchParams();
+  query.set("limit", String(options.limit || 100));
+  if (options.runDue) query.set("runDue", "true");
+  const response = await request(`/api/v1/sites/${siteId}/indexing-status?${query.toString()}`);
+  return response.data;
+};
+
+export const submitSiteSitemapForIndexing = async (siteId) => {
+  const response = await request(`/api/v1/sites/${siteId}/indexing/submit-sitemap`, {
+    method: "POST",
+    body: JSON.stringify({}),
+  });
+  return response.data;
+};
+
+export const runSiteIndexingInspections = async (siteId, limit = 20) => {
+  const response = await request(`/api/v1/sites/${siteId}/indexing/run-inspections`, {
+    method: "POST",
+    body: JSON.stringify({ limit }),
+  });
+  return response.data;
+};
+
 export const getIntegrationSettings = () => ({
   backendUrl: getBackendUrl(),
   apiKey: getApiKey(),
