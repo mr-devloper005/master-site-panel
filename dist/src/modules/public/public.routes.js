@@ -40,9 +40,11 @@ router.get("/:siteCode/bootstrap", (0, async_handler_1.asyncHandler)(async (req,
 }));
 router.get("/:siteCode/feed", (0, async_handler_1.asyncHandler)(async (req, res) => {
     const siteCode = String(req.params.siteCode);
-    const limit = Math.min(Number(req.query.limit) || 20, 100);
+    const limit = Math.min(Math.max(Number(req.query.limit) || 20, 1), 1000);
     const categoryParam = typeof req.query.category === "string" ? req.query.category.trim() : "";
     const category = categoryParam ? categoryParam.toLowerCase() : "";
+    const taskParam = typeof req.query.task === "string" ? req.query.task.trim() : "";
+    const task = taskParam ? taskParam.toLowerCase() : "";
     const site = await db_1.prisma.site.findUnique({
         where: { code: siteCode },
         select: {
@@ -64,14 +66,28 @@ router.get("/:siteCode/feed", (0, async_handler_1.asyncHandler)(async (req, res)
         where: {
             siteId: site.id,
             status: client_1.PostStatus.PUBLISHED,
-            ...(category
-                ? {
-                    content: {
-                        path: ["category"],
-                        equals: category,
-                    },
-                }
-                : {}),
+            AND: [
+                ...(category
+                    ? [
+                        {
+                            content: {
+                                path: ["category"],
+                                equals: category,
+                            },
+                        },
+                    ]
+                    : []),
+                ...(task
+                    ? [
+                        {
+                            content: {
+                                path: ["type"],
+                                equals: task,
+                            },
+                        },
+                    ]
+                    : []),
+            ],
         },
         orderBy: { publishedAt: "desc" },
         take: limit,
@@ -86,6 +102,8 @@ router.get("/:siteCode/feed", (0, async_handler_1.asyncHandler)(async (req, res)
             tags: true,
             authorName: true,
             publishedAt: true,
+            createdAt: true,
+            updatedAt: true,
         },
     });
     res.json({
