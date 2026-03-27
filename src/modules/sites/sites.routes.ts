@@ -21,6 +21,7 @@ const router = Router();
 const backendBaseUrl = () => getBaseUrl();
 const SITEMAP_TIMEOUT_MS = 8000;
 const SEO_TIMEOUT_MS = 9000;
+const LINK_HEALTH_TIMEOUT_MS = 15000;
 
 const normalizeTaskValue = (value?: string | string[] | null): string => {
   const raw = Array.isArray(value) ? value[0] : value;
@@ -29,6 +30,12 @@ const normalizeTaskValue = (value?: string | string[] | null): string => {
     return "comment";
   }
   return normalized;
+};
+
+const firstQueryValue = (value?: unknown): string => {
+  if (Array.isArray(value)) return String(value[0] || "");
+  if (typeof value === "string") return value;
+  return "";
 };
 
 const provisionTaskToken = async (site: { id: string; code: string }, task: SiteTask) => {
@@ -158,6 +165,12 @@ const fetchTextWithTimeout = async (url: string, accept: string, timeoutMs: numb
   } finally {
     clearTimeout(timeout);
   }
+};
+
+const parsePositiveInt = (value: string, fallback: number, min: number, max: number) => {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed <= 0) return fallback;
+  return Math.min(Math.max(Math.floor(parsed), min), max);
 };
 
 router.get("/", requireApiKey("sites:read"), asyncHandler(async (req, res) => {
@@ -568,6 +581,102 @@ router.get("/:siteId/seo-status", requireApiKey("sites:read"), asyncHandler(asyn
       pages: pageReports,
     },
   });
+}));
+
+router.get("/:siteId/link-health", requireApiKey("sites:read"), asyncHandler(async (req, res) => {
+  const siteId = String(req.params.siteId);
+  const site = await prisma.site.findUnique({
+    where: { id: siteId },
+    select: { id: true, code: true, name: true, config: true },
+  });
+
+  if (!site) {
+    throw new ApiError(404, "Site not found.");
+  }
+
+  const config = sanitizeSiteConfig(site.config);
+  const frontendUrl =
+    (config.frontendUrl || config.liveUrl || config.siteUrl || "").replace(/\/+$/, "");
+
+  if (!frontendUrl) {
+    throw new ApiError(400, "Site frontend URL is missing. Update site config first.");
+  }
+
+  const limit = parsePositiveInt(firstQueryValue(req.query.limit), 120, 1, 1000);
+  const maxLinks = parsePositiveInt(firstQueryValue(req.query.maxLinks), 200, 1, 1000);
+  const timeoutMs = parsePositiveInt(firstQueryValue(req.query.timeoutMs), 8000, 1000, 30000);
+  const concurrency = parsePositiveInt(firstQueryValue(req.query.concurrency), 6, 1, 20);
+
+  const endpointUrl = `${frontendUrl}/api/seo/link-health?limit=${limit}&maxLinks=${maxLinks}&timeoutMs=${timeoutMs}&concurrency=${concurrency}`;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), LINK_HEALTH_TIMEOUT_MS);
+  const checkedAt = new Date().toISOString();
+
+  try {
+    const response = await fetch(endpointUrl, {
+      method: "GET",
+      headers: { Accept: "application/json,*/*" },
+      cache: "no-store",
+      signal: controller.signal,
+    });
+    const rawText = await response.text();
+    let parsed: Record<string, unknown> | null = null;
+    if (rawText) {
+      try {
+        parsed = JSON.parse(rawText) as Record<string, unknown>;
+      } catch {
+        parsed = null;
+      }
+    }
+
+    const payload = parsed && typeof parsed === "object" ? parsed : {};
+    const data = (payload.data && typeof payload.data === "object"
+      ? payload.data
+      : null) as Record<string, unknown> | null;
+    const success = Boolean(payload.success) && response.ok && Boolean(data);
+
+    res.json({
+      success: true,
+      data: {
+        siteId: site.id,
+        siteCode: site.code,
+        siteName: site.name,
+        endpointUrl,
+        checkedAt,
+        reachable: response.ok,
+        httpStatus: response.status,
+        success,
+        error: success
+          ? null
+          : typeof payload.message === "string"
+            ? payload.message
+            : !response.ok
+              ? `Remote endpoint failed with status ${response.status}`
+              : "Invalid link health payload from site.",
+        result: data || null,
+      },
+    });
+    return;
+  } catch (error) {
+    res.json({
+      success: true,
+      data: {
+        siteId: site.id,
+        siteCode: site.code,
+        siteName: site.name,
+        endpointUrl,
+        checkedAt,
+        reachable: false,
+        httpStatus: null,
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to fetch link health endpoint.",
+        result: null,
+      },
+    });
+    return;
+  } finally {
+    clearTimeout(timeout);
+  }
 }));
 
 router.post("/:siteId/indexing/submit-sitemap", requireApiKey("sites:write"), asyncHandler(async (req, res) => {

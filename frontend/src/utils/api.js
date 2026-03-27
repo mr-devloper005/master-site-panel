@@ -306,6 +306,16 @@ export const fetchSiteSeoStatus = async (siteId) => {
   return response.data;
 };
 
+export const fetchSiteLinkHealth = async (siteId, options = {}) => {
+  const query = new URLSearchParams();
+  query.set("limit", String(options.limit || 120));
+  query.set("maxLinks", String(options.maxLinks || 200));
+  query.set("timeoutMs", String(options.timeoutMs || 8000));
+  query.set("concurrency", String(options.concurrency || 6));
+  const response = await request(`/api/v1/sites/${siteId}/link-health?${query.toString()}`);
+  return response.data;
+};
+
 export const fetchSiteIndexingStatus = async (siteId, options = {}) => {
   const query = new URLSearchParams();
   query.set("limit", String(options.limit || 100));

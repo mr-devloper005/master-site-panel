@@ -19,11 +19,13 @@ import {
   SearchCheck,
   Send,
   AlertTriangle,
+  Link2,
 } from "lucide-react";
 
 import { useAppData } from "../context/AppContext";
 import {
   fetchSiteIndexingStatus,
+  fetchSiteLinkHealth,
   fetchSiteSeoStatus,
   fetchSiteSitemapConfig,
   fetchSiteSitemapStatus,
@@ -62,6 +64,7 @@ export default function Indexing() {
   const [sitemapStatus, setSitemapStatus] = useState(null);
   const [seoStatus, setSeoStatus] = useState(null);
   const [indexingStatus, setIndexingStatus] = useState(null);
+  const [linkHealth, setLinkHealth] = useState(null);
   const [manualUrlsInput, setManualUrlsInput] = useState("");
   const [excludedUrlsInput, setExcludedUrlsInput] = useState("");
   const [loading, setLoading] = useState({
@@ -69,6 +72,7 @@ export default function Indexing() {
     submitSitemap: false,
     runInspection: false,
     saveConfig: false,
+    linkHealth: false,
   });
 
   const selectedSite = useMemo(
@@ -97,6 +101,10 @@ export default function Indexing() {
       setIndexingStatus(indexing);
       setManualUrlsInput((sitemapConfig.sitemapManualUrls || []).join("\n"));
       setExcludedUrlsInput((sitemapConfig.sitemapExcludedUrls || []).join("\n"));
+      if (!options.skipLinkHealth) {
+        const health = await fetchSiteLinkHealth(siteId, { limit: 120, maxLinks: 200 });
+        setLinkHealth(health);
+      }
     } catch (error) {
       toast.error(error.message || "Failed to load indexing data");
     } finally {
@@ -154,6 +162,29 @@ export default function Indexing() {
     }
   };
 
+  const handleRunLinkHealth = async () => {
+    if (!selectedSiteId) return;
+    setLoading((prev) => ({ ...prev, linkHealth: true }));
+    try {
+      const health = await fetchSiteLinkHealth(selectedSiteId, {
+        limit: 200,
+        maxLinks: 300,
+        timeoutMs: 9000,
+        concurrency: 8,
+      });
+      setLinkHealth(health);
+      if (health?.success) {
+        toast.success("Link health check completed");
+      } else {
+        toast.error(health?.error || "Link health endpoint returned an error");
+      }
+    } catch (error) {
+      toast.error(error.message || "Failed to run link health check");
+    } finally {
+      setLoading((prev) => ({ ...prev, linkHealth: false }));
+    }
+  };
+
   const summary = indexingStatus?.summary || {
     total: 0,
     sitemapSubmitted: 0,
@@ -181,6 +212,9 @@ export default function Indexing() {
   const submittedUrls = Number(summary.sitemapSubmitted || 0);
   const discoveredUrls = Number(summary.discovered || 0);
   const awaitingUrls = Math.max(trackedUrls - indexedUrls - notIndexedUrls, 0);
+  const linkHealthResult = linkHealth?.result || null;
+  const brokenLinks = Array.isArray(linkHealthResult?.broken) ? linkHealthResult.broken : [];
+  const healthyLinks = Array.isArray(linkHealthResult?.healthy) ? linkHealthResult.healthy : [];
 
   const googleState = useMemo(() => {
     if (!selectedSiteId) return "Select site";
@@ -290,6 +324,14 @@ export default function Indexing() {
           >
             {loading.runInspection ? <Loader2 size={14} className="animate-spin" /> : <SearchCheck size={14} />}
             Run Inspection
+          </button>
+          <button
+            className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-indigo-600 px-3 text-sm text-white"
+            onClick={handleRunLinkHealth}
+            disabled={!selectedSiteId || loading.linkHealth}
+          >
+            {loading.linkHealth ? <Loader2 size={14} className="animate-spin" /> : <Link2 size={14} />}
+            Link Health
           </button>
         </div>
       </div>
@@ -467,6 +509,46 @@ export default function Indexing() {
           </article>
         </section>
 
+        <section className="grid grid-cols-1 gap-4 xl:grid-cols-3">
+          <article className="glass rounded-panel p-4">
+            <h2 className="text-sm font-semibold">Outbound Link Health</h2>
+            <div className="mt-3 space-y-2 text-sm">
+              <p>Endpoint Reachable: {linkHealth?.reachable ? "Yes" : "No"}</p>
+              <p>HTTP Status: {linkHealth?.httpStatus ?? "N/A"}</p>
+              <p>Checked At: {formatDateTime(linkHealth?.checkedAt)}</p>
+              <p>Scanned Posts: <span className="font-semibold">{Number(linkHealthResult?.scannedPosts || 0)}</span></p>
+              <p>Unique Checked Links: <span className="font-semibold">{Number(linkHealthResult?.uniqueCheckedLinks || 0)}</span></p>
+              {linkHealth?.error ? (
+                <p className="rounded-lg border border-rose-200 bg-rose-50 px-2 py-1 text-xs text-rose-700">
+                  {linkHealth.error}
+                </p>
+              ) : null}
+              {linkHealth?.endpointUrl ? (
+                <a
+                  href={linkHealth.endpointUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline"
+                >
+                  Open health endpoint
+                </a>
+              ) : null}
+            </div>
+          </article>
+
+          <article className="rounded-panel bg-gradient-to-br from-emerald-600 to-teal-500 p-4 text-white shadow-panel">
+            <p className="text-xs text-white/80">Healthy Outbound Links</p>
+            <p className="mt-2 text-3xl font-bold">{Number(linkHealthResult?.healthyCount || healthyLinks.length || 0)}</p>
+            <p className="text-xs text-white/80">Checked from site content</p>
+          </article>
+
+          <article className="rounded-panel bg-gradient-to-br from-rose-600 to-orange-500 p-4 text-white shadow-panel">
+            <p className="text-xs text-white/80">Broken Outbound Links</p>
+            <p className="mt-2 text-3xl font-bold">{Number(linkHealthResult?.brokenCount || brokenLinks.length || 0)}</p>
+            <p className="text-xs text-white/80">Fix these first for crawl quality</p>
+          </article>
+        </section>
+
         <section className="glass rounded-panel p-4">
           <h2 className="text-sm font-semibold">Sitemap URL Inventory</h2>
           <p className="mt-1 text-xs text-[var(--text-secondary)]">
@@ -522,6 +604,55 @@ export default function Indexing() {
                     <td className="px-3 py-2">{formatDateTime(row.inspectionLastCheckedAt)}</td>
                   </tr>
                 ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section className="glass rounded-panel p-4">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-sm font-semibold">Broken Link Table</h2>
+            <span className="inline-flex items-center gap-1 text-xs text-[var(--text-secondary)]">
+              <Link2 size={13} />
+              {brokenLinks.length} broken links
+            </span>
+          </div>
+          <div className="mt-3 overflow-x-auto rounded-lg border border-[var(--border-color)]">
+            <table className="min-w-full text-xs">
+              <thead className="bg-[var(--bg-surface)]">
+                <tr>
+                  <th className="px-3 py-2 text-left">URL</th>
+                  <th className="px-3 py-2 text-left">HTTP</th>
+                  <th className="px-3 py-2 text-left">Error</th>
+                  <th className="px-3 py-2 text-left">Source Post</th>
+                  <th className="px-3 py-2 text-left">Task</th>
+                </tr>
+              </thead>
+              <tbody>
+                {brokenLinks.length ? (
+                  brokenLinks.map((row) => {
+                    const source = Array.isArray(row.sources) && row.sources.length ? row.sources[0] : null;
+                    return (
+                      <tr key={row.url} className="border-t border-[var(--border-color)]">
+                        <td className="px-3 py-2">
+                          <a href={row.url} target="_blank" rel="noreferrer" className="line-clamp-1 text-blue-600 hover:underline">
+                            {row.url}
+                          </a>
+                        </td>
+                        <td className="px-3 py-2">{row.status ?? "N/A"}</td>
+                        <td className="px-3 py-2">{row.error || "-"}</td>
+                        <td className="px-3 py-2">{source?.postSlug || "-"}</td>
+                        <td className="px-3 py-2">{source?.task || "-"}</td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td className="px-3 py-3 text-[var(--text-secondary)]" colSpan={5}>
+                      No broken outbound links found.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
