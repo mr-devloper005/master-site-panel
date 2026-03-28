@@ -51,6 +51,65 @@ const sanitizeSiteConfig = (value) => {
             .map((item) => item.trim())
             .filter((item) => Boolean(item) && /^https?:\/\//i.test(item))
         : [];
+    const sanitizeString = (input, maxLength = 500) => {
+        if (typeof input !== "string")
+            return undefined;
+        const value = input.trim();
+        if (!value)
+            return undefined;
+        return value.slice(0, maxLength);
+    };
+    const sanitizeKeywords = (input) => {
+        if (!Array.isArray(input))
+            return [];
+        return Array.from(new Set(input
+            .filter((item) => typeof item === "string")
+            .map((item) => item.trim().toLowerCase())
+            .filter(Boolean)
+            .slice(0, 40)));
+    };
+    const rawSeoDefaults = source.seoDefaults && typeof source.seoDefaults === "object" && !Array.isArray(source.seoDefaults)
+        ? source.seoDefaults
+        : {};
+    const seoDefaults = {
+        defaultTitle: sanitizeString(rawSeoDefaults.defaultTitle, 120),
+        titleTemplate: sanitizeString(rawSeoDefaults.titleTemplate, 120),
+        defaultDescription: sanitizeString(rawSeoDefaults.defaultDescription, 320),
+        defaultOgImage: sanitizeString(rawSeoDefaults.defaultOgImage, 500),
+        keywords: sanitizeKeywords(rawSeoDefaults.keywords),
+    };
+    const rawSeoPages = source.seoPages && typeof source.seoPages === "object" && !Array.isArray(source.seoPages)
+        ? source.seoPages
+        : {};
+    const seoPages = Object.fromEntries(Object.entries(rawSeoPages)
+        .filter(([path, pageConfig]) => {
+        if (typeof path !== "string" || !path.trim())
+            return false;
+        return Boolean(pageConfig && typeof pageConfig === "object" && !Array.isArray(pageConfig));
+    })
+        .map(([path, pageConfig]) => {
+        const config = pageConfig;
+        const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+        return [
+            normalizedPath,
+            {
+                title: sanitizeString(config.title, 120),
+                description: sanitizeString(config.description, 320),
+                canonical: sanitizeString(config.canonical, 500),
+                ogImage: sanitizeString(config.ogImage, 500),
+                keywords: sanitizeKeywords(config.keywords),
+                robotsIndex: typeof config.robotsIndex === "boolean" ? config.robotsIndex : undefined,
+                robotsFollow: typeof config.robotsFollow === "boolean" ? config.robotsFollow : undefined,
+            },
+        ];
+    })
+        .slice(0, 80));
+    const hasSeoDefaults = Boolean(seoDefaults.defaultTitle ||
+        seoDefaults.titleTemplate ||
+        seoDefaults.defaultDescription ||
+        seoDefaults.defaultOgImage ||
+        (seoDefaults.keywords && seoDefaults.keywords.length));
+    const hasSeoPages = Boolean(seoPages && Object.keys(seoPages).length);
     return {
         frontendUrl: (0, exports.normalizeBaseUrl)(source.frontendUrl) || undefined,
         liveUrl: (0, exports.normalizeBaseUrl)(source.liveUrl) || undefined,
@@ -87,6 +146,9 @@ const sanitizeSiteConfig = (value) => {
         taskViews,
         metrics,
         description: typeof source.description === "string" ? source.description : undefined,
+        seoDefaults: hasSeoDefaults ? seoDefaults : undefined,
+        seoPages: hasSeoPages ? seoPages : undefined,
+        seoUpdatedAt: sanitizeString(source.seoUpdatedAt, 64),
     };
 };
 exports.sanitizeSiteConfig = sanitizeSiteConfig;

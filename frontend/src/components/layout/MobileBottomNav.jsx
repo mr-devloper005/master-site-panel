@@ -1,4 +1,4 @@
-import { BarChart3, Files, Globe2, Home, Settings, KeyRound, SearchCheck } from "lucide-react";
+import { BarChart3, Files, Globe2, Home, ScanSearch, KeyRound, SearchCheck, Settings } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 const tabs = [
@@ -7,6 +7,7 @@ const tabs = [
   { to: "/tasks", label: "Tasks", icon: KeyRound },
   { to: "/posts", label: "Posts", icon: Files },
   { to: "/analytics", label: "Charts", icon: BarChart3 },
+  { to: "/seo", label: "SEO", icon: ScanSearch },
   { to: "/indexing", label: "Index", icon: SearchCheck },
   { to: "/settings", label: "Settings", icon: Settings }
 ];

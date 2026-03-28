@@ -36,6 +36,26 @@ export type SiteConnectorConfig = {
   taskViews?: Partial<Record<SiteTask, string>>;
   metrics?: string[];
   description?: string;
+  seoDefaults?: {
+    defaultTitle?: string;
+    titleTemplate?: string;
+    defaultDescription?: string;
+    defaultOgImage?: string;
+    keywords?: string[];
+  };
+  seoPages?: Record<
+    string,
+    {
+      title?: string;
+      description?: string;
+      canonical?: string;
+      ogImage?: string;
+      keywords?: string[];
+      robotsIndex?: boolean;
+      robotsFollow?: boolean;
+    }
+  >;
+  seoUpdatedAt?: string;
 };
 
 export const DEFAULT_CONNECTOR_VERSION = "2026-03-connector-v1";
@@ -86,6 +106,79 @@ export const sanitizeSiteConfig = (value: unknown): SiteConnectorConfig => {
         .filter((item) => Boolean(item) && /^https?:\/\//i.test(item))
     : [];
 
+  const sanitizeString = (input: unknown, maxLength = 500): string | undefined => {
+    if (typeof input !== "string") return undefined;
+    const value = input.trim();
+    if (!value) return undefined;
+    return value.slice(0, maxLength);
+  };
+
+  const sanitizeKeywords = (input: unknown): string[] => {
+    if (!Array.isArray(input)) return [];
+    return Array.from(
+      new Set(
+        input
+          .filter((item): item is string => typeof item === "string")
+          .map((item) => item.trim().toLowerCase())
+          .filter(Boolean)
+          .slice(0, 40)
+      )
+    );
+  };
+
+  const rawSeoDefaults =
+    source.seoDefaults && typeof source.seoDefaults === "object" && !Array.isArray(source.seoDefaults)
+      ? (source.seoDefaults as Record<string, unknown>)
+      : {};
+
+  const seoDefaults = {
+    defaultTitle: sanitizeString(rawSeoDefaults.defaultTitle, 120),
+    titleTemplate: sanitizeString(rawSeoDefaults.titleTemplate, 120),
+    defaultDescription: sanitizeString(rawSeoDefaults.defaultDescription, 320),
+    defaultOgImage: sanitizeString(rawSeoDefaults.defaultOgImage, 500),
+    keywords: sanitizeKeywords(rawSeoDefaults.keywords),
+  };
+
+  const rawSeoPages =
+    source.seoPages && typeof source.seoPages === "object" && !Array.isArray(source.seoPages)
+      ? (source.seoPages as Record<string, unknown>)
+      : {};
+
+  const seoPages = Object.fromEntries(
+    Object.entries(rawSeoPages)
+      .filter(([path, pageConfig]) => {
+        if (typeof path !== "string" || !path.trim()) return false;
+        return Boolean(pageConfig && typeof pageConfig === "object" && !Array.isArray(pageConfig));
+      })
+      .map(([path, pageConfig]) => {
+        const config = pageConfig as Record<string, unknown>;
+        const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+        return [
+          normalizedPath,
+          {
+            title: sanitizeString(config.title, 120),
+            description: sanitizeString(config.description, 320),
+            canonical: sanitizeString(config.canonical, 500),
+            ogImage: sanitizeString(config.ogImage, 500),
+            keywords: sanitizeKeywords(config.keywords),
+            robotsIndex: typeof config.robotsIndex === "boolean" ? config.robotsIndex : undefined,
+            robotsFollow: typeof config.robotsFollow === "boolean" ? config.robotsFollow : undefined,
+          },
+        ];
+      })
+      .slice(0, 80)
+  ) as SiteConnectorConfig["seoPages"];
+
+  const hasSeoDefaults = Boolean(
+    seoDefaults.defaultTitle ||
+      seoDefaults.titleTemplate ||
+      seoDefaults.defaultDescription ||
+      seoDefaults.defaultOgImage ||
+      (seoDefaults.keywords && seoDefaults.keywords.length)
+  );
+
+  const hasSeoPages = Boolean(seoPages && Object.keys(seoPages).length);
+
   return {
     frontendUrl: normalizeBaseUrl(source.frontendUrl) || undefined,
     liveUrl: normalizeBaseUrl(source.liveUrl) || undefined,
@@ -130,6 +223,9 @@ export const sanitizeSiteConfig = (value: unknown): SiteConnectorConfig => {
     taskViews,
     metrics,
     description: typeof source.description === "string" ? source.description : undefined,
+    seoDefaults: hasSeoDefaults ? seoDefaults : undefined,
+    seoPages: hasSeoPages ? seoPages : undefined,
+    seoUpdatedAt: sanitizeString(source.seoUpdatedAt, 64),
   };
 };
 

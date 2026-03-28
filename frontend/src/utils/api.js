@@ -316,6 +316,19 @@ export const fetchSiteLinkHealth = async (siteId, options = {}) => {
   return response.data;
 };
 
+export const fetchSiteSeoConfig = async (siteId) => {
+  const response = await request(`/api/v1/sites/${siteId}/seo-config`);
+  return response.data;
+};
+
+export const updateSiteSeoConfig = async (siteId, payload) => {
+  const response = await request(`/api/v1/sites/${siteId}/seo-config`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+  return response.data;
+};
+
 export const fetchSiteIndexingStatus = async (siteId, options = {}) => {
   const query = new URLSearchParams();
   query.set("limit", String(options.limit || 100));

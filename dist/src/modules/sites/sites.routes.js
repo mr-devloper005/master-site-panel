@@ -346,6 +346,74 @@ router.patch("/:siteId/sitemap-config", (0, auth_1.requireApiKey)("sites:write")
         },
     });
 }));
+router.get("/:siteId/seo-config", (0, auth_1.requireApiKey)("sites:read"), (0, async_handler_1.asyncHandler)(async (req, res) => {
+    const siteId = String(req.params.siteId);
+    const site = await db_1.prisma.site.findUnique({
+        where: { id: siteId },
+        select: { id: true, code: true, name: true, config: true, updatedAt: true },
+    });
+    if (!site) {
+        throw new api_error_1.ApiError(404, "Site not found.");
+    }
+    const config = (0, site_contract_1.sanitizeSiteConfig)(site.config);
+    res.json({
+        success: true,
+        data: {
+            siteId: site.id,
+            siteCode: site.code,
+            siteName: site.name,
+            seoDefaults: config.seoDefaults || {
+                defaultTitle: "",
+                titleTemplate: "",
+                defaultDescription: "",
+                defaultOgImage: "",
+                keywords: [],
+            },
+            seoPages: config.seoPages || {},
+            seoUpdatedAt: config.seoUpdatedAt || site.updatedAt.toISOString(),
+        },
+    });
+}));
+router.patch("/:siteId/seo-config", (0, auth_1.requireApiKey)("sites:write"), (0, async_handler_1.asyncHandler)(async (req, res) => {
+    const siteId = String(req.params.siteId);
+    const site = await db_1.prisma.site.findUnique({
+        where: { id: siteId },
+        select: { id: true, code: true, name: true, config: true },
+    });
+    if (!site) {
+        throw new api_error_1.ApiError(404, "Site not found.");
+    }
+    const currentConfig = (0, site_contract_1.sanitizeSiteConfig)(site.config);
+    const normalized = (0, site_contract_1.sanitizeSiteConfig)({
+        ...currentConfig,
+        seoDefaults: req.body?.seoDefaults,
+        seoPages: req.body?.seoPages,
+        seoUpdatedAt: new Date().toISOString(),
+    });
+    const updated = await db_1.prisma.site.update({
+        where: { id: site.id },
+        data: { config: normalized },
+        select: { id: true, code: true, name: true, config: true, updatedAt: true },
+    });
+    const updatedConfig = (0, site_contract_1.sanitizeSiteConfig)(updated.config);
+    res.json({
+        success: true,
+        data: {
+            siteId: updated.id,
+            siteCode: updated.code,
+            siteName: updated.name,
+            seoDefaults: updatedConfig.seoDefaults || {
+                defaultTitle: "",
+                titleTemplate: "",
+                defaultDescription: "",
+                defaultOgImage: "",
+                keywords: [],
+            },
+            seoPages: updatedConfig.seoPages || {},
+            seoUpdatedAt: updatedConfig.seoUpdatedAt || updated.updatedAt.toISOString(),
+        },
+    });
+}));
 router.get("/:siteId/seo-status", (0, auth_1.requireApiKey)("sites:read"), (0, async_handler_1.asyncHandler)(async (req, res) => {
     const siteId = String(req.params.siteId);
     const site = await db_1.prisma.site.findUnique({
