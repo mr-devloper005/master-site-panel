@@ -68,6 +68,15 @@ const sanitizeSiteConfig = (value) => {
             .filter(Boolean)
             .slice(0, 40)));
     };
+    const sanitizePositiveNumber = (input, min, max) => {
+        const parsed = Number(input);
+        if (!Number.isFinite(parsed))
+            return undefined;
+        const value = Math.floor(parsed);
+        if (value < min || value > max)
+            return undefined;
+        return value;
+    };
     const rawSeoDefaults = source.seoDefaults && typeof source.seoDefaults === "object" && !Array.isArray(source.seoDefaults)
         ? source.seoDefaults
         : {};
@@ -110,6 +119,148 @@ const sanitizeSiteConfig = (value) => {
         seoDefaults.defaultOgImage ||
         (seoDefaults.keywords && seoDefaults.keywords.length));
     const hasSeoPages = Boolean(seoPages && Object.keys(seoPages).length);
+    const rawSeoBlueprint = source.seoBlueprint && typeof source.seoBlueprint === "object" && !Array.isArray(source.seoBlueprint)
+        ? source.seoBlueprint
+        : {};
+    const rawUrlStructure = rawSeoBlueprint.urlStructure &&
+        typeof rawSeoBlueprint.urlStructure === "object" &&
+        !Array.isArray(rawSeoBlueprint.urlStructure)
+        ? rawSeoBlueprint.urlStructure
+        : {};
+    const rawHeadingPolicy = rawSeoBlueprint.headingPolicy &&
+        typeof rawSeoBlueprint.headingPolicy === "object" &&
+        !Array.isArray(rawSeoBlueprint.headingPolicy)
+        ? rawSeoBlueprint.headingPolicy
+        : {};
+    const rawImagePolicy = rawSeoBlueprint.imagePolicy &&
+        typeof rawSeoBlueprint.imagePolicy === "object" &&
+        !Array.isArray(rawSeoBlueprint.imagePolicy)
+        ? rawSeoBlueprint.imagePolicy
+        : {};
+    const rawInternalLinkPolicy = rawSeoBlueprint.internalLinkPolicy &&
+        typeof rawSeoBlueprint.internalLinkPolicy === "object" &&
+        !Array.isArray(rawSeoBlueprint.internalLinkPolicy)
+        ? rawSeoBlueprint.internalLinkPolicy
+        : {};
+    const rawSchemaPolicy = rawSeoBlueprint.schemaPolicy &&
+        typeof rawSeoBlueprint.schemaPolicy === "object" &&
+        !Array.isArray(rawSeoBlueprint.schemaPolicy)
+        ? rawSeoBlueprint.schemaPolicy
+        : {};
+    const rawDefaultsPolicy = rawSeoBlueprint.defaults &&
+        typeof rawSeoBlueprint.defaults === "object" &&
+        !Array.isArray(rawSeoBlueprint.defaults)
+        ? rawSeoBlueprint.defaults
+        : {};
+    const sanitizeSchemaTypes = (input) => {
+        if (!Array.isArray(input))
+            return [];
+        const allow = new Set([
+            "Organization",
+            "WebSite",
+            "Article",
+            "BreadcrumbList",
+            "LocalBusiness",
+            "ImageObject",
+            "CollectionPage",
+            "ItemList",
+        ]);
+        return Array.from(new Set(input
+            .filter((item) => typeof item === "string")
+            .map((item) => item.trim())
+            .filter((item) => allow.has(item))));
+    };
+    const rawPageTemplates = rawSeoBlueprint.pageTemplates &&
+        typeof rawSeoBlueprint.pageTemplates === "object" &&
+        !Array.isArray(rawSeoBlueprint.pageTemplates)
+        ? rawSeoBlueprint.pageTemplates
+        : {};
+    const pageTemplates = Object.fromEntries(Object.entries(rawPageTemplates)
+        .filter(([path, template]) => {
+        if (typeof path !== "string" || !path.trim())
+            return false;
+        return Boolean(template && typeof template === "object" && !Array.isArray(template));
+    })
+        .map(([path, template]) => {
+        const value = template;
+        const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+        return [
+            normalizedPath,
+            {
+                titleTemplate: sanitizeString(value.titleTemplate, 180),
+                descriptionTemplate: sanitizeString(value.descriptionTemplate, 400),
+                h1Template: sanitizeString(value.h1Template, 180),
+                canonical: sanitizeString(value.canonical, 500),
+                schemaTypes: sanitizeSchemaTypes(value.schemaTypes),
+                minInternalLinks: sanitizePositiveNumber(value.minInternalLinks, 0, 200),
+                imageAltTemplate: sanitizeString(value.imageAltTemplate, 220),
+                robotsIndex: typeof value.robotsIndex === "boolean" ? value.robotsIndex : undefined,
+                robotsFollow: typeof value.robotsFollow === "boolean" ? value.robotsFollow : undefined,
+            },
+        ];
+    })
+        .slice(0, 120));
+    const seoBlueprint = {
+        urlStructure: {
+            enforceLowercase: typeof rawUrlStructure.enforceLowercase === "boolean" ? rawUrlStructure.enforceLowercase : undefined,
+            enforceHyphenatedSlugs: typeof rawUrlStructure.enforceHyphenatedSlugs === "boolean"
+                ? rawUrlStructure.enforceHyphenatedSlugs
+                : undefined,
+            maxSlugLength: sanitizePositiveNumber(rawUrlStructure.maxSlugLength, 20, 220),
+        },
+        headingPolicy: {
+            requireSingleH1: typeof rawHeadingPolicy.requireSingleH1 === "boolean" ? rawHeadingPolicy.requireSingleH1 : undefined,
+            minH2Count: sanitizePositiveNumber(rawHeadingPolicy.minH2Count, 0, 40),
+            allowH3Plus: typeof rawHeadingPolicy.allowH3Plus === "boolean" ? rawHeadingPolicy.allowH3Plus : undefined,
+        },
+        imagePolicy: {
+            requireAltText: typeof rawImagePolicy.requireAltText === "boolean" ? rawImagePolicy.requireAltText : undefined,
+            minAltLength: sanitizePositiveNumber(rawImagePolicy.minAltLength, 0, 160),
+            enforceLazyLoading: typeof rawImagePolicy.enforceLazyLoading === "boolean"
+                ? rawImagePolicy.enforceLazyLoading
+                : undefined,
+            enforceWidthHeight: typeof rawImagePolicy.enforceWidthHeight === "boolean"
+                ? rawImagePolicy.enforceWidthHeight
+                : undefined,
+        },
+        internalLinkPolicy: {
+            minInternalLinksPerPage: sanitizePositiveNumber(rawInternalLinkPolicy.minInternalLinksPerPage, 0, 50),
+            descriptiveAnchorMinWords: sanitizePositiveNumber(rawInternalLinkPolicy.descriptiveAnchorMinWords, 1, 12),
+            enforceRelatedBlock: typeof rawInternalLinkPolicy.enforceRelatedBlock === "boolean"
+                ? rawInternalLinkPolicy.enforceRelatedBlock
+                : undefined,
+        },
+        schemaPolicy: {
+            enabledTypes: sanitizeSchemaTypes(rawSchemaPolicy.enabledTypes),
+            requireBreadcrumbOnDetail: typeof rawSchemaPolicy.requireBreadcrumbOnDetail === "boolean"
+                ? rawSchemaPolicy.requireBreadcrumbOnDetail
+                : undefined,
+            requireArticleSchemaOnArticles: typeof rawSchemaPolicy.requireArticleSchemaOnArticles === "boolean"
+                ? rawSchemaPolicy.requireArticleSchemaOnArticles
+                : undefined,
+            requireImageObjectForImagePosts: typeof rawSchemaPolicy.requireImageObjectForImagePosts === "boolean"
+                ? rawSchemaPolicy.requireImageObjectForImagePosts
+                : undefined,
+        },
+        defaults: {
+            robotsIndex: typeof rawDefaultsPolicy.robotsIndex === "boolean" ? rawDefaultsPolicy.robotsIndex : undefined,
+            robotsFollow: typeof rawDefaultsPolicy.robotsFollow === "boolean" ? rawDefaultsPolicy.robotsFollow : undefined,
+            hreflangDefault: sanitizeString(rawDefaultsPolicy.hreflangDefault, 16),
+            authorFallback: sanitizeString(rawDefaultsPolicy.authorFallback, 100),
+        },
+        pageTemplates,
+    };
+    const hasBlueprint = Object.keys(pageTemplates || {}).length > 0 ||
+        Object.values(seoBlueprint.urlStructure || {}).some((value) => value !== undefined) ||
+        Object.values(seoBlueprint.headingPolicy || {}).some((value) => value !== undefined) ||
+        Object.values(seoBlueprint.imagePolicy || {}).some((value) => value !== undefined) ||
+        Object.values(seoBlueprint.internalLinkPolicy || {}).some((value) => value !== undefined) ||
+        Object.values(seoBlueprint.defaults || {}).some((value) => value !== undefined) ||
+        (Array.isArray(seoBlueprint.schemaPolicy?.enabledTypes) &&
+            seoBlueprint.schemaPolicy?.enabledTypes.length > 0) ||
+        typeof seoBlueprint.schemaPolicy?.requireBreadcrumbOnDetail === "boolean" ||
+        typeof seoBlueprint.schemaPolicy?.requireArticleSchemaOnArticles === "boolean" ||
+        typeof seoBlueprint.schemaPolicy?.requireImageObjectForImagePosts === "boolean";
     return {
         frontendUrl: (0, exports.normalizeBaseUrl)(source.frontendUrl) || undefined,
         liveUrl: (0, exports.normalizeBaseUrl)(source.liveUrl) || undefined,
@@ -148,6 +299,7 @@ const sanitizeSiteConfig = (value) => {
         description: typeof source.description === "string" ? source.description : undefined,
         seoDefaults: hasSeoDefaults ? seoDefaults : undefined,
         seoPages: hasSeoPages ? seoPages : undefined,
+        seoBlueprint: hasBlueprint ? seoBlueprint : undefined,
         seoUpdatedAt: sanitizeString(source.seoUpdatedAt, 64),
     };
 };

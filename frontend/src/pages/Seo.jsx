@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { CheckCircle2, Loader2, RefreshCw, Save, SearchCheck } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Loader2, RefreshCw, Save, SearchCheck } from "lucide-react";
 
 import { useAppData } from "../context/AppContext";
 import {
@@ -30,6 +30,54 @@ const EMPTY_DEFAULTS = {
   keywords: [],
 };
 
+const EMPTY_BLUEPRINT = {
+  urlStructure: {
+    enforceLowercase: true,
+    enforceHyphenatedSlugs: true,
+    maxSlugLength: 120,
+  },
+  headingPolicy: {
+    requireSingleH1: true,
+    minH2Count: 1,
+    allowH3Plus: true,
+  },
+  imagePolicy: {
+    requireAltText: true,
+    minAltLength: 8,
+    enforceLazyLoading: true,
+    enforceWidthHeight: false,
+  },
+  internalLinkPolicy: {
+    minInternalLinksPerPage: 5,
+    descriptiveAnchorMinWords: 2,
+    enforceRelatedBlock: true,
+  },
+  schemaPolicy: {
+    enabledTypes: ["Organization", "WebSite", "Article", "BreadcrumbList", "LocalBusiness", "ImageObject"],
+    requireBreadcrumbOnDetail: true,
+    requireArticleSchemaOnArticles: true,
+    requireImageObjectForImagePosts: true,
+  },
+  defaults: {
+    robotsIndex: true,
+    robotsFollow: true,
+    hreflangDefault: "en-IN",
+    authorFallback: "",
+  },
+  pageTemplates: {},
+};
+
+const SCHEMA_TYPE_OPTIONS = [
+  "Organization",
+  "WebSite",
+  "Article",
+  "BreadcrumbList",
+  "LocalBusiness",
+  "ImageObject",
+  "CollectionPage",
+  "ItemList",
+];
+
 const normalizeKeywords = (input) =>
   Array.from(
     new Set(
@@ -39,6 +87,34 @@ const normalizeKeywords = (input) =>
         .filter(Boolean)
     )
   );
+
+const normalizeBlueprint = (input) => {
+  const source = input && typeof input === "object" ? input : {};
+  const from = (path, fallback) => {
+    const value = source?.[path];
+    if (!value || typeof value !== "object") return fallback;
+    return { ...fallback, ...value };
+  };
+
+  const normalized = {
+    urlStructure: from("urlStructure", EMPTY_BLUEPRINT.urlStructure),
+    headingPolicy: from("headingPolicy", EMPTY_BLUEPRINT.headingPolicy),
+    imagePolicy: from("imagePolicy", EMPTY_BLUEPRINT.imagePolicy),
+    internalLinkPolicy: from("internalLinkPolicy", EMPTY_BLUEPRINT.internalLinkPolicy),
+    schemaPolicy: from("schemaPolicy", EMPTY_BLUEPRINT.schemaPolicy),
+    defaults: from("defaults", EMPTY_BLUEPRINT.defaults),
+    pageTemplates:
+      source?.pageTemplates && typeof source.pageTemplates === "object" && !Array.isArray(source.pageTemplates)
+        ? source.pageTemplates
+        : {},
+  };
+
+  normalized.schemaPolicy.enabledTypes = Array.isArray(normalized.schemaPolicy.enabledTypes)
+    ? normalized.schemaPolicy.enabledTypes.filter((item) => typeof item === "string" && item.trim())
+    : [];
+
+  return normalized;
+};
 
 const parseChecksSummary = (seoStatus) => {
   const pages = Array.isArray(seoStatus?.pages) ? seoStatus.pages : [];
@@ -62,6 +138,9 @@ export default function Seo() {
   const [seoDefaults, setSeoDefaults] = useState(EMPTY_DEFAULTS);
   const [defaultKeywordsInput, setDefaultKeywordsInput] = useState("");
   const [seoPages, setSeoPages] = useState({});
+  const [seoBlueprint, setSeoBlueprint] = useState(EMPTY_BLUEPRINT);
+  const [templatePathInput, setTemplatePathInput] = useState("");
+  const [templateJsonInput, setTemplateJsonInput] = useState("");
   const [loading, setLoading] = useState({
     fetch: false,
     save: false,
@@ -116,6 +195,7 @@ export default function Seo() {
         };
       });
       setSeoPages(nextPages);
+      setSeoBlueprint(normalizeBlueprint(config?.seoBlueprint || EMPTY_BLUEPRINT));
     } catch (error) {
       toast.error(error.message || "Failed to load SEO data");
     } finally {
@@ -148,6 +228,53 @@ export default function Seo() {
         ])
       );
 
+      const parseIntOr = (value, fallback) => {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? Math.floor(parsed) : fallback;
+      };
+
+      const blueprintPayload = {
+        urlStructure: {
+          enforceLowercase: Boolean(seoBlueprint.urlStructure?.enforceLowercase),
+          enforceHyphenatedSlugs: Boolean(seoBlueprint.urlStructure?.enforceHyphenatedSlugs),
+          maxSlugLength: parseIntOr(seoBlueprint.urlStructure?.maxSlugLength, 120),
+        },
+        headingPolicy: {
+          requireSingleH1: Boolean(seoBlueprint.headingPolicy?.requireSingleH1),
+          minH2Count: parseIntOr(seoBlueprint.headingPolicy?.minH2Count, 1),
+          allowH3Plus: Boolean(seoBlueprint.headingPolicy?.allowH3Plus),
+        },
+        imagePolicy: {
+          requireAltText: Boolean(seoBlueprint.imagePolicy?.requireAltText),
+          minAltLength: parseIntOr(seoBlueprint.imagePolicy?.minAltLength, 8),
+          enforceLazyLoading: Boolean(seoBlueprint.imagePolicy?.enforceLazyLoading),
+          enforceWidthHeight: Boolean(seoBlueprint.imagePolicy?.enforceWidthHeight),
+        },
+        internalLinkPolicy: {
+          minInternalLinksPerPage: parseIntOr(seoBlueprint.internalLinkPolicy?.minInternalLinksPerPage, 5),
+          descriptiveAnchorMinWords: parseIntOr(seoBlueprint.internalLinkPolicy?.descriptiveAnchorMinWords, 2),
+          enforceRelatedBlock: Boolean(seoBlueprint.internalLinkPolicy?.enforceRelatedBlock),
+        },
+        schemaPolicy: {
+          enabledTypes: Array.isArray(seoBlueprint.schemaPolicy?.enabledTypes)
+            ? seoBlueprint.schemaPolicy.enabledTypes.filter(Boolean)
+            : [],
+          requireBreadcrumbOnDetail: Boolean(seoBlueprint.schemaPolicy?.requireBreadcrumbOnDetail),
+          requireArticleSchemaOnArticles: Boolean(seoBlueprint.schemaPolicy?.requireArticleSchemaOnArticles),
+          requireImageObjectForImagePosts: Boolean(seoBlueprint.schemaPolicy?.requireImageObjectForImagePosts),
+        },
+        defaults: {
+          robotsIndex: Boolean(seoBlueprint.defaults?.robotsIndex),
+          robotsFollow: Boolean(seoBlueprint.defaults?.robotsFollow),
+          hreflangDefault: String(seoBlueprint.defaults?.hreflangDefault || "en-IN").trim(),
+          authorFallback: String(seoBlueprint.defaults?.authorFallback || "").trim(),
+        },
+        pageTemplates:
+          seoBlueprint.pageTemplates && typeof seoBlueprint.pageTemplates === "object"
+            ? seoBlueprint.pageTemplates
+            : {},
+      };
+
       await updateSiteSeoConfig(selectedSiteId, {
         seoDefaults: {
           defaultTitle: String(seoDefaults.defaultTitle || "").trim(),
@@ -157,6 +284,7 @@ export default function Seo() {
           keywords: normalizeKeywords(defaultKeywordsInput),
         },
         seoPages: payloadPages,
+        seoBlueprint: blueprintPayload,
       });
 
       toast.success("SEO settings updated");
@@ -170,6 +298,35 @@ export default function Seo() {
 
   const checksSummary = parseChecksSummary(seoStatus);
   const diagnostics = indexingStatus?.diagnostics || {};
+  const pageWarnings = checksSummary.pages.filter((page) => Array.isArray(page.missing) && page.missing.length);
+
+  const upsertTemplateRule = () => {
+    const path = String(templatePathInput || "").trim();
+    if (!path) {
+      toast.error("Template path required (e.g. /articles)");
+      return;
+    }
+    const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+    let parsed = {};
+    if (String(templateJsonInput || "").trim()) {
+      try {
+        parsed = JSON.parse(templateJsonInput);
+      } catch {
+        toast.error("Invalid JSON for page template rule");
+        return;
+      }
+    }
+    setSeoBlueprint((prev) => ({
+      ...prev,
+      pageTemplates: {
+        ...(prev.pageTemplates || {}),
+        [normalizedPath]: parsed,
+      },
+    }));
+    setTemplatePathInput("");
+    setTemplateJsonInput("");
+    toast.success("Template rule staged. Click Save SEO.");
+  };
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-4 overflow-hidden">
@@ -406,6 +563,387 @@ export default function Seo() {
         </section>
 
         <section className="glass rounded-panel p-4">
+          <h2 className="text-sm font-semibold">SEO Blueprint Rules (Panel Controlled)</h2>
+          <p className="mt-1 text-xs text-[var(--text-secondary)]">
+            These are UI-independent on-page SEO rules for all connected sites: URL policy, headings, image policy,
+            internal links, schema, and robots defaults.
+          </p>
+          <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+            <article className="rounded-lg border border-[var(--border-color)] p-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">URL Structure</p>
+              <div className="mt-2 space-y-2 text-sm">
+                <label className="inline-flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(seoBlueprint.urlStructure?.enforceLowercase)}
+                    onChange={(event) =>
+                      setSeoBlueprint((prev) => ({
+                        ...prev,
+                        urlStructure: { ...prev.urlStructure, enforceLowercase: event.target.checked },
+                      }))
+                    }
+                  />
+                  Enforce lowercase URLs
+                </label>
+                <label className="inline-flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(seoBlueprint.urlStructure?.enforceHyphenatedSlugs)}
+                    onChange={(event) =>
+                      setSeoBlueprint((prev) => ({
+                        ...prev,
+                        urlStructure: { ...prev.urlStructure, enforceHyphenatedSlugs: event.target.checked },
+                      }))
+                    }
+                  />
+                  Enforce hyphenated slugs
+                </label>
+                <label className="block">
+                  <span className="mb-1 block text-xs text-[var(--text-secondary)]">Max slug length</span>
+                  <input
+                    type="number"
+                    min={20}
+                    max={220}
+                    className="w-full rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
+                    value={seoBlueprint.urlStructure?.maxSlugLength ?? 120}
+                    onChange={(event) =>
+                      setSeoBlueprint((prev) => ({
+                        ...prev,
+                        urlStructure: { ...prev.urlStructure, maxSlugLength: Number(event.target.value) || 120 },
+                      }))
+                    }
+                  />
+                </label>
+              </div>
+            </article>
+
+            <article className="rounded-lg border border-[var(--border-color)] p-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">Heading Policy</p>
+              <div className="mt-2 space-y-2 text-sm">
+                <label className="inline-flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(seoBlueprint.headingPolicy?.requireSingleH1)}
+                    onChange={(event) =>
+                      setSeoBlueprint((prev) => ({
+                        ...prev,
+                        headingPolicy: { ...prev.headingPolicy, requireSingleH1: event.target.checked },
+                      }))
+                    }
+                  />
+                  Require exactly one H1
+                </label>
+                <label className="block">
+                  <span className="mb-1 block text-xs text-[var(--text-secondary)]">Minimum H2 count</span>
+                  <input
+                    type="number"
+                    min={0}
+                    max={40}
+                    className="w-full rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
+                    value={seoBlueprint.headingPolicy?.minH2Count ?? 1}
+                    onChange={(event) =>
+                      setSeoBlueprint((prev) => ({
+                        ...prev,
+                        headingPolicy: { ...prev.headingPolicy, minH2Count: Number(event.target.value) || 0 },
+                      }))
+                    }
+                  />
+                </label>
+                <label className="inline-flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(seoBlueprint.headingPolicy?.allowH3Plus)}
+                    onChange={(event) =>
+                      setSeoBlueprint((prev) => ({
+                        ...prev,
+                        headingPolicy: { ...prev.headingPolicy, allowH3Plus: event.target.checked },
+                      }))
+                    }
+                  />
+                  Allow H3-H6 in content
+                </label>
+              </div>
+            </article>
+
+            <article className="rounded-lg border border-[var(--border-color)] p-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">Image Optimization</p>
+              <div className="mt-2 space-y-2 text-sm">
+                <label className="inline-flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(seoBlueprint.imagePolicy?.requireAltText)}
+                    onChange={(event) =>
+                      setSeoBlueprint((prev) => ({
+                        ...prev,
+                        imagePolicy: { ...prev.imagePolicy, requireAltText: event.target.checked },
+                      }))
+                    }
+                  />
+                  Require ALT text
+                </label>
+                <label className="inline-flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(seoBlueprint.imagePolicy?.enforceLazyLoading)}
+                    onChange={(event) =>
+                      setSeoBlueprint((prev) => ({
+                        ...prev,
+                        imagePolicy: { ...prev.imagePolicy, enforceLazyLoading: event.target.checked },
+                      }))
+                    }
+                  />
+                  Enforce lazy loading
+                </label>
+                <label className="inline-flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(seoBlueprint.imagePolicy?.enforceWidthHeight)}
+                    onChange={(event) =>
+                      setSeoBlueprint((prev) => ({
+                        ...prev,
+                        imagePolicy: { ...prev.imagePolicy, enforceWidthHeight: event.target.checked },
+                      }))
+                    }
+                  />
+                  Require width & height attributes
+                </label>
+                <label className="block">
+                  <span className="mb-1 block text-xs text-[var(--text-secondary)]">Minimum ALT length</span>
+                  <input
+                    type="number"
+                    min={0}
+                    max={160}
+                    className="w-full rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
+                    value={seoBlueprint.imagePolicy?.minAltLength ?? 8}
+                    onChange={(event) =>
+                      setSeoBlueprint((prev) => ({
+                        ...prev,
+                        imagePolicy: { ...prev.imagePolicy, minAltLength: Number(event.target.value) || 0 },
+                      }))
+                    }
+                  />
+                </label>
+              </div>
+            </article>
+
+            <article className="rounded-lg border border-[var(--border-color)] p-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">Internal Linking</p>
+              <div className="mt-2 space-y-2 text-sm">
+                <label className="block">
+                  <span className="mb-1 block text-xs text-[var(--text-secondary)]">Min internal links per page</span>
+                  <input
+                    type="number"
+                    min={0}
+                    max={50}
+                    className="w-full rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
+                    value={seoBlueprint.internalLinkPolicy?.minInternalLinksPerPage ?? 5}
+                    onChange={(event) =>
+                      setSeoBlueprint((prev) => ({
+                        ...prev,
+                        internalLinkPolicy: {
+                          ...prev.internalLinkPolicy,
+                          minInternalLinksPerPage: Number(event.target.value) || 0,
+                        },
+                      }))
+                    }
+                  />
+                </label>
+                <label className="block">
+                  <span className="mb-1 block text-xs text-[var(--text-secondary)]">Min words in anchor text</span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={12}
+                    className="w-full rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
+                    value={seoBlueprint.internalLinkPolicy?.descriptiveAnchorMinWords ?? 2}
+                    onChange={(event) =>
+                      setSeoBlueprint((prev) => ({
+                        ...prev,
+                        internalLinkPolicy: {
+                          ...prev.internalLinkPolicy,
+                          descriptiveAnchorMinWords: Number(event.target.value) || 2,
+                        },
+                      }))
+                    }
+                  />
+                </label>
+                <label className="inline-flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(seoBlueprint.internalLinkPolicy?.enforceRelatedBlock)}
+                    onChange={(event) =>
+                      setSeoBlueprint((prev) => ({
+                        ...prev,
+                        internalLinkPolicy: {
+                          ...prev.internalLinkPolicy,
+                          enforceRelatedBlock: event.target.checked,
+                        },
+                      }))
+                    }
+                  />
+                  Require related links block
+                </label>
+              </div>
+            </article>
+          </div>
+
+          <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+            <article className="rounded-lg border border-[var(--border-color)] p-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">Schema Policy</p>
+              <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                {SCHEMA_TYPE_OPTIONS.map((type) => {
+                  const isChecked = (seoBlueprint.schemaPolicy?.enabledTypes || []).includes(type);
+                  return (
+                    <label key={type} className="inline-flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={(event) => {
+                          const current = new Set(seoBlueprint.schemaPolicy?.enabledTypes || []);
+                          if (event.target.checked) current.add(type);
+                          else current.delete(type);
+                          setSeoBlueprint((prev) => ({
+                            ...prev,
+                            schemaPolicy: { ...prev.schemaPolicy, enabledTypes: Array.from(current) },
+                          }));
+                        }}
+                      />
+                      {type}
+                    </label>
+                  );
+                })}
+              </div>
+            </article>
+
+            <article className="rounded-lg border border-[var(--border-color)] p-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">Robots & Defaults</p>
+              <div className="mt-2 space-y-2 text-sm">
+                <label className="inline-flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(seoBlueprint.defaults?.robotsIndex)}
+                    onChange={(event) =>
+                      setSeoBlueprint((prev) => ({
+                        ...prev,
+                        defaults: { ...prev.defaults, robotsIndex: event.target.checked },
+                      }))
+                    }
+                  />
+                  Default robots: index
+                </label>
+                <label className="inline-flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(seoBlueprint.defaults?.robotsFollow)}
+                    onChange={(event) =>
+                      setSeoBlueprint((prev) => ({
+                        ...prev,
+                        defaults: { ...prev.defaults, robotsFollow: event.target.checked },
+                      }))
+                    }
+                  />
+                  Default robots: follow
+                </label>
+                <label className="block">
+                  <span className="mb-1 block text-xs text-[var(--text-secondary)]">Default hreflang</span>
+                  <input
+                    className="w-full rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
+                    value={seoBlueprint.defaults?.hreflangDefault || ""}
+                    onChange={(event) =>
+                      setSeoBlueprint((prev) => ({
+                        ...prev,
+                        defaults: { ...prev.defaults, hreflangDefault: event.target.value },
+                      }))
+                    }
+                    placeholder="en-IN"
+                  />
+                </label>
+              </div>
+            </article>
+          </div>
+
+          <article className="mt-3 rounded-lg border border-[var(--border-color)] p-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">Page Template Rules (JSON)</p>
+            <p className="mt-1 text-xs text-[var(--text-secondary)]">
+              Add route-level templates for title/description/H1/schema/internal links. Useful for bulk on-page SEO governance.
+            </p>
+            <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-[220px_1fr_auto]">
+              <input
+                className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
+                placeholder="/articles"
+                value={templatePathInput}
+                onChange={(event) => setTemplatePathInput(event.target.value)}
+              />
+              <input
+                className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
+                placeholder='{"titleTemplate":"{keyword} | Brand","minInternalLinks":6,"schemaTypes":["Article","BreadcrumbList"]}'
+                value={templateJsonInput}
+                onChange={(event) => setTemplateJsonInput(event.target.value)}
+              />
+              <button
+                type="button"
+                className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
+                onClick={upsertTemplateRule}
+              >
+                Add / Update
+              </button>
+            </div>
+            <div className="mt-3 space-y-2">
+              {Object.entries(seoBlueprint.pageTemplates || {}).length ? (
+                Object.entries(seoBlueprint.pageTemplates || {}).map(([path, rule]) => (
+                  <div key={path} className="flex items-start justify-between gap-2 rounded-lg border border-[var(--border-color)] p-2 text-xs">
+                    <div className="min-w-0">
+                      <p className="font-semibold">{path}</p>
+                      <pre className="mt-1 max-h-24 overflow-auto whitespace-pre-wrap break-all text-[11px] text-[var(--text-secondary)]">
+                        {JSON.stringify(rule, null, 2)}
+                      </pre>
+                    </div>
+                    <button
+                      type="button"
+                      className="rounded-md border border-rose-300 px-2 py-1 text-rose-600"
+                      onClick={() =>
+                        setSeoBlueprint((prev) => {
+                          const next = { ...(prev.pageTemplates || {}) };
+                          delete next[path];
+                          return { ...prev, pageTemplates: next };
+                        })
+                      }
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <p className="text-xs text-[var(--text-secondary)]">No custom template rules yet.</p>
+              )}
+            </div>
+          </article>
+        </section>
+
+        <section className="glass rounded-panel p-4">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-sm font-semibold">Actionable SEO Warnings</h2>
+            <span className="inline-flex items-center gap-1 text-xs text-[var(--text-secondary)]">
+              <AlertTriangle size={13} />
+              {pageWarnings.length} page(s) with warnings
+            </span>
+          </div>
+          <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2">
+            {pageWarnings.length ? (
+              pageWarnings.map((page) => (
+                <article key={`warn-${page.page}`} className="rounded-lg border border-amber-300/50 bg-amber-50/40 p-3 text-xs">
+                  <p className="font-semibold">{page.page}</p>
+                  <p className="mt-1 text-[var(--text-secondary)]">{page.url}</p>
+                  <p className="mt-2 text-amber-700">Missing: {page.missing.join(", ")}</p>
+                </article>
+              ))
+            ) : (
+              <p className="text-xs text-[var(--text-secondary)]">No warnings. Current sampled pages look healthy.</p>
+            )}
+          </div>
+        </section>
+
+        <section className="glass rounded-panel p-4">
           <div className="flex items-center justify-between gap-2">
             <h2 className="text-sm font-semibold">Live SEO Audit Checks</h2>
             <span className="inline-flex items-center gap-1 text-xs text-[var(--text-secondary)]">
@@ -421,6 +959,8 @@ export default function Seo() {
                   <th className="px-3 py-2 text-left">Page</th>
                   <th className="px-3 py-2 text-left">Reachable</th>
                   <th className="px-3 py-2 text-left">Missing Tags</th>
+                  <th className="px-3 py-2 text-left">Internal Links</th>
+                  <th className="px-3 py-2 text-left">Image Alt</th>
                   <th className="px-3 py-2 text-left">HTTP</th>
                 </tr>
               </thead>
@@ -443,12 +983,20 @@ export default function Seo() {
                         )}
                       </td>
                       <td className="px-3 py-2">{Array.isArray(page.missing) && page.missing.length ? page.missing.join(", ") : "-"}</td>
+                      <td className="px-3 py-2">
+                        {typeof page.metrics?.links?.internal === "number" ? page.metrics.links.internal : "-"}
+                      </td>
+                      <td className="px-3 py-2">
+                        {typeof page.metrics?.images?.withMeaningfulAlt === "number" && typeof page.metrics?.images?.total === "number"
+                          ? `${page.metrics.images.withMeaningfulAlt}/${page.metrics.images.total}`
+                          : "-"}
+                      </td>
                       <td className="px-3 py-2">{page.httpStatus ?? "N/A"}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td className="px-3 py-3 text-[var(--text-secondary)]" colSpan={4}>
+                    <td className="px-3 py-3 text-[var(--text-secondary)]" colSpan={6}>
                       No SEO audit data yet.
                     </td>
                   </tr>

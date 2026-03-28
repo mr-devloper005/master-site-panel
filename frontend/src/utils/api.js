@@ -329,6 +329,19 @@ export const updateSiteSeoConfig = async (siteId, payload) => {
   return response.data;
 };
 
+export const fetchSiteSeoBlueprint = async (siteId) => {
+  const response = await request(`/api/v1/sites/${siteId}/seo-blueprint`);
+  return response.data;
+};
+
+export const updateSiteSeoBlueprint = async (siteId, payload) => {
+  const response = await request(`/api/v1/sites/${siteId}/seo-blueprint`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+  return response.data;
+};
+
 export const fetchSiteIndexingStatus = async (siteId, options = {}) => {
   const query = new URLSearchParams();
   query.set("limit", String(options.limit || 100));

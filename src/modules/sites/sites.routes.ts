@@ -70,6 +70,16 @@ const parseHost = (url?: string | null): string | null => {
   }
 };
 
+const pathFromUrl = (value: string): string => {
+  try {
+    const parsed = new URL(value);
+    const path = parsed.pathname || "/";
+    return path === "/" ? "/" : path.replace(/\/+$/, "");
+  } catch {
+    return "/";
+  }
+};
+
 const normalizeAbsoluteUrlList = (items: unknown): string[] => {
   if (!Array.isArray(items)) return [];
   return Array.from(
@@ -84,16 +94,118 @@ const normalizeAbsoluteUrlList = (items: unknown): string[] => {
 
 const hasTag = (html: string, pattern: RegExp) => pattern.test(html);
 
-const inspectSeoTags = (html: string, options?: { articleDetail?: boolean }) => {
+type SeoAuditPolicy = {
+  minInternalLinksPerPage: number;
+  requireAltText: boolean;
+  minAltLength: number;
+  enforceLazyLoading: boolean;
+  requireSingleH1: boolean;
+  minH2Count: number;
+};
+
+const getFirstMatch = (html: string, pattern: RegExp): string | null => {
+  const match = html.match(pattern);
+  return match && typeof match[1] === "string" ? match[1] : null;
+};
+
+const countMatches = (html: string, pattern: RegExp): number => {
+  const matches = html.match(pattern);
+  return matches ? matches.length : 0;
+};
+
+const extractImageStats = (html: string) => {
+  const imgTags = html.match(/<img\b[^>]*>/gi) || [];
+  const total = imgTags.length;
+  const withAlt = imgTags.filter((tag) => /\balt\s*=\s*(['"])(.*?)\1/i.test(tag)).length;
+  const withMeaningfulAlt = imgTags.filter((tag) => {
+    const match = tag.match(/\balt\s*=\s*(['"])(.*?)\1/i);
+    if (!match || typeof match[2] !== "string") return false;
+    return match[2].trim().length >= 4;
+  }).length;
+  const lazyLoaded = imgTags.filter((tag) => /\bloading\s*=\s*(['"])lazy\1/i.test(tag)).length;
+  const withDimensions = imgTags.filter(
+    (tag) => /\bwidth\s*=\s*(['"])\d+\1/i.test(tag) && /\bheight\s*=\s*(['"])\d+\1/i.test(tag)
+  ).length;
+
+  return { total, withAlt, withMeaningfulAlt, lazyLoaded, withDimensions };
+};
+
+const extractLinkStats = (html: string, siteHost: string | null) => {
+  const linkTags = html.match(/<a\b[^>]*href\s*=\s*(['"])(.*?)\1[^>]*>[\s\S]*?<\/a>/gi) || [];
+  let total = 0;
+  let internal = 0;
+  let descriptive = 0;
+  for (const tag of linkTags) {
+    const href = getFirstMatch(tag, /\bhref\s*=\s*['"]([^'"]+)['"]/i);
+    if (!href) continue;
+    total += 1;
+    const textOnly = tag.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    const wordCount = textOnly ? textOnly.split(/\s+/).filter(Boolean).length : 0;
+    if (wordCount >= 2) descriptive += 1;
+
+    if (href.startsWith("/")) {
+      internal += 1;
+      continue;
+    }
+    if (siteHost) {
+      try {
+        const parsed = new URL(href);
+        if (parsed.host === siteHost) internal += 1;
+      } catch {
+        // ignore malformed urls
+      }
+    }
+  }
+
+  return { total, internal, descriptive };
+};
+
+const extractHeadingStats = (html: string) => ({
+  h1: countMatches(html, /<h1\b[^>]*>[\s\S]*?<\/h1>/gi),
+  h2: countMatches(html, /<h2\b[^>]*>[\s\S]*?<\/h2>/gi),
+  h3Plus: countMatches(html, /<h[3-6]\b[^>]*>[\s\S]*?<\/h[3-6]>/gi),
+});
+
+const inspectSeoTags = (
+  html: string,
+  options?: { articleDetail?: boolean; url?: string; siteHost?: string | null; policy?: Partial<SeoAuditPolicy> }
+) => {
+  const policy: SeoAuditPolicy = {
+    minInternalLinksPerPage: 5,
+    requireAltText: true,
+    minAltLength: 8,
+    enforceLazyLoading: true,
+    requireSingleH1: true,
+    minH2Count: 1,
+    ...options?.policy,
+  };
+
+  const titleTag = getFirstMatch(html, /<title[^>]*>([\s\S]*?)<\/title>/i)?.trim() || "";
+  const canonicalHref = getFirstMatch(html, /<link[^>]+rel=["'][^"']*canonical[^"']*["'][^>]*href=["']([^"']+)["'][^>]*>/i);
+  const metaDescription =
+    getFirstMatch(html, /<meta[^>]+name=["']description["'][^>]*content=["']([^"']+)["'][^>]*>/i)?.trim() || "";
+  const imageStats = extractImageStats(html);
+  const linkStats = extractLinkStats(html, options?.siteHost || null);
+  const headingStats = extractHeadingStats(html);
+
+  const normalizedCanonical = canonicalHref ? canonicalHref.split("#")[0].replace(/\/+$/, "") : "";
+  const normalizedUrl = options?.url ? options.url.split("#")[0].replace(/\/+$/, "") : "";
+
   const checks: Record<string, boolean> = {
+    titleTag: Boolean(titleTag),
     metaDescription: hasTag(
       html,
       /<meta[^>]+name=["']description["'][^>]*content=["'][^"']+["'][^>]*>/i
     ),
+    metaDescriptionLength: metaDescription.length >= 120 && metaDescription.length <= 180,
     canonical: hasTag(
       html,
       /<link[^>]+rel=["'][^"']*canonical[^"']*["'][^>]*href=["'][^"']+["'][^>]*>/i
     ),
+    canonicalSelf:
+      !normalizedUrl || !normalizedCanonical
+        ? Boolean(normalizedCanonical)
+        : normalizedCanonical === normalizedUrl,
     robotsMeta: hasTag(
       html,
       /<meta[^>]+name=["']robots["'][^>]*content=["'][^"']*(index|follow)[^"']*["'][^>]*>/i
@@ -126,7 +238,18 @@ const inspectSeoTags = (html: string, options?: { articleDetail?: boolean }) => 
       html,
       /<script[^>]+type=["']application\/ld\+json["'][^>]*>/i
     ),
-    h1: hasTag(html, /<h1[^>]*>[\s\S]*?<\/h1>/i),
+    h1: headingStats.h1 >= 1,
+    singleH1: policy.requireSingleH1 ? headingStats.h1 === 1 : headingStats.h1 >= 1,
+    h2Coverage: headingStats.h2 >= policy.minH2Count,
+    internalLinks: linkStats.internal >= policy.minInternalLinksPerPage,
+    imageAltCoverage:
+      !policy.requireAltText || imageStats.total === 0
+        ? true
+        : imageStats.withMeaningfulAlt >= imageStats.total,
+    imageLazyLoading:
+      !policy.enforceLazyLoading || imageStats.total === 0
+        ? true
+        : imageStats.lazyLoaded >= imageStats.total,
   };
 
   if (options?.articleDetail) {
@@ -147,7 +270,18 @@ const inspectSeoTags = (html: string, options?: { articleDetail?: boolean }) => 
     .filter(([, value]) => !value)
     .map(([key]) => key);
 
-  return { checks, missing };
+  return {
+    checks,
+    missing,
+    metrics: {
+      titleLength: titleTag.length,
+      metaDescriptionLength: metaDescription.length,
+      headings: headingStats,
+      images: imageStats,
+      links: linkStats,
+      canonical: canonicalHref,
+    },
+  };
 };
 
 const fetchTextWithTimeout = async (url: string, accept: string, timeoutMs: number) => {
@@ -279,6 +413,7 @@ router.get("/:siteId/sitemap-status", requireApiKey("sites:read"), asyncHandler(
   }
 
   const config = sanitizeSiteConfig(site.config);
+  const blueprint = config.seoBlueprint;
   const frontendUrl =
     (config.frontendUrl || config.liveUrl || config.siteUrl || "").replace(/\/+$/, "");
   const includeAll = req.query.all === "true";
@@ -454,6 +589,15 @@ router.get("/:siteId/seo-config", requireApiKey("sites:read"), asyncHandler(asyn
         keywords: [],
       },
       seoPages: config.seoPages || {},
+      seoBlueprint: config.seoBlueprint || {
+        urlStructure: {},
+        headingPolicy: {},
+        imagePolicy: {},
+        internalLinkPolicy: {},
+        schemaPolicy: { enabledTypes: [] },
+        defaults: {},
+        pageTemplates: {},
+      },
       seoUpdatedAt: config.seoUpdatedAt || site.updatedAt.toISOString(),
     },
   });
@@ -475,6 +619,7 @@ router.patch("/:siteId/seo-config", requireApiKey("sites:write"), asyncHandler(a
     ...currentConfig,
     seoDefaults: req.body?.seoDefaults,
     seoPages: req.body?.seoPages,
+    seoBlueprint: req.body?.seoBlueprint,
     seoUpdatedAt: new Date().toISOString(),
   });
 
@@ -500,6 +645,92 @@ router.patch("/:siteId/seo-config", requireApiKey("sites:write"), asyncHandler(a
         keywords: [],
       },
       seoPages: updatedConfig.seoPages || {},
+      seoBlueprint: updatedConfig.seoBlueprint || {
+        urlStructure: {},
+        headingPolicy: {},
+        imagePolicy: {},
+        internalLinkPolicy: {},
+        schemaPolicy: { enabledTypes: [] },
+        defaults: {},
+        pageTemplates: {},
+      },
+      seoUpdatedAt: updatedConfig.seoUpdatedAt || updated.updatedAt.toISOString(),
+    },
+  });
+}));
+
+router.get("/:siteId/seo-blueprint", requireApiKey("sites:read"), asyncHandler(async (req, res) => {
+  const siteId = String(req.params.siteId);
+  const site = await prisma.site.findUnique({
+    where: { id: siteId },
+    select: { id: true, code: true, name: true, config: true, updatedAt: true },
+  });
+
+  if (!site) {
+    throw new ApiError(404, "Site not found.");
+  }
+
+  const config = sanitizeSiteConfig(site.config);
+  res.json({
+    success: true,
+    data: {
+      siteId: site.id,
+      siteCode: site.code,
+      siteName: site.name,
+      seoBlueprint: config.seoBlueprint || {
+        urlStructure: {},
+        headingPolicy: {},
+        imagePolicy: {},
+        internalLinkPolicy: {},
+        schemaPolicy: { enabledTypes: [] },
+        defaults: {},
+        pageTemplates: {},
+      },
+      seoUpdatedAt: config.seoUpdatedAt || site.updatedAt.toISOString(),
+    },
+  });
+}));
+
+router.patch("/:siteId/seo-blueprint", requireApiKey("sites:write"), asyncHandler(async (req, res) => {
+  const siteId = String(req.params.siteId);
+  const site = await prisma.site.findUnique({
+    where: { id: siteId },
+    select: { id: true, code: true, name: true, config: true },
+  });
+
+  if (!site) {
+    throw new ApiError(404, "Site not found.");
+  }
+
+  const currentConfig = sanitizeSiteConfig(site.config);
+  const normalized = sanitizeSiteConfig({
+    ...currentConfig,
+    seoBlueprint: req.body?.seoBlueprint,
+    seoUpdatedAt: new Date().toISOString(),
+  });
+
+  const updated = await prisma.site.update({
+    where: { id: site.id },
+    data: { config: normalized },
+    select: { id: true, code: true, name: true, config: true, updatedAt: true },
+  });
+
+  const updatedConfig = sanitizeSiteConfig(updated.config);
+  res.json({
+    success: true,
+    data: {
+      siteId: updated.id,
+      siteCode: updated.code,
+      siteName: updated.name,
+      seoBlueprint: updatedConfig.seoBlueprint || {
+        urlStructure: {},
+        headingPolicy: {},
+        imagePolicy: {},
+        internalLinkPolicy: {},
+        schemaPolicy: { enabledTypes: [] },
+        defaults: {},
+        pageTemplates: {},
+      },
       seoUpdatedAt: updatedConfig.seoUpdatedAt || updated.updatedAt.toISOString(),
     },
   });
@@ -517,6 +748,7 @@ router.get("/:siteId/seo-status", requireApiKey("sites:read"), asyncHandler(asyn
   }
 
   const config = sanitizeSiteConfig(site.config);
+  const blueprint = config.seoBlueprint;
   const frontendUrl =
     (config.frontendUrl || config.liveUrl || config.siteUrl || "").replace(/\/+$/, "");
 
@@ -609,7 +841,27 @@ router.get("/:siteId/seo-status", requireApiKey("sites:read"), asyncHandler(asyn
         continue;
       }
 
-      const inspected = inspectSeoTags(body, { articleDetail: page.articleDetail });
+      const pagePath = pathFromUrl(page.url);
+      const pageRule =
+        (blueprint?.pageTemplates && pagePath in blueprint.pageTemplates
+          ? blueprint.pageTemplates[pagePath]
+          : undefined) || {};
+      const inspected = inspectSeoTags(body, {
+        articleDetail: page.articleDetail,
+        url: page.url,
+        siteHost: parseHost(frontendUrl),
+        policy: {
+          minInternalLinksPerPage:
+            pageRule.minInternalLinks ??
+            blueprint?.internalLinkPolicy?.minInternalLinksPerPage ??
+            5,
+          requireAltText: blueprint?.imagePolicy?.requireAltText ?? true,
+          minAltLength: blueprint?.imagePolicy?.minAltLength ?? 8,
+          enforceLazyLoading: blueprint?.imagePolicy?.enforceLazyLoading ?? true,
+          requireSingleH1: blueprint?.headingPolicy?.requireSingleH1 ?? true,
+          minH2Count: blueprint?.headingPolicy?.minH2Count ?? 1,
+        },
+      });
       pageReports.push({
         page: page.key,
         url: page.url,
@@ -617,6 +869,7 @@ router.get("/:siteId/seo-status", requireApiKey("sites:read"), asyncHandler(asyn
         httpStatus: response.status,
         checks: inspected.checks,
         missing: inspected.missing,
+        metrics: inspected.metrics,
       });
     } catch (error) {
       pageReports.push({
@@ -626,6 +879,7 @@ router.get("/:siteId/seo-status", requireApiKey("sites:read"), asyncHandler(asyn
         httpStatus: null,
         checks: {},
         missing: [],
+        metrics: null,
         error: error instanceof Error ? error.message : "Failed to fetch page",
       });
     }
@@ -657,6 +911,7 @@ router.get("/:siteId/seo-status", requireApiKey("sites:read"), asyncHandler(asyn
       robots: robotsStatus,
       sitemap: sitemapStatus,
       pages: pageReports,
+      blueprint: blueprint || null,
     },
   });
 }));
