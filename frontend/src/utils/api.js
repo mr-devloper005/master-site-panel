@@ -301,8 +301,13 @@ export const fetchSiteSitemapStatus = async (siteId, options = {}) => {
   return response.data;
 };
 
-export const fetchSiteSeoStatus = async (siteId) => {
-  const response = await request(`/api/v1/sites/${siteId}/seo-status`);
+export const fetchSiteSeoStatus = async (siteId, options = {}) => {
+  const query = new URLSearchParams();
+  if (options.all) query.set("all", "true");
+  if (options.limit) query.set("limit", String(options.limit));
+  if (options.concurrency) query.set("concurrency", String(options.concurrency));
+  const suffix = query.toString() ? `?${query.toString()}` : "";
+  const response = await request(`/api/v1/sites/${siteId}/seo-status${suffix}`);
   return response.data;
 };
 

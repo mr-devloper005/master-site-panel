@@ -80,6 +80,20 @@ const pathFromUrl = (value: string): string => {
   }
 };
 
+const resolvePageTemplateRule = (templates: Record<string, unknown> | undefined, path: string) => {
+  if (!templates || typeof templates !== "object") return null;
+  if (path in templates) return templates[path] as Record<string, unknown>;
+
+  const matches = Object.entries(templates)
+    .filter(([key]) => {
+      if (!key || key === "/") return false;
+      return path === key || path.startsWith(`${key}/`);
+    })
+    .sort((a, b) => b[0].length - a[0].length);
+
+  return matches.length ? (matches[0][1] as Record<string, unknown>) : null;
+};
+
 const normalizeAbsoluteUrlList = (items: unknown): string[] => {
   if (!Array.isArray(items)) return [];
   return Array.from(
@@ -307,6 +321,77 @@ const parsePositiveInt = (value: string, fallback: number, min: number, max: num
   return Math.min(Math.max(Math.floor(parsed), min), max);
 };
 
+const buildSeoAuditPolicy = (
+  blueprint: ReturnType<typeof sanitizeSiteConfig>["seoBlueprint"],
+  pageRule: Record<string, unknown> | null
+) => ({
+  // Route-level rule can override minimum internal links for that path.
+  minInternalLinksPerPage:
+    typeof pageRule?.["minInternalLinks"] === "number"
+      ? Number(pageRule["minInternalLinks"])
+      : (blueprint?.internalLinkPolicy?.minInternalLinksPerPage ?? 5),
+  requireAltText: blueprint?.imagePolicy?.requireAltText ?? true,
+  minAltLength: blueprint?.imagePolicy?.minAltLength ?? 8,
+  enforceLazyLoading: blueprint?.imagePolicy?.enforceLazyLoading ?? true,
+  requireSingleH1: blueprint?.headingPolicy?.requireSingleH1 ?? true,
+  minH2Count: blueprint?.headingPolicy?.minH2Count ?? 1,
+});
+
+const inspectPageSeo = async (
+  page: { key: string; url: string; articleDetail?: boolean },
+  frontendUrl: string,
+  blueprint: ReturnType<typeof sanitizeSiteConfig>["seoBlueprint"]
+) => {
+  const pagePath = pathFromUrl(page.url);
+  const pageRule = resolvePageTemplateRule(blueprint?.pageTemplates as Record<string, unknown> | undefined, pagePath);
+
+  try {
+    const { response, body } = await fetchTextWithTimeout(page.url, "text/html,*/*", SEO_TIMEOUT_MS);
+    if (!response.ok) {
+      return {
+        page: page.key,
+        path: pagePath,
+        url: page.url,
+        reachable: false,
+        httpStatus: response.status,
+        checks: {},
+        missing: ["pageUnreachable"],
+        metrics: null,
+      };
+    }
+
+    const inspected = inspectSeoTags(body, {
+      articleDetail: page.articleDetail,
+      url: page.url,
+      siteHost: parseHost(frontendUrl),
+      policy: buildSeoAuditPolicy(blueprint, pageRule),
+    });
+
+    return {
+      page: page.key,
+      path: pagePath,
+      url: page.url,
+      reachable: true,
+      httpStatus: response.status,
+      checks: inspected.checks,
+      missing: inspected.missing,
+      metrics: inspected.metrics,
+    };
+  } catch (error) {
+    return {
+      page: page.key,
+      path: pagePath,
+      url: page.url,
+      reachable: false,
+      httpStatus: null,
+      checks: {},
+      missing: ["pageUnreachable"],
+      metrics: null,
+      error: error instanceof Error ? error.message : "Failed to fetch page",
+    };
+  }
+};
+
 router.get("/", requireApiKey("sites:read"), asyncHandler(async (req, res) => {
   const search = req.query.search?.toString().trim();
   const framework = req.query.framework?.toString();
@@ -413,7 +498,6 @@ router.get("/:siteId/sitemap-status", requireApiKey("sites:read"), asyncHandler(
   }
 
   const config = sanitizeSiteConfig(site.config);
-  const blueprint = config.seoBlueprint;
   const frontendUrl =
     (config.frontendUrl || config.liveUrl || config.siteUrl || "").replace(/\/+$/, "");
   const includeAll = req.query.all === "true";
@@ -757,8 +841,13 @@ router.get("/:siteId/seo-status", requireApiKey("sites:read"), asyncHandler(asyn
   }
 
   const checkedAt = new Date().toISOString();
+  const includeAll = firstQueryValue(req.query.all).toLowerCase() === "true";
+  const limit = parsePositiveInt(firstQueryValue(req.query.limit), includeAll ? 300 : 80, 1, 2000);
+  const concurrency = parsePositiveInt(firstQueryValue(req.query.concurrency), 6, 1, 20);
   const robotsUrl = `${frontendUrl}/robots.txt`;
   const sitemapUrl = `${frontendUrl}/sitemap.xml`;
+  const manualUrls = normalizeAbsoluteUrlList(config.sitemapManualUrls);
+  const excludedUrls = new Set(normalizeAbsoluteUrlList(config.sitemapExcludedUrls));
 
   let robotsStatus: Record<string, unknown> = {
     url: robotsUrl,
@@ -773,8 +862,7 @@ router.get("/:siteId/seo-status", requireApiKey("sites:read"), asyncHandler(asyn
     httpStatus: null,
     urlCount: 0,
   };
-  const pageReports: Array<Record<string, unknown>> = [];
-  let articleDetailUrl: string | null = null;
+  const sitemapUrls: string[] = [];
 
   try {
     const { response, body } = await fetchTextWithTimeout(
@@ -803,7 +891,7 @@ router.get("/:siteId/seo-status", requireApiKey("sites:read"), asyncHandler(asyn
       SEO_TIMEOUT_MS
     );
     const urls = response.ok ? extractSitemapUrls(body) : [];
-    articleDetailUrl = urls.find((url) => /\/articles\/[^/]+$/i.test(url)) || null;
+    sitemapUrls.push(...urls);
     sitemapStatus = {
       ...sitemapStatus,
       reachable: response.ok,
@@ -818,71 +906,42 @@ router.get("/:siteId/seo-status", requireApiKey("sites:read"), asyncHandler(asyn
     };
   }
 
-  const pagesToInspect: Array<{ key: string; url: string; articleDetail?: boolean }> = [
-    { key: "home", url: `${frontendUrl}/` },
-    { key: "articles", url: `${frontendUrl}/articles` },
+  const staticFallbackPages = [
+    `${frontendUrl}/`,
+    `${frontendUrl}/listings`,
+    `${frontendUrl}/articles`,
+    `${frontendUrl}/classifieds`,
+    `${frontendUrl}/image-sharing`,
+    `${frontendUrl}/social`,
+    `${frontendUrl}/social-bookmarking`,
+    `${frontendUrl}/profile`,
+    `${frontendUrl}/pdf`,
   ];
-  if (articleDetailUrl) {
-    pagesToInspect.push({ key: "articleDetail", url: articleDetailUrl, articleDetail: true });
-  }
 
-  for (const page of pagesToInspect) {
-    try {
-      const { response, body } = await fetchTextWithTimeout(page.url, "text/html,*/*", SEO_TIMEOUT_MS);
-      if (!response.ok) {
-        pageReports.push({
-          page: page.key,
-          url: page.url,
-          reachable: false,
-          httpStatus: response.status,
-          checks: {},
-          missing: [],
-        });
-        continue;
-      }
+  const effectiveUrls = Array.from(
+    new Set([...sitemapUrls, ...manualUrls, ...staticFallbackPages])
+  ).filter((url) => /^https?:\/\//i.test(url) && !excludedUrls.has(url));
 
-      const pagePath = pathFromUrl(page.url);
-      const pageRule =
-        (blueprint?.pageTemplates && pagePath in blueprint.pageTemplates
-          ? blueprint.pageTemplates[pagePath]
-          : undefined) || {};
-      const inspected = inspectSeoTags(body, {
-        articleDetail: page.articleDetail,
-        url: page.url,
-        siteHost: parseHost(frontendUrl),
-        policy: {
-          minInternalLinksPerPage:
-            pageRule.minInternalLinks ??
-            blueprint?.internalLinkPolicy?.minInternalLinksPerPage ??
-            5,
-          requireAltText: blueprint?.imagePolicy?.requireAltText ?? true,
-          minAltLength: blueprint?.imagePolicy?.minAltLength ?? 8,
-          enforceLazyLoading: blueprint?.imagePolicy?.enforceLazyLoading ?? true,
-          requireSingleH1: blueprint?.headingPolicy?.requireSingleH1 ?? true,
-          minH2Count: blueprint?.headingPolicy?.minH2Count ?? 1,
-        },
-      });
-      pageReports.push({
-        page: page.key,
-        url: page.url,
-        reachable: true,
-        httpStatus: response.status,
-        checks: inspected.checks,
-        missing: inspected.missing,
-        metrics: inspected.metrics,
-      });
-    } catch (error) {
-      pageReports.push({
-        page: page.key,
-        url: page.url,
-        reachable: false,
-        httpStatus: null,
-        checks: {},
-        missing: [],
-        metrics: null,
-        error: error instanceof Error ? error.message : "Failed to fetch page",
-      });
-    }
+  const urlsToInspect = (includeAll ? effectiveUrls : effectiveUrls).slice(0, limit);
+  const pagesToInspect: Array<{ key: string; path: string; url: string; articleDetail?: boolean }> =
+    urlsToInspect.map((url) => {
+      const path = pathFromUrl(url);
+      const isArticleDetail = /^\/articles\/[^/]+$/i.test(path);
+      return {
+        key: path === "/" ? "home" : path,
+        path,
+        url,
+        articleDetail: isArticleDetail,
+      };
+    });
+
+  const pageReports: Array<Record<string, unknown>> = [];
+  for (let index = 0; index < pagesToInspect.length; index += concurrency) {
+    const batch = pagesToInspect.slice(index, index + concurrency);
+    const inspectedBatch = await Promise.all(
+      batch.map((page) => inspectPageSeo(page, frontendUrl, blueprint))
+    );
+    pageReports.push(...inspectedBatch);
   }
 
   const totalChecks = pageReports.reduce((sum, item) => {
@@ -910,6 +969,14 @@ router.get("/:siteId/seo-status", requireApiKey("sites:read"), asyncHandler(asyn
       },
       robots: robotsStatus,
       sitemap: sitemapStatus,
+      crawl: {
+        includeAll,
+        limit,
+        concurrency,
+        discoveredUrls: effectiveUrls.length,
+        inspectedUrls: pageReports.length,
+        isLimited: effectiveUrls.length > pageReports.length,
+      },
       pages: pageReports,
       blueprint: blueprint || null,
     },

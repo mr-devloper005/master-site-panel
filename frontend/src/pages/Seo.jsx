@@ -130,6 +130,15 @@ const parseChecksSummary = (seoStatus) => {
   return { totalChecks, passedChecks, pages };
 };
 
+const missingLabel = (key) => {
+  if (!key) return "-";
+  return String(key)
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/[_-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+};
+
 export default function Seo() {
   const { sites } = useAppData();
   const [selectedSiteId, setSelectedSiteId] = useState("");
@@ -162,7 +171,7 @@ export default function Seo() {
     setLoading((prev) => ({ ...prev, fetch: true }));
     try {
       const [status, config, indexing] = await Promise.all([
-        fetchSiteSeoStatus(siteId),
+        fetchSiteSeoStatus(siteId, { all: true, limit: 500, concurrency: 8 }),
         fetchSiteSeoConfig(siteId),
         fetchSiteIndexingStatus(siteId, { runDue: false, limit: 20 }),
       ]);
@@ -298,7 +307,9 @@ export default function Seo() {
 
   const checksSummary = parseChecksSummary(seoStatus);
   const diagnostics = indexingStatus?.diagnostics || {};
-  const pageWarnings = checksSummary.pages.filter((page) => Array.isArray(page.missing) && page.missing.length);
+  const pageWarnings = checksSummary.pages
+    .filter((page) => Array.isArray(page.missing) && page.missing.length)
+    .sort((a, b) => (b.missing?.length || 0) - (a.missing?.length || 0));
 
   const upsertTemplateRule = () => {
     const path = String(templatePathInput || "").trim();
@@ -921,6 +932,23 @@ export default function Seo() {
         </section>
 
         <section className="glass rounded-panel p-4">
+          <div className="mb-3 grid grid-cols-1 gap-2 md:grid-cols-3">
+            <article className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-surface)] p-3">
+              <p className="text-[11px] uppercase tracking-wide text-[var(--text-secondary)]">URLs Discovered</p>
+              <p className="mt-1 text-lg font-semibold">{Number(seoStatus?.crawl?.discoveredUrls || 0)}</p>
+            </article>
+            <article className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-surface)] p-3">
+              <p className="text-[11px] uppercase tracking-wide text-[var(--text-secondary)]">URLs Inspected</p>
+              <p className="mt-1 text-lg font-semibold">{Number(seoStatus?.crawl?.inspectedUrls || 0)}</p>
+            </article>
+            <article className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-surface)] p-3">
+              <p className="text-[11px] uppercase tracking-wide text-[var(--text-secondary)]">Checked At</p>
+              <p className="mt-1 text-sm font-medium">
+                {seoStatus?.checkedAt ? new Date(seoStatus.checkedAt).toLocaleString() : "-"}
+              </p>
+            </article>
+          </div>
+
           <div className="flex items-center justify-between gap-2">
             <h2 className="text-sm font-semibold">Actionable SEO Warnings</h2>
             <span className="inline-flex items-center gap-1 text-xs text-[var(--text-secondary)]">
@@ -931,14 +959,23 @@ export default function Seo() {
           <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2">
             {pageWarnings.length ? (
               pageWarnings.map((page) => (
-                <article key={`warn-${page.page}`} className="rounded-lg border border-amber-300/50 bg-amber-50/40 p-3 text-xs">
-                  <p className="font-semibold">{page.page}</p>
+                <article key={`warn-${page.page}-${page.url}`} className="rounded-lg border border-rose-300/70 bg-rose-50/50 p-3 text-xs">
+                  <p className="font-semibold text-rose-700">{page.page}</p>
                   <p className="mt-1 text-[var(--text-secondary)]">{page.url}</p>
-                  <p className="mt-2 text-amber-700">Missing: {page.missing.join(", ")}</p>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {page.missing.map((item) => (
+                      <span
+                        key={`${page.page}-${item}`}
+                        className="rounded-md border border-rose-200 bg-rose-100 px-2 py-0.5 text-[11px] font-medium text-rose-700"
+                      >
+                        {missingLabel(item)}
+                      </span>
+                    ))}
+                  </div>
                 </article>
               ))
             ) : (
-              <p className="text-xs text-[var(--text-secondary)]">No warnings. Current sampled pages look healthy.</p>
+              <p className="text-xs text-[var(--text-secondary)]">No warnings. Current scanned pages look healthy.</p>
             )}
           </div>
         </section>
@@ -967,11 +1004,15 @@ export default function Seo() {
               <tbody>
                 {checksSummary.pages.length ? (
                   checksSummary.pages.map((page) => (
-                    <tr key={page.page} className="border-t border-[var(--border-color)]">
+                    <tr
+                      key={`${page.page}-${page.url}`}
+                      className={`border-t border-[var(--border-color)] ${Array.isArray(page.missing) && page.missing.length ? "bg-rose-50/40" : ""}`}
+                    >
                       <td className="px-3 py-2">
                         <a href={page.url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
                           {page.page}
                         </a>
+                        {page.path ? <p className="mt-0.5 text-[11px] text-[var(--text-secondary)]">{page.path}</p> : null}
                       </td>
                       <td className="px-3 py-2">
                         {page.reachable ? (
@@ -982,7 +1023,22 @@ export default function Seo() {
                           <span className="text-rose-600">No</span>
                         )}
                       </td>
-                      <td className="px-3 py-2">{Array.isArray(page.missing) && page.missing.length ? page.missing.join(", ") : "-"}</td>
+                      <td className="px-3 py-2">
+                        {Array.isArray(page.missing) && page.missing.length ? (
+                          <div className="flex flex-wrap gap-1">
+                            {page.missing.map((item) => (
+                              <span
+                                key={`${page.page}-missing-${item}`}
+                                className="rounded-md border border-rose-200 bg-rose-100 px-1.5 py-0.5 text-[11px] font-medium text-rose-700"
+                              >
+                                {missingLabel(item)}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          "-"
+                        )}
+                      </td>
                       <td className="px-3 py-2">
                         {typeof page.metrics?.links?.internal === "number" ? page.metrics.links.internal : "-"}
                       </td>
