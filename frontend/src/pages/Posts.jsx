@@ -65,6 +65,14 @@ export default function Posts() {
     setSelected([]);
   }, [tab, siteFilter, statusFilter, query, dateFrom, dateTo, sortBy]);
 
+  useEffect(() => {
+    const paramSearch = params.get("search") || "";
+    if (paramSearch && paramSearch !== query) {
+      setQuery(paramSearch);
+      setGlobalQuery(paramSearch);
+    }
+  }, [params, query, setGlobalQuery]);
+
   const totalPages = Math.max(Math.ceil(filtered.length / PAGE_SIZE), 1);
   const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 

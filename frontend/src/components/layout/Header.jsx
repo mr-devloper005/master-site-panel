@@ -12,17 +12,27 @@ export default function Header({ onMenuToggle }) {
   const { globalQuery, setGlobalQuery, sites, posts } = useAppData();
   const [openProfile, setOpenProfile] = useState(false);
   const navigate = useNavigate();
+  const safeLower = (value) => String(value || "").toLowerCase();
 
   const suggestions = useMemo(() => {
     if (!globalQuery.trim()) return [];
-    const q = globalQuery.toLowerCase();
+    const q = safeLower(globalQuery);
     const siteMatches = sites
-      .filter((site) => site.name.toLowerCase().includes(q))
+      .filter((site) => safeLower(site.name).includes(q) || safeLower(site.code).includes(q))
       .slice(0, 3)
       .map((site) => ({ id: site.id, type: "site", label: site.name }));
 
     const postMatches = posts
-      .filter((post) => post.title.toLowerCase().includes(q) || post.author.toLowerCase().includes(q))
+      .filter((post) =>
+        [
+          post.title,
+          post.author,
+          post.siteName,
+          post.slug,
+          post.excerpt,
+          Array.isArray(post.tags) ? post.tags.join(" ") : "",
+        ].some((field) => safeLower(field).includes(q))
+      )
       .slice(0, 4)
       .map((post) => ({ id: post.id, type: "post", label: post.title }));
 
@@ -49,6 +59,7 @@ export default function Header({ onMenuToggle }) {
             onChange={(e) => setGlobalQuery(e.target.value)}
             onKeyDown={(e) => {
               if (e.key !== "Enter") return;
+              e.preventDefault();
               const q = globalQuery.trim();
               navigate(q ? `/posts?search=${encodeURIComponent(q)}` : "/posts");
             }}
