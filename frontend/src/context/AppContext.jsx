@@ -16,6 +16,7 @@ import {
 
 const AppContext = createContext(null);
 const TOKEN_CACHE_KEY = "site-master-task-tokens";
+const safeLower = (value) => String(value || "").toLowerCase();
 
 const loadTokenCache = () => {
   try {
@@ -129,24 +130,28 @@ export const AppProvider = ({ children }) => {
 
   const filteredSites = useMemo(() => {
     if (!globalQuery.trim()) return sites;
-    const q = globalQuery.toLowerCase();
+    const q = safeLower(globalQuery);
     return sites.filter(
       (site) =>
-        site.name.toLowerCase().includes(q) ||
-        site.url.toLowerCase().includes(q) ||
-        site.description.toLowerCase().includes(q)
+        safeLower(site.name).includes(q) ||
+        safeLower(site.code).includes(q) ||
+        safeLower(site.url).includes(q) ||
+        safeLower(site.description).includes(q)
     );
   }, [sites, globalQuery]);
 
   const filteredPosts = useMemo(() => {
     if (!globalQuery.trim()) return posts;
-    const q = globalQuery.toLowerCase();
+    const q = safeLower(globalQuery);
     return posts.filter(
       (post) =>
-        post.title.toLowerCase().includes(q) ||
-        post.excerpt.toLowerCase().includes(q) ||
-        post.author.toLowerCase().includes(q) ||
-        post.siteName.toLowerCase().includes(q)
+        safeLower(post.title).includes(q) ||
+        safeLower(post.excerpt).includes(q) ||
+        safeLower(post.author).includes(q) ||
+        safeLower(post.siteName).includes(q) ||
+        safeLower(post.slug).includes(q) ||
+        safeLower(post.category).includes(q) ||
+        (Array.isArray(post.tags) && post.tags.some((tag) => safeLower(tag).includes(q)))
     );
   }, [posts, globalQuery]);
 

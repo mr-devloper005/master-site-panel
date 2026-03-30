@@ -7,14 +7,15 @@ import { useAppData } from "../context/AppContext";
 const PAGE_SIZE = 15;
 
 export default function Posts() {
-  const { posts, sites, runPostBulkAction, editPost } = useAppData();
+  const { posts, sites, globalQuery, setGlobalQuery, runPostBulkAction, editPost } = useAppData();
   const [params] = useSearchParams();
   const initialSiteId = params.get("site") || "all";
+  const initialSearch = params.get("search") || "";
 
   const [tab, setTab] = useState(initialSiteId === "all" ? "all" : "site");
   const [siteFilter, setSiteFilter] = useState(initialSiteId);
   const [statusFilter, setStatusFilter] = useState("all");
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialSearch || globalQuery || "");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [selected, setSelected] = useState([]);
@@ -30,7 +31,8 @@ export default function Posts() {
   const selectedSite = sites.find((site) => site.id === siteFilter);
 
   const filtered = useMemo(() => {
-    const q = query.toLowerCase();
+    const effectiveQuery = query.trim() || globalQuery.trim();
+    const q = effectiveQuery.toLowerCase();
 
     let result = posts.filter((post) => {
       const matchTab =
@@ -39,7 +41,7 @@ export default function Posts() {
         post.siteId === siteFilter ||
         (selectedSite ? post.siteName === selectedSite.name : false);
       const matchStatus = statusFilter === "all" ? true : post.status === statusFilter;
-      const matchSearch = !query.trim()
+      const matchSearch = !effectiveQuery
         ? true
         : [post.title, post.excerpt, post.author, post.siteName, post.date].some((field) =>
             field.toLowerCase().includes(q)
@@ -56,7 +58,7 @@ export default function Posts() {
     });
 
     return result;
-  }, [posts, tab, siteFilter, selectedSite, statusFilter, query, dateFrom, dateTo, sortBy]);
+  }, [posts, tab, siteFilter, selectedSite, statusFilter, query, globalQuery, dateFrom, dateTo, sortBy]);
 
   useEffect(() => {
     setPage(1);
@@ -103,7 +105,15 @@ export default function Posts() {
             <option value="Published">Published</option>
             <option value="Draft">Draft</option>
           </select>
-          <input className="min-h-11 min-w-[220px] flex-1 rounded-lg border border-[var(--border-color)] px-3 text-sm" placeholder="Search title, content, author, date" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <input
+            className="min-h-11 min-w-[220px] flex-1 rounded-lg border border-[var(--border-color)] px-3 text-sm"
+            placeholder="Search title, content, author, date"
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setGlobalQuery(e.target.value);
+            }}
+          />
           <input type="date" className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
           <input type="date" className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
         </div>

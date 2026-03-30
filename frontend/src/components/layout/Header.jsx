@@ -1,5 +1,6 @@
 import { Menu, Moon, Search, Sun, UserCircle2 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { useTheme } from "../../context/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
@@ -10,6 +11,7 @@ export default function Header({ onMenuToggle }) {
   const { user, logout } = useAuth();
   const { globalQuery, setGlobalQuery, sites, posts } = useAppData();
   const [openProfile, setOpenProfile] = useState(false);
+  const navigate = useNavigate();
 
   const suggestions = useMemo(() => {
     if (!globalQuery.trim()) return [];
@@ -45,13 +47,28 @@ export default function Header({ onMenuToggle }) {
             aria-label="Global search"
             value={globalQuery}
             onChange={(e) => setGlobalQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key !== "Enter") return;
+              const q = globalQuery.trim();
+              navigate(q ? `/posts?search=${encodeURIComponent(q)}` : "/posts");
+            }}
             placeholder="Search posts, sites, authors"
             className="w-full rounded-xl border border-[var(--border-color)] bg-[var(--bg-primary)] py-2 pl-9 pr-3 text-sm"
           />
           {suggestions.length > 0 && (
             <ul className="absolute mt-2 w-full rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] p-1 shadow-panel">
               {suggestions.map((item) => (
-                <li key={`${item.type}-${item.id}`} className="rounded-lg px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800">
+                <li
+                  key={`${item.type}-${item.id}`}
+                  className="cursor-pointer rounded-lg px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+                  onClick={() => {
+                    if (item.type === "site") {
+                      navigate("/sites");
+                    } else {
+                      navigate(`/posts?search=${encodeURIComponent(item.label)}`);
+                    }
+                  }}
+                >
                   <span className="mr-2 rounded bg-slate-100 px-1.5 py-0.5 text-xs uppercase dark:bg-slate-700">{item.type}</span>
                   {item.label}
                 </li>
