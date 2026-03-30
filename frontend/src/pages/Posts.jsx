@@ -7,7 +7,7 @@ import { useAppData } from "../context/AppContext";
 const PAGE_SIZE = 15;
 
 export default function Posts() {
-  const { posts, sites, globalQuery, setGlobalQuery, runPostBulkAction, editPost } = useAppData();
+  const { posts: allPosts, filteredPosts, sites, globalQuery, setGlobalQuery, runPostBulkAction, editPost } = useAppData();
   const [params] = useSearchParams();
   const initialSiteId = params.get("site") || "all";
   const initialSearch = params.get("search") || "";
@@ -29,6 +29,7 @@ export default function Posts() {
   });
 
   const selectedSite = sites.find((site) => site.id === siteFilter);
+  const posts = globalQuery.trim() ? filteredPosts : allPosts;
 
   const filtered = useMemo(() => {
     const effectiveQuery = query.trim() || globalQuery.trim();
