@@ -3,8 +3,19 @@ import { useEffect, useState } from "react";
 import Modal from "../common/Modal";
 
 const frameworks = ["NEXT_JS", "REACT", "HTML_CSS_JS", "OTHER"];
-const categories = ["ARTICLE", "SBM", "IMAGE_SHARING", "LOCAL_LISTING", "PROFILE", "CUSTOM"];
+const categories = ["ARTICLE", "SBM", "IMAGE_SHARING", "LOCAL_LISTING", "MULTI_TASK", "PROFILE", "CUSTOM"];
 const taskOptions = ["listing", "article", "image", "profile", "classified", "social"];
+const siteTypes = ["listing", "article", "image", "profile", "social", "multi-task", "generic"];
+
+const categoryDefaults = {
+  ARTICLE: { siteType: "article", feedPath: "/articles" },
+  SBM: { siteType: "social", feedPath: "/sbm" },
+  IMAGE_SHARING: { siteType: "image", feedPath: "/image-sharing" },
+  LOCAL_LISTING: { siteType: "listing", feedPath: "/listings" },
+  MULTI_TASK: { siteType: "multi-task", feedPath: "/" },
+  PROFILE: { siteType: "profile", feedPath: "/profile" },
+  CUSTOM: { siteType: "generic", feedPath: "/" },
+};
 
 const initial = {
   code: "",
@@ -23,6 +34,8 @@ const initial = {
 export default function SiteFormModal({ open, onClose, onSubmit, editing }) {
   const [form, setForm] = useState(initial);
   const [errors, setErrors] = useState({});
+
+  const siteTypeLocked = form.category === "MULTI_TASK";
 
   useEffect(() => {
     if (editing) {
@@ -59,6 +72,13 @@ export default function SiteFormModal({ open, onClose, onSubmit, editing }) {
     evt.preventDefault();
     if (!validate()) return;
 
+    const normalizedSiteType = siteTypeLocked
+      ? "multi-task"
+      : form.siteType.trim() || categoryDefaults[form.category]?.siteType || "generic";
+    const normalizedFeedPath = siteTypeLocked
+      ? "/"
+      : form.feedPath.trim() || categoryDefaults[form.category]?.feedPath || "/";
+
     onSubmit({
       code: form.code.trim(),
       name: form.name.trim(),
@@ -68,8 +88,8 @@ export default function SiteFormModal({ open, onClose, onSubmit, editing }) {
       config: {
         frontendUrl: form.frontendUrl.trim(),
         description: form.description.trim(),
-        siteType: form.siteType.trim(),
-        feedPath: form.feedPath.trim() || "/",
+        siteType: normalizedSiteType,
+        feedPath: normalizedFeedPath,
         supportedTasks: form.supportedTasks,
         metrics: form.metrics
           .split(",")
@@ -85,6 +105,16 @@ export default function SiteFormModal({ open, onClose, onSubmit, editing }) {
       supportedTasks: prev.supportedTasks.includes(task)
         ? prev.supportedTasks.filter((item) => item !== task)
         : [...prev.supportedTasks, task],
+    }));
+  };
+
+  const handleCategoryChange = (category) => {
+    const defaults = categoryDefaults[category] || categoryDefaults.CUSTOM;
+    setForm((prev) => ({
+      ...prev,
+      category,
+      siteType: defaults.siteType,
+      feedPath: defaults.feedPath,
     }));
   };
 
@@ -113,7 +143,7 @@ export default function SiteFormModal({ open, onClose, onSubmit, editing }) {
           </div>
           <div>
             <label className="mb-1 block text-sm">Category</label>
-            <select className="w-full rounded-lg border border-[var(--border-color)] px-3 py-2" value={form.category} onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))}>
+            <select className="w-full rounded-lg border border-[var(--border-color)] px-3 py-2" value={form.category} onChange={(e) => handleCategoryChange(e.target.value)}>
               {categories.map((item) => <option key={item} value={item}>{item}</option>)}
             </select>
           </div>
@@ -138,11 +168,38 @@ export default function SiteFormModal({ open, onClose, onSubmit, editing }) {
           </div>
           <div>
             <label className="mb-1 block text-sm">Site Type</label>
-            <input className="w-full rounded-lg border border-[var(--border-color)] px-3 py-2" value={form.siteType} onChange={(e) => setForm((p) => ({ ...p, siteType: e.target.value }))} />
+            <select
+              className="w-full rounded-lg border border-[var(--border-color)] px-3 py-2"
+              value={form.siteType}
+              onChange={(e) => setForm((p) => ({ ...p, siteType: e.target.value }))}
+              disabled={siteTypeLocked}
+            >
+              {siteTypes.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+            {siteTypeLocked ? (
+              <p className="mt-1 text-xs text-[var(--text-secondary)]">
+                Multi-task sites use `multi-task` automatically.
+              </p>
+            ) : null}
           </div>
           <div>
             <label className="mb-1 block text-sm">Feed Path</label>
-            <input className="w-full rounded-lg border border-[var(--border-color)] px-3 py-2" value={form.feedPath} onChange={(e) => setForm((p) => ({ ...p, feedPath: e.target.value }))} />
+            <input
+              className="w-full rounded-lg border border-[var(--border-color)] px-3 py-2 disabled:cursor-not-allowed disabled:opacity-60"
+              value={form.feedPath}
+              onChange={(e) => setForm((p) => ({ ...p, feedPath: e.target.value }))}
+              disabled={siteTypeLocked}
+              placeholder={siteTypeLocked ? "Optional for multi-task sites" : "/listings"}
+            />
+            <p className="mt-1 text-xs text-[var(--text-secondary)]">
+              {siteTypeLocked
+                ? "Multi-task sites rely on task views, so a single feed path is not required."
+                : "Primary public content route for this site."}
+            </p>
           </div>
         </div>
 

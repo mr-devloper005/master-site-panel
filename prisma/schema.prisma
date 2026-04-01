@@ -19,6 +19,7 @@ enum SiteCategory {
   SBM
   IMAGE_SHARING
   LOCAL_LISTING
+  MULTI_TASK
   PROFILE
   CUSTOM
 }
