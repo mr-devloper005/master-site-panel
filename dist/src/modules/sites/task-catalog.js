@@ -106,7 +106,7 @@ const taskPayloads = {
             type: "comment",
             category: "Blog",
             description: "Contextual response or commentary for a blog post.",
-            parentUrl: "https://example.com/original-post",
+            articleSlug: "original-article-slug",
         },
         media: [{ url: "https://example.com/comment-cover.jpg", type: "IMAGE" }],
     },

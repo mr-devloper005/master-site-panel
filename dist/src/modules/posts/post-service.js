@@ -186,28 +186,27 @@ const createPublishedPost = async ({ apiKey, siteCode, title, slug, summary, con
             commentTargetTitle = selected.title;
         }
         else {
-            if (typeof contentRecord.articleSlug === "string") {
-                commentTargetSlug = contentRecord.articleSlug;
+            const target = await db_1.prisma.post.findFirst({
+                where: {
+                    siteId: site.id,
+                    content: { path: ["type"], equals: "article" },
+                    ...(typeof contentRecord.articleId === "string"
+                        ? { id: contentRecord.articleId }
+                        : {}),
+                    ...(typeof contentRecord.articleSlug === "string"
+                        ? { slug: contentRecord.articleSlug }
+                        : {}),
+                },
+                select: { id: true, slug: true, title: true },
+            });
+            if (!target) {
+                throw new api_error_1.ApiError(400, "Comment target article was not found for this site. Use a valid articleId or articleSlug.");
             }
-            if (typeof contentRecord.articleTitle === "string") {
-                commentTargetTitle = contentRecord.articleTitle;
-            }
-            if (!commentTargetSlug && typeof contentRecord.articleId === "string") {
-                const target = await db_1.prisma.post.findFirst({
-                    where: {
-                        id: contentRecord.articleId,
-                        siteId: site.id,
-                        content: { path: ["type"], equals: "article" },
-                    },
-                    select: { slug: true, title: true },
-                });
-                if (target) {
-                    commentTargetSlug = target.slug;
-                    commentTargetTitle = target.title;
-                    contentRecord.articleSlug = target.slug;
-                    contentRecord.articleTitle = target.title;
-                }
-            }
+            contentRecord.articleId = target.id;
+            contentRecord.articleSlug = target.slug;
+            contentRecord.articleTitle = target.title;
+            commentTargetSlug = target.slug;
+            commentTargetTitle = target.title;
         }
         if (!contentRecord.parentUrl && commentTargetSlug) {
             const frontendBaseUrl = (0, site_contract_1.getSiteFrontendBaseUrl)(site.config);
@@ -266,7 +265,7 @@ const createPublishedPost = async ({ apiKey, siteCode, title, slug, summary, con
     if (resolvedTask === "comment" && commentTargetSlug) {
         const articlePath = getTaskViewPath(site.config, "article");
         if (frontendBaseUrl) {
-            liveUrl = `${frontendBaseUrl}${articlePath}/${commentTargetSlug}#comment-${post.id}`;
+            liveUrl = `${frontendBaseUrl}${articlePath}/${commentTargetSlug}#comment-${post.slug}`;
         }
     }
     if (liveUrl) {
