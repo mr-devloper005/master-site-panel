@@ -23,13 +23,15 @@ router.post("/", (0, auth_1.requireApiKey)("posts:write"), (0, async_handler_1.a
     if (!apiKey) {
         throw new api_error_1.ApiError(401, "API key context missing.");
     }
-    const { siteCode, title, slug, summary, content, media, tags, authorName, externalPostId } = req.body;
+    const { siteCode, title, slug, summary, metaTitle, metaDescription, content, media, tags, authorName, externalPostId, } = req.body;
     const created = await (0, post_service_1.createPublishedPost)({
         apiKey,
         siteCode,
         title,
         slug,
         summary,
+        metaTitle,
+        metaDescription,
         content,
         media,
         tags,
@@ -133,7 +135,7 @@ router.patch("/:postId", (0, auth_1.requireApiKey)("posts:write"), (0, async_han
             throw new api_error_1.ApiError(403, "No posting access for this post's site.");
         }
     }
-    const { title, slug, summary, content, media, tags, authorName, status, publishedAt } = req.body;
+    const { title, slug, summary, metaTitle, metaDescription, content, media, tags, authorName, status, publishedAt } = req.body;
     const updateData = {};
     if (title !== undefined)
         updateData.title = title;
@@ -141,6 +143,10 @@ router.patch("/:postId", (0, auth_1.requireApiKey)("posts:write"), (0, async_han
         updateData.slug = slug;
     if (summary !== undefined)
         updateData.summary = summary;
+    if (metaTitle !== undefined)
+        updateData.metaTitle = metaTitle ? String(metaTitle).trim() : null;
+    if (metaDescription !== undefined)
+        updateData.metaDescription = metaDescription ? String(metaDescription).trim() : null;
     if (content !== undefined)
         updateData.content = content;
     if (media !== undefined)

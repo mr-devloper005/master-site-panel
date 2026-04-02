@@ -26,14 +26,27 @@ router.post("/", requireApiKey("posts:write"), asyncHandler(async (req, res) => 
       throw new ApiError(401, "API key context missing.");
     }
 
-    const { siteCode, title, slug, summary, content, media, tags, authorName, externalPostId } =
-      req.body;
+    const {
+      siteCode,
+      title,
+      slug,
+      summary,
+      metaTitle,
+      metaDescription,
+      content,
+      media,
+      tags,
+      authorName,
+      externalPostId,
+    } = req.body;
     const created = await createPublishedPost({
       apiKey,
       siteCode,
       title,
       slug,
       summary,
+      metaTitle,
+      metaDescription,
       content,
       media,
       tags,
@@ -148,12 +161,14 @@ router.patch("/:postId", requireApiKey("posts:write"), asyncHandler(async (req, 
     }
   }
 
-  const { title, slug, summary, content, media, tags, authorName, status, publishedAt } = req.body;
+  const { title, slug, summary, metaTitle, metaDescription, content, media, tags, authorName, status, publishedAt } = req.body;
   const updateData: Prisma.PostUpdateInput = {};
 
   if (title !== undefined) updateData.title = title;
   if (slug !== undefined) updateData.slug = slug;
   if (summary !== undefined) updateData.summary = summary;
+  if (metaTitle !== undefined) updateData.metaTitle = metaTitle ? String(metaTitle).trim() : null;
+  if (metaDescription !== undefined) updateData.metaDescription = metaDescription ? String(metaDescription).trim() : null;
   if (content !== undefined) updateData.content = content;
   if (media !== undefined) updateData.media = media;
   if (authorName !== undefined) updateData.authorName = authorName;

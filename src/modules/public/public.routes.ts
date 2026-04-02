@@ -106,6 +106,8 @@ router.get("/:siteCode/feed", asyncHandler(async (req, res) => {
       title: true,
       slug: true,
       summary: true,
+      metaTitle: true,
+      metaDescription: true,
       content: true,
       media: true,
       tags: true,

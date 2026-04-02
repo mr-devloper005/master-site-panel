@@ -6,6 +6,8 @@ const baseExample = {
     title: "Example post title",
     slug: "example-post-title",
     summary: "Short summary shown on cards and search results.",
+    metaTitle: "Custom SEO title for this page",
+    metaDescription: "Custom SEO description for this page. Search engines and social previews should prefer this when provided.",
     tags: ["seo", "content"],
     authorName: "Site Master Pro",
 };

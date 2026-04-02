@@ -38,8 +38,19 @@ const handleTaskPost = async ({
     throw new ApiError(401, "API key context missing.");
   }
 
-  const { siteCode: bodySiteCode, title, slug, summary, content, media, tags, authorName, externalPostId } =
-    req.body;
+  const {
+    siteCode: bodySiteCode,
+    title,
+    slug,
+    summary,
+    metaTitle,
+    metaDescription,
+    content,
+    media,
+    tags,
+    authorName,
+    externalPostId,
+  } = req.body;
   const resolvedSiteCode = siteCode || bodySiteCode;
 
   const created = await createPublishedPost({
@@ -48,6 +59,8 @@ const handleTaskPost = async ({
     title,
     slug,
     summary,
+    metaTitle,
+    metaDescription,
     content,
     media,
     tags,

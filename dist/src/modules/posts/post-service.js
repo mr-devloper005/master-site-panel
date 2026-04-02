@@ -102,7 +102,7 @@ const buildPostLiveUrl = (frontendBaseUrl, slug, siteConfig, task) => {
     return `${frontendBaseUrl}${path}/${slug}`;
 };
 exports.buildPostLiveUrl = buildPostLiveUrl;
-const createPublishedPost = async ({ apiKey, siteCode, title, slug, summary, content, media, tags, authorName, externalPostId, requestedTask, }) => {
+const createPublishedPost = async ({ apiKey, siteCode, title, slug, summary, metaTitle, metaDescription, content, media, tags, authorName, externalPostId, requestedTask, }) => {
     if (!siteCode || !title || !content) {
         throw new api_error_1.ApiError(400, "siteCode, title and content are required.");
     }
@@ -250,6 +250,8 @@ const createPublishedPost = async ({ apiKey, siteCode, title, slug, summary, con
             title,
             slug: resolvedSlug,
             summary,
+            metaTitle: metaTitle?.trim() || null,
+            metaDescription: metaDescription?.trim() || null,
             content: (contentRecord || content),
             media: (media ?? client_1.Prisma.JsonNull),
             tags: Array.isArray(tags) ? tags : [],

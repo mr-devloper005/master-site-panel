@@ -122,6 +122,8 @@ type CreatePublishedPostInput = {
   title: string;
   slug?: string | null;
   summary?: string | null;
+  metaTitle?: string | null;
+  metaDescription?: string | null;
   content: unknown;
   media?: unknown;
   tags?: unknown;
@@ -136,6 +138,8 @@ export const createPublishedPost = async ({
   title,
   slug,
   summary,
+  metaTitle,
+  metaDescription,
   content,
   media,
   tags,
@@ -319,6 +323,8 @@ export const createPublishedPost = async ({
       title,
       slug: resolvedSlug,
       summary,
+      metaTitle: metaTitle?.trim() || null,
+      metaDescription: metaDescription?.trim() || null,
       content: (contentRecord || content) as Prisma.InputJsonValue,
       media: (media ?? Prisma.JsonNull) as Prisma.InputJsonValue | typeof Prisma.JsonNull,
       tags: Array.isArray(tags) ? tags : [],
