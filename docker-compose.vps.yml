@@ -1,0 +1,42 @@
+services:
+  master_panel_db:
+    image: postgres:16-alpine
+    container_name: master_panel_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-masterpanel}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - master_panel_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-masterpanel}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  master_panel_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: master_panel_api
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@master_panel_db:5432/${POSTGRES_DB:-masterpanel}?schema=public
+      PORT: 4000
+      NODE_ENV: production
+    depends_on:
+      master_panel_db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${MASTER_PANEL_API_PORT:-4010}:4000"
+
+volumes:
+  master_panel_db_data:
+
+networks:
+  default:
+    external: true
+    name: seo_paradox_net
