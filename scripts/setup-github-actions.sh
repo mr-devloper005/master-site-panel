@@ -64,6 +64,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.2
@@ -74,6 +75,7 @@ jobs:
           username: ${{{{ secrets.VPS_USER }}}}
           key: ${{{{ secrets.VPS_SSH_KEY }}}}
           port: ${{{{ secrets.VPS_PORT }}}}
+          command_timeout: 35m
           envs: APP_ENV_PRODUCTION
           script: |
             set -euo pipefail
