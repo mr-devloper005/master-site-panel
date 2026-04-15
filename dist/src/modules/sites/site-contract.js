@@ -6,6 +6,7 @@ exports.SITE_TASKS = [
     "listing",
     "article",
     "image",
+    "mediaDistribution",
     "profile",
     "classified",
     "social",

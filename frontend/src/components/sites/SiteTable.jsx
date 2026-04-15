@@ -1,5 +1,22 @@
 import { Pencil, Trash2, Eye, KeyRound } from "lucide-react";
 
+const TASK_LABELS = {
+  listing: "Listing",
+  article: "Article",
+  image: "Images",
+  mediaDistribution: "Media Distribution",
+  profile: "Profile",
+  classified: "Classified",
+  social: "Social",
+  sbm: "SBM",
+  comment: "Comment",
+  pdf: "PDF",
+  org: "Organization",
+};
+
+const formatTasks = (tasks) =>
+  Array.isArray(tasks) && tasks.length ? tasks.map((task) => TASK_LABELS[task] || task).join(", ") : "-";
+
 export default function SiteTable({
   sites,
   selectedIds,
@@ -49,7 +66,7 @@ export default function SiteTable({
                 <td className="px-3 py-2 text-xs text-[var(--text-secondary)]">{site.code}</td>
                 <td className="px-3 py-2"><a className="text-blue-600" href={site.url} target="_blank" rel="noreferrer">{site.url}</a></td>
                 <td className="px-3 py-2 text-xs">
-                  <div>{site.supportedTasks?.join(", ") || "-"}</div>
+                  <div>{formatTasks(site.supportedTasks)}</div>
                   <div className="text-[var(--text-secondary)]">{site.framework}</div>
                 </td>
                 <td className="px-3 py-2 text-xs">
@@ -99,7 +116,7 @@ export default function SiteTable({
               <input type="checkbox" checked={selectedIds.includes(site.id)} onChange={() => onToggle(site.id)} />
             </div>
             <p className="mt-1 text-sm text-[var(--text-secondary)]">{site.description}</p>
-            <p className="mt-1 text-xs text-[var(--text-secondary)]">{site.supportedTasks?.join(", ") || "-"} · {site.framework}</p>
+            <p className="mt-1 text-xs text-[var(--text-secondary)]">{formatTasks(site.supportedTasks)} · {site.framework}</p>
             <p className="mt-1 text-xs text-[var(--text-secondary)]">Health: {site.runtime?.status || "NO_SIGNAL"}</p>
             <div className="mt-2 flex items-center justify-between text-xs">
               <span>{site.postCount} posts</span>

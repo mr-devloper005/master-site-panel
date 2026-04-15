@@ -16,6 +16,11 @@ const normalizeTaskValue = (value) => {
     if (normalized === "blog-commenting" || normalized === "blog_commenting") {
         return "comment";
     }
+    if (normalized === "mediadistribution" ||
+        normalized === "media-distribution" ||
+        normalized === "media_distribution") {
+        return "mediaDistribution";
+    }
     return normalized;
 };
 router.get("/keys", (0, auth_1.requireApiKey)("keys:write"), (0, async_handler_1.asyncHandler)(async (_req, res) => {

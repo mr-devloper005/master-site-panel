@@ -9,6 +9,19 @@ import { fetchApiKeys, issueSiteTaskToken } from "../utils/api";
 const badgeClass =
   "inline-flex items-center rounded-full border border-[var(--border-color)] bg-slate-50 px-2.5 py-1 text-xs dark:bg-slate-900/40";
 const TOKEN_CACHE_KEY = "site-master-task-tokens";
+const TASK_LABELS = {
+  listing: "Listing",
+  article: "Article",
+  image: "Images",
+  mediaDistribution: "Media Distribution",
+  profile: "Profile",
+  classified: "Classified",
+  social: "Social",
+  sbm: "SBM",
+  comment: "Comment",
+  pdf: "PDF",
+  org: "Organization",
+};
 
 const loadTokenCache = () => {
   try {
@@ -149,7 +162,7 @@ export default function Tasks() {
                       {taskRows.map((row) => (
                         <tr key={row.task} className="border-t border-[var(--border-color)]">
                           <td className="py-2 pr-4">
-                            <span className={badgeClass}>{row.task}</span>
+                            <span className={badgeClass}>{TASK_LABELS[row.task] || row.task}</span>
                           </td>
                           <td className="py-2 pr-4 font-mono text-xs">{row.endpoint}</td>
                           <td className="py-2 pr-4 text-xs">{row.keyName}</td>

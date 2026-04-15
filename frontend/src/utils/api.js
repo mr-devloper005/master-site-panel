@@ -90,6 +90,7 @@ const inferCategory = (post) => {
   const tags = Array.isArray(post.tags) ? post.tags.map((tag) => String(tag).toLowerCase()) : [];
 
   if (explicit.includes("listing") || tags.includes("listing")) return "Listing";
+  if (explicit.includes("mediadistribution") || explicit.includes("media-distribution")) return "Media Distribution";
   if (explicit.includes("article") || tags.includes("article") || tags.includes("blog")) return "Article";
   if (explicit.includes("gallery") || explicit.includes("image") || tags.includes("gallery")) return "Gallery";
   return "General";

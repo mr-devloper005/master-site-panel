@@ -21,6 +21,13 @@ const normalizeTaskValue = (value?: string | string[] | null): string | null => 
   if (normalized === "blog-commenting" || normalized === "blog_commenting") {
     return "comment";
   }
+  if (
+    normalized === "mediadistribution" ||
+    normalized === "media-distribution" ||
+    normalized === "media_distribution"
+  ) {
+    return "mediaDistribution";
+  }
   return normalized;
 };
 

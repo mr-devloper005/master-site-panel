@@ -3,15 +3,37 @@ import { useEffect, useState } from "react";
 import Modal from "../common/Modal";
 
 const frameworks = ["NEXT_JS", "REACT", "HTML_CSS_JS", "OTHER"];
-const categories = ["ARTICLE", "SBM", "IMAGE_SHARING", "LOCAL_LISTING", "MULTI_TASK", "PROFILE", "CUSTOM"];
-const taskOptions = ["listing", "article", "image", "profile", "classified", "social"];
-const siteTypes = ["listing", "article", "image", "profile", "social", "multi-task", "generic"];
+const categories = ["ARTICLE", "SBM", "IMAGE_SHARING", "LOCAL_LISTING", "MEDIA_DISTRIBUTION", "MULTI_TASK", "PROFILE", "CUSTOM"];
+const taskOptions = ["listing", "article", "image", "mediaDistribution", "profile", "classified", "social"];
+const siteTypes = ["listing", "article", "image", "media-distribution", "profile", "social", "multi-task", "generic"];
+
+const categoryLabels = {
+  ARTICLE: "Article",
+  SBM: "SBM",
+  IMAGE_SHARING: "Images",
+  LOCAL_LISTING: "Local Listing",
+  MEDIA_DISTRIBUTION: "Media Distribution",
+  MULTI_TASK: "Multi Task",
+  PROFILE: "Profile",
+  CUSTOM: "Custom",
+};
+
+const taskLabels = {
+  listing: "Listing",
+  article: "Article",
+  image: "Images",
+  mediaDistribution: "Media Distribution",
+  profile: "Profile",
+  classified: "Classified",
+  social: "Social",
+};
 
 const categoryDefaults = {
   ARTICLE: { siteType: "article", feedPath: "/articles" },
   SBM: { siteType: "social", feedPath: "/sbm" },
-  IMAGE_SHARING: { siteType: "image", feedPath: "/image-sharing" },
+  IMAGE_SHARING: { siteType: "image", feedPath: "/images" },
   LOCAL_LISTING: { siteType: "listing", feedPath: "/listings" },
+  MEDIA_DISTRIBUTION: { siteType: "media-distribution", feedPath: "/updates" },
   MULTI_TASK: { siteType: "multi-task", feedPath: "/" },
   PROFILE: { siteType: "profile", feedPath: "/profile" },
   CUSTOM: { siteType: "generic", feedPath: "/" },
@@ -144,7 +166,7 @@ export default function SiteFormModal({ open, onClose, onSubmit, editing }) {
           <div>
             <label className="mb-1 block text-sm">Category</label>
             <select className="w-full rounded-lg border border-[var(--border-color)] px-3 py-2" value={form.category} onChange={(e) => handleCategoryChange(e.target.value)}>
-              {categories.map((item) => <option key={item} value={item}>{item}</option>)}
+              {categories.map((item) => <option key={item} value={item}>{categoryLabels[item] || item}</option>)}
             </select>
           </div>
         </div>
@@ -209,7 +231,7 @@ export default function SiteFormModal({ open, onClose, onSubmit, editing }) {
             {taskOptions.map((task) => (
               <label key={task} className="inline-flex items-center gap-2 rounded-full border border-[var(--border-color)] px-3 py-1.5 text-sm">
                 <input type="checkbox" checked={form.supportedTasks.includes(task)} onChange={() => toggleTask(task)} />
-                {task}
+                {taskLabels[task] || task}
               </label>
             ))}
           </div>

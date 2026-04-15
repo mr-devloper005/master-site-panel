@@ -6,6 +6,7 @@ const ALL_TASKS = [
   "listing",
   "article",
   "image",
+  "mediaDistribution",
   "profile",
   "classified",
   "social",
@@ -14,6 +15,20 @@ const ALL_TASKS = [
   "pdf",
   "org",
 ];
+
+const TASK_LABELS = {
+  listing: "Listing",
+  article: "Article",
+  image: "Images",
+  mediaDistribution: "Media Distribution",
+  profile: "Profile",
+  classified: "Classified",
+  social: "Social",
+  sbm: "SBM",
+  comment: "Comment",
+  pdf: "PDF",
+  org: "Organization",
+};
 
 export default function SiteTaskModal({ open, onClose, site, onSubmit }) {
   const [task, setTask] = useState("");
@@ -62,7 +77,7 @@ export default function SiteTaskModal({ open, onClose, site, onSubmit }) {
             <option value="">Select task</option>
             {options.map((item) => (
               <option key={item} value={item}>
-                {item}
+                {TASK_LABELS[item] || item}
               </option>
             ))}
           </select>
@@ -93,7 +108,5 @@ export default function SiteTaskModal({ open, onClose, site, onSubmit }) {
     </Modal>
   );
 }
-
-
 
 

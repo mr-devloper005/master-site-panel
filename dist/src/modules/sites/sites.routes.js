@@ -17,11 +17,29 @@ const backendBaseUrl = () => (0, base_url_1.getBaseUrl)();
 const SITEMAP_TIMEOUT_MS = 8000;
 const SEO_TIMEOUT_MS = 9000;
 const LINK_HEALTH_TIMEOUT_MS = 15000;
+const normalizeSiteCategory = (value) => {
+    if (typeof value !== "string")
+        return undefined;
+    const normalized = value.trim().toUpperCase();
+    if (normalized === "IMAGES")
+        return client_1.SiteCategory.IMAGE_SHARING;
+    if (normalized === "MEDIA_DISTRIBUTION" || normalized === "MEDIADISTRIBUTION") {
+        return client_1.SiteCategory.MEDIA_DISTRIBUTION;
+    }
+    if (normalized in client_1.SiteCategory)
+        return normalized;
+    return undefined;
+};
 const normalizeTaskValue = (value) => {
     const raw = Array.isArray(value) ? value[0] : value;
     const normalized = String(raw || "").trim().toLowerCase();
     if (normalized === "blog-commenting" || normalized === "blog_commenting") {
         return "comment";
+    }
+    if (normalized === "mediadistribution" ||
+        normalized === "media-distribution" ||
+        normalized === "media_distribution") {
+        return "mediaDistribution";
     }
     return normalized;
 };
@@ -318,8 +336,9 @@ router.get("/", (0, auth_1.requireApiKey)("sites:read"), (0, async_handler_1.asy
     if (framework && framework in client_1.SiteFramework) {
         where.framework = framework;
     }
-    if (category && category in client_1.SiteCategory) {
-        where.category = category;
+    const normalizedCategory = normalizeSiteCategory(category);
+    if (normalizedCategory) {
+        where.category = normalizedCategory;
     }
     if (isActive === "true" || isActive === "false") {
         where.isActive = isActive === "true";
@@ -761,7 +780,7 @@ router.get("/:siteId/seo-status", (0, auth_1.requireApiKey)("sites:read"), (0, a
         `${frontendUrl}/listings`,
         `${frontendUrl}/articles`,
         `${frontendUrl}/classifieds`,
-        `${frontendUrl}/image-sharing`,
+        `${frontendUrl}/images`,
         `${frontendUrl}/social`,
         `${frontendUrl}/social-bookmarking`,
         `${frontendUrl}/profile`,
@@ -1186,7 +1205,8 @@ router.post("/", (0, auth_1.requireApiKey)("sites:write"), (0, async_handler_1.a
     if (!(framework in client_1.SiteFramework)) {
         throw new api_error_1.ApiError(400, "Invalid framework value.");
     }
-    if (!(category in client_1.SiteCategory)) {
+    const normalizedCategory = normalizeSiteCategory(category);
+    if (!normalizedCategory) {
         throw new api_error_1.ApiError(400, "Invalid category value.");
     }
     const sanitizedConfig = (0, site_contract_1.sanitizeSiteConfig)(config);
@@ -1195,7 +1215,7 @@ router.post("/", (0, auth_1.requireApiKey)("sites:write"), (0, async_handler_1.a
             code,
             name,
             framework,
-            category,
+            category: normalizedCategory,
             theme,
             config: sanitizedConfig,
         },
@@ -1427,10 +1447,11 @@ router.patch("/:siteId", (0, auth_1.requireApiKey)("sites:write"), (0, async_han
         updateData.framework = framework;
     }
     if (category !== undefined) {
-        if (!(category in client_1.SiteCategory)) {
+        const normalizedCategory = normalizeSiteCategory(category);
+        if (!normalizedCategory) {
             throw new api_error_1.ApiError(400, "Invalid category value.");
         }
-        updateData.category = category;
+        updateData.category = normalizedCategory;
     }
     const site = await db_1.prisma.site.update({
         where: { id: siteId },

@@ -15,6 +15,11 @@ const normalizeTaskValue = (value) => {
     if (normalized === "blog-commenting" || normalized === "blog_commenting") {
         return "comment";
     }
+    if (normalized === "mediadistribution" ||
+        normalized === "media-distribution" ||
+        normalized === "media_distribution") {
+        return "mediaDistribution";
+    }
     return normalized;
 };
 const handleTaskPost = async ({ task, siteCode, req, res, }) => {

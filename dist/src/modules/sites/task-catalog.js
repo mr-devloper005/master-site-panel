@@ -57,6 +57,19 @@ const taskPayloads = {
             { url: "https://example.com/gallery-2.jpg", type: "IMAGE" },
         ],
     },
+    mediaDistribution: {
+        ...baseExample,
+        content: {
+            type: "mediaDistribution",
+            category: "Business",
+            description: "Simple newsroom-style post body for announcements, updates, and media coverage.",
+            excerpt: "Short summary for the homepage and archive feed.",
+            featuredImage: "https://example.com/media-distribution-cover.jpg",
+            publicationName: "Example Media Desk",
+            sourceUrl: "https://example.com/announcement",
+        },
+        media: [{ url: "https://example.com/media-distribution-cover.jpg", type: "IMAGE" }],
+    },
     profile: {
         ...baseExample,
         content: {
@@ -139,6 +152,7 @@ const taskDescriptions = {
     listing: "Service, business, or marketplace listings with commercial metadata.",
     article: "Editorial posts, blog articles, and knowledge content.",
     image: "Image-first posts and gallery content.",
+    mediaDistribution: "Newswire-style updates, announcements, and media distribution posts.",
     profile: "Profile and business identity pages.",
     classified: "Classified or short offer-style content.",
     social: "Short-form social or campaign posts.",
@@ -159,9 +173,14 @@ const taskUsage = {
         "This token is scoped to the selected site and article task only.",
     ],
     image: [
-        "Use this for gallery, portfolio, or image-sharing style posts.",
+        "Use this for gallery, portfolio, or image-based posts.",
         "Send every image in media[] so the frontend gallery can render cleanly.",
         "This token is scoped to the selected site and image task only.",
+    ],
+    mediaDistribution: [
+        "Use this for newsroom-style updates, announcement posts, and media distribution publishing.",
+        "Keep the post body inside content.description or your rich content payload, and include the lead image in media[].",
+        "This token is scoped to the selected site and mediaDistribution task only.",
     ],
     profile: [
         "Use this for profile pages, business identity pages, or local profile content.",
@@ -210,7 +229,7 @@ const buildTaskProvisioningGuide = (task, siteCode, backendBaseUrl) => {
     };
     return {
         task,
-        label: task.charAt(0).toUpperCase() + task.slice(1),
+        label: task === "mediaDistribution" ? "Media Distribution" : task.charAt(0).toUpperCase() + task.slice(1),
         description: taskDescriptions[task],
         endpointPath: siteEndpointPath,
         endpoint: siteEndpoint,

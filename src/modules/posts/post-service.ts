@@ -31,6 +31,13 @@ const normalizeTaskValue = (value?: string | null): string | null => {
   if (normalized === "blog-commenting" || normalized === "blog_commenting") {
     return "comment";
   }
+  if (
+    normalized === "mediadistribution" ||
+    normalized === "media-distribution" ||
+    normalized === "media_distribution"
+  ) {
+    return "mediaDistribution";
+  }
   return normalized;
 };
 
@@ -45,7 +52,8 @@ const getTaskViewPath = (siteConfig: unknown, task: SiteTask | null) => {
     listing: "/listings",
     classified: "/classifieds",
     article: "/articles",
-    image: "/image-sharing",
+    image: "/images",
+    mediaDistribution: "/updates",
     profile: "/profile",
     social: "/community",
     sbm: "/sbm",
@@ -64,8 +72,9 @@ const buildRevalidatePaths = (siteConfig: unknown, slug?: string | null, task?: 
   paths.add(`/posts/${slug}`);
   paths.add("/listings");
   paths.add("/articles");
+  paths.add("/updates");
   paths.add("/classifieds");
-  paths.add("/image-sharing");
+  paths.add("/images");
   paths.add("/profile");
   paths.add("/sbm");
   paths.add("/pdf");
