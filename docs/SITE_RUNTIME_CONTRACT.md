@@ -37,3 +37,6 @@ The panel should be able to track:
 
 ## Non-goal
 This contract does not prescribe visual layout. It exists to standardize operations and SEO at scale.
+
+
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIILlCGnC7jtL2GuGuJrocRU3kSDNILa/XfpjWpGzDK3N media-vps-github

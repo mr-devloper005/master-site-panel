@@ -1,0 +1,2617 @@
+[
+  {
+    "repo": "24x7newspress.com",
+    "code": "n8ol4yatbt",
+    "name": "24 X 7 Newspress",
+    "tagline": "Independent media updates",
+    "domain": "24x7newspress.com",
+    "url": "https://24x7newspress.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on 24 X 7 Newspress.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "aerialmatrix.com",
+    "code": "am2x8v4q7m",
+    "name": "Aerial Matrix",
+    "tagline": "Visual-first showcases and media posts",
+    "domain": "aerialmatrix.com",
+    "url": "https://aerialmatrix.com",
+    "description": "An image-led publishing site for showcases, visual collections, and gallery-style posts.",
+    "tasks": [
+      "image"
+    ],
+    "category": "IMAGE_SHARING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "agasbistro.com",
+    "code": "ab7m4v8q2x",
+    "name": "Agas Bistro",
+    "tagline": "Business listing platform",
+    "domain": "agasbistro.com",
+    "url": "https://agasbistro.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "aidteck.com",
+    "code": "bnd4acecef",
+    "name": "Aidteck",
+    "tagline": "Article platform",
+    "domain": "aidteck.com",
+    "url": "https://aidteck.com",
+    "description": "A article site for Aidteck, built for clean discovery and structured publishing.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "alefcoach.com",
+    "code": "3fxxsmjztv",
+    "name": "Alef Coach",
+    "tagline": "Editorial stories and insights",
+    "domain": "alefcoach.com",
+    "url": "https://alefcoach.com",
+    "description": "A reading-first article platform for essays, guides, opinions, and long-form publishing.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "alwadidates.com",
+    "code": "3fqjbz14e7",
+    "name": "Alwadidates",
+    "tagline": "SBM , Profile platform",
+    "domain": "alwadidates.com",
+    "url": "https://alwadidates.com",
+    "description": "A sbm , profile site for Alwadidates, built for clean discovery and structured publishing.",
+    "tasks": [
+      "profile",
+      "sbm"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "apcreatiu.com",
+    "code": "v7kq2m9x",
+    "name": "Apcreatiu",
+    "tagline": "Business listings & discovery",
+    "domain": "apcreatiu.com",
+    "url": "https://apcreatiu.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "aporiakennels.com",
+    "code": "ak4q8x2m7v",
+    "name": "Aporia Kennels",
+    "tagline": "Showcase images and featured highlights",
+    "domain": "aporiakennels.com",
+    "url": "https://aporiakennels.com",
+    "description": "A visual-first site designed for image-led showcases, updates, and gallery browsing.",
+    "tasks": [
+      "image"
+    ],
+    "category": "IMAGE_SHARING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "arcanumwebs.com",
+    "code": "aw7v2m9q4x",
+    "name": "Arcanum Webs",
+    "tagline": "Editorial publishing with a sharper voice",
+    "domain": "arcanumwebs.com",
+    "url": "https://arcanumwebs.com",
+    "description": "An article-focused platform for insight-driven publishing, commentary, and feature writing.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "authixo.com",
+    "code": "4p64jqmx8o",
+    "name": "Authixo",
+    "tagline": "Independent media updates",
+    "domain": "authixo.com",
+    "url": "https://authixo.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Authixo.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "authorityxa.com",
+    "code": "f955vfu9tm",
+    "name": "Authorityxa",
+    "tagline": "Independent media updates",
+    "domain": "authorityxa.com",
+    "url": "https://authorityxa.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Authorityxa.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "beingadviser.com",
+    "code": "bd8q2m7x4v",
+    "name": "Being Adviser",
+    "tagline": "Business listing platform",
+    "domain": "beingadviser.com",
+    "url": "https://beingadviser.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "bestpressnews.com",
+    "code": "4azpfk7bp0",
+    "name": "Bestpressnews",
+    "tagline": "Independent media updates",
+    "domain": "bestpressnews.com",
+    "url": "https://bestpressnews.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Bestpressnews.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "bestprnews24.com",
+    "code": "00y43amk68",
+    "name": "Bestprnews 24",
+    "tagline": "Independent media updates",
+    "domain": "bestprnews24.com",
+    "url": "https://bestprnews24.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Bestprnews 24.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "bharatamayu.com",
+    "code": "ba9q4m7x2v",
+    "name": "Bharat Amayu",
+    "tagline": "Business listing platform",
+    "domain": "bharatamayu.com",
+    "url": "https://bharatamayu.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "profile",
+      "sbm"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "blogmiki.com",
+    "code": "4ckgtndj82",
+    "name": "Blog Miki",
+    "tagline": "Editorial stories and insights",
+    "domain": "blogmiki.com",
+    "url": "https://blogmiki.com",
+    "description": "A reading-first article platform for essays, guides, opinions, and long-form publishing.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "bokunotrends.com",
+    "code": "bt4q9x2m7v",
+    "name": "Bokuno Trends",
+    "tagline": "Business listing platform",
+    "domain": "bokunotrends.com",
+    "url": "https://bokunotrends.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "cabanalaemilia.com",
+    "code": "ca7m4x9q2v",
+    "name": "Caban Ala Emilia",
+    "tagline": "Visual stories and booking-ready discovery",
+    "domain": "cabanalaemilia.com",
+    "url": "https://cabanalaemilia.com",
+    "description": "An image-first discovery site for hospitality visuals, featured properties, and business listings.",
+    "tasks": [
+      "listing",
+      "image"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "callgadgets.com",
+    "code": "cg4x9m2q7v",
+    "name": "Call Gadgets",
+    "tagline": "Deals, drops, and image-led gadget finds",
+    "domain": "callgadgets.com",
+    "url": "https://callgadgets.com",
+    "description": "A fast-moving marketplace-style platform for gadget classifieds, image-led posts, and product discoveries.",
+    "tasks": [
+      "classified",
+      "image"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "celebriches.com",
+    "code": "cb7v2q8m4x",
+    "name": "Celebriches",
+    "tagline": "Business listing platform",
+    "domain": "celebriches.com",
+    "url": "https://celebriches.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "profile",
+      "sbm"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "choicemakerscrew.com",
+    "code": "jmhn2dfxz4",
+    "name": "Choice Makers Crew",
+    "tagline": "Editorial stories and insights",
+    "domain": "choicemakerscrew.com",
+    "url": "https://choicemakerscrew.com",
+    "description": "A reading-first article platform for essays, guides, opinions, and long-form publishing.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "choose-your-car.com",
+    "code": "cy6v8q2m4x",
+    "name": "Choose Your Car",
+    "tagline": "Compare listings and browse active auto deals",
+    "domain": "choose-your-car.com",
+    "url": "https://choose-your-car.com",
+    "description": "A structured automotive discovery platform combining business listings with active classified inventory.",
+    "tasks": [
+      "listing",
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "codepixelmedia.com",
+    "code": "q8v1m4kx",
+    "name": "Code Pixel Media",
+    "tagline": "Business listing platform",
+    "domain": "codepixelmedia.com",
+    "url": "https://codepixelmedia.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "comtelesis.net",
+    "code": "comtelesis",
+    "name": "ComTelesis",
+    "tagline": "Independent article publication",
+    "domain": "comtelesis.net",
+    "url": "https://comtelesis.net",
+    "description": "A fully article-first publication for essays, insights, analysis, and curated reading across topics and contributors.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "creationtable.com",
+    "code": "xjex0s30s1",
+    "name": "Creationtable",
+    "tagline": "Image + Profile platform",
+    "domain": "creationtable.com",
+    "url": "https://creationtable.com",
+    "description": "A image + profile site for Creationtable, built for clean discovery and structured publishing.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "currentprpress.com",
+    "code": "p1ek5iqqxj",
+    "name": "Currentprpress",
+    "tagline": "Independent media updates",
+    "domain": "currentprpress.com",
+    "url": "https://currentprpress.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Currentprpress.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "dailyhubglobal.com",
+    "code": "4acww0g5o2",
+    "name": "Dailyhubglobal",
+    "tagline": "Independent media updates",
+    "domain": "dailyhubglobal.com",
+    "url": "https://dailyhubglobal.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Dailyhubglobal.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "dailytrendpress.com",
+    "code": "fyvzw7y1ku",
+    "name": "Dailytrendpress",
+    "tagline": "Independent media updates",
+    "domain": "dailytrendpress.com",
+    "url": "https://dailytrendpress.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Dailytrendpress.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "datazynxllc.com",
+    "code": "8mv0ihf1rx",
+    "name": "Datazynxllc",
+    "tagline": "Listing platform",
+    "domain": "datazynxllc.com",
+    "url": "https://datazynxllc.com",
+    "description": "A listing site for Datazynxllc, built for clean discovery and structured publishing.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "devcybernexus.com",
+    "code": "dc8v4q2m7x",
+    "name": "Dev Cyber Nexus",
+    "tagline": "Cybersecurity insights and technical articles",
+    "domain": "devcybernexus.com",
+    "url": "https://devcybernexus.com",
+    "description": "An editorial platform for publishing technical articles, product commentary, and cybersecurity-focused insights.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "digitalvirtuose.com",
+    "code": "uq3jnkf9yb",
+    "name": "Digitalvirtuose",
+    "tagline": "Listing platform",
+    "domain": "digitalvirtuose.com",
+    "url": "https://digitalvirtuose.com",
+    "description": "A listing site for Digitalvirtuose, built for clean discovery and structured publishing.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "djlservicios.com",
+    "code": "dj6x4q8m2v",
+    "name": "DJL Servicios",
+    "tagline": "Local classifieds & services",
+    "domain": "djlservicios.com",
+    "url": "https://djlservicios.com",
+    "description": "Post and browse real classified ads in your area: home services, jobs, items for sale, rentals, and local deals. Search by keyword, filter by category, and contact sellers directly from each listing.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "dlkautoparts.com",
+    "code": "da8m4q7v2x",
+    "name": "DLK Auto Parts",
+    "tagline": "Business listing platform",
+    "domain": "dlkautoparts.com",
+    "url": "https://dlkautoparts.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "dotsdeveloper.com",
+    "code": "acws7qn8hm",
+    "name": "Dots Developer",
+    "tagline": "Editorial stories and insights",
+    "domain": "dotsdeveloper.com",
+    "url": "https://dotsdeveloper.com",
+    "description": "A reading-first article platform for essays, guides, opinions, and long-form publishing.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "earthskydesign.com",
+    "code": "7q611x3ckp",
+    "name": "Earthskydesign",
+    "tagline": "Image + Social Profile platform",
+    "domain": "earthskydesign.com",
+    "url": "https://earthskydesign.com",
+    "description": "A image + social profile site for Earthskydesign, built for clean discovery and structured publishing.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "elitepressa.com",
+    "code": "zrxq3yq26q",
+    "name": "Elite Pressa",
+    "tagline": "Independent media updates",
+    "domain": "elitepressa.com",
+    "url": "https://elitepressa.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Elite Pressa.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "enginecrib.com",
+    "code": "enginecrib",
+    "name": "EngineCrib",
+    "tagline": "Business listing platform",
+    "domain": "enginecrib.com",
+    "url": "https://enginecrib.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "ethicsites.com",
+    "code": "zq23bs9wgs",
+    "name": "Ethicsites",
+    "tagline": "PDF + Profile platform",
+    "domain": "ethicsites.com",
+    "url": "https://ethicsites.com",
+    "description": "A pdf + profile site for Ethicsites, built for clean discovery and structured publishing.",
+    "tasks": [
+      "profile",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "expressainewsdaily.com",
+    "code": "sfvh06zltv",
+    "name": "Expressainewsdaily",
+    "tagline": "Independent media updates",
+    "domain": "expressainewsdaily.com",
+    "url": "https://expressainewsdaily.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Expressainewsdaily.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "feedopr.com",
+    "code": "eimxpghq85",
+    "name": "Feedopr",
+    "tagline": "Independent media updates",
+    "domain": "feedopr.com",
+    "url": "https://feedopr.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Feedopr.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "fflowlink.com",
+    "code": "fjkb3lw2rs",
+    "name": "Fflowlink",
+    "tagline": "Article platform",
+    "domain": "fflowlink.com",
+    "url": "https://fflowlink.com",
+    "description": "A article site for Fflowlink, built for clean discovery and structured publishing.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "finscoastal.com",
+    "code": "finscoastal",
+    "name": "Fins Coastal",
+    "tagline": "Business listing platform",
+    "domain": "finscoastal.com",
+    "url": "https://finscoastal.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "fluxyogaretreats.com",
+    "code": "5psvhebc8g",
+    "name": "Flux Yoga Retreats",
+    "tagline": "Visual profiles and image-led discovery",
+    "domain": "fluxyogaretreats.com",
+    "url": "https://fluxyogaretreats.com",
+    "description": "An image-first platform for galleries, creator profiles, and visually driven discovery.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "fullprokey.com",
+    "code": "fp9q2x7m4v",
+    "name": "Full Pro Key",
+    "tagline": "Direct classifieds and buyer-ready posts",
+    "domain": "fullprokey.com",
+    "url": "https://fullprokey.com",
+    "description": "A no-frills classified platform for practical offers, deals, and quick discovery.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "futurethey.com",
+    "code": "ft7m4q8x2v",
+    "name": "Future They",
+    "tagline": "Forward-looking stories and commentary",
+    "domain": "futurethey.com",
+    "url": "https://futurethey.com",
+    "description": "A clean editorial site for future-focused articles, stories, and perspective pieces.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "globalbriefingai.com",
+    "code": "p9r0vd3fr3",
+    "name": "Globalbriefingai",
+    "tagline": "Independent media updates",
+    "domain": "globalbriefingai.com",
+    "url": "https://globalbriefingai.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Globalbriefingai.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "globalnewsdock.com",
+    "code": "1ynmhb0zdn",
+    "name": "Globalnewsdock",
+    "tagline": "Independent media updates",
+    "domain": "globalnewsdock.com",
+    "url": "https://globalnewsdock.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Globalnewsdock.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "globalpressy.com",
+    "code": "wfk5fi68b3",
+    "name": "Global Pressy",
+    "tagline": "Independent media updates",
+    "domain": "globalpressy.com",
+    "url": "https://globalpressy.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Global Pressy.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "growthixa.com",
+    "code": "qpzsrstilh",
+    "name": "Growthixa",
+    "tagline": "Independent media updates",
+    "domain": "growthixa.com",
+    "url": "https://growthixa.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Growthixa.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "habibyasmaharun.com",
+    "code": "k4a910n0j1",
+    "name": "Habibyasmaharun",
+    "tagline": "Classified platform",
+    "domain": "habibyasmaharun.com",
+    "url": "https://habibyasmaharun.com",
+    "description": "A classified site for Habibyasmaharun, built for clean discovery and structured publishing.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "happysignups.com",
+    "code": "259b0233yz",
+    "name": "Happysignups",
+    "tagline": "Listing platform",
+    "domain": "happysignups.com",
+    "url": "https://happysignups.com",
+    "description": "A listing site for Happysignups, built for clean discovery and structured publishing.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "helloartcity.com",
+    "code": "thufpa2gp8",
+    "name": "Hello Art City",
+    "tagline": "Visual profiles and image-led discovery",
+    "domain": "helloartcity.com",
+    "url": "https://helloartcity.com",
+    "description": "An image-first platform for galleries, creator profiles, and visually driven discovery.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "herotherblog.com",
+    "code": "rzeqiand5b",
+    "name": "Herotherblog",
+    "tagline": "PDF + Profile platform",
+    "domain": "herotherblog.com",
+    "url": "https://herotherblog.com",
+    "description": "A pdf + profile site for Herotherblog, built for clean discovery and structured publishing.",
+    "tasks": [
+      "profile",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "hiddengemsreno.com",
+    "code": "47hed3cu5a",
+    "name": "Hidden Gems Reno",
+    "tagline": "Visual profiles and image-led discovery",
+    "domain": "hiddengemsreno.com",
+    "url": "https://hiddengemsreno.com",
+    "description": "An image-first platform for galleries, creator profiles, and visually driven discovery.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "housesdecors.com",
+    "code": "hd9m2q7x4v",
+    "name": "Houses Decors",
+    "tagline": "Image-led home and decor inspiration",
+    "domain": "housesdecors.com",
+    "url": "https://housesdecors.com",
+    "description": "A gallery-style site for visual inspiration, design images, and decor discovery.",
+    "tasks": [
+      "image"
+    ],
+    "category": "IMAGE_SHARING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "hubusatoday.com",
+    "code": "7tb0tmyino",
+    "name": "Hubusatoday",
+    "tagline": "Independent media updates",
+    "domain": "hubusatoday.com",
+    "url": "https://hubusatoday.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Hubusatoday.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "hutdailynews.com",
+    "code": "zsyi08145i",
+    "name": "Hutdaily News",
+    "tagline": "Independent media updates",
+    "domain": "hutdailynews.com",
+    "url": "https://hutdailynews.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Hutdaily News.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "ideovera.com",
+    "code": "et5bb5xy6l",
+    "name": "Ideovera",
+    "tagline": "Listing platform",
+    "domain": "ideovera.com",
+    "url": "https://ideovera.com",
+    "description": "A listing site for Ideovera, built for clean discovery and structured publishing.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "infoplatforms.com",
+    "code": "if7m2q9x4v",
+    "name": "Info Platforms",
+    "tagline": "Reports, articles, and resource publishing",
+    "domain": "infoplatforms.com",
+    "url": "https://infoplatforms.com",
+    "description": "A clean publication platform for articles, insights, and downloadable PDF resources.",
+    "tasks": [
+      "article",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "iodailynews.com",
+    "code": "5qmn2ecm2v",
+    "name": "Iodailynews",
+    "tagline": "Independent media updates",
+    "domain": "iodailynews.com",
+    "url": "https://iodailynews.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Iodailynews.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "isanexpert.com",
+    "code": "sarpaeva1f",
+    "name": "Isanexpert",
+    "tagline": "Listing platform",
+    "domain": "isanexpert.com",
+    "url": "https://isanexpert.com",
+    "description": "A listing site for Isanexpert, built for clean discovery and structured publishing.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "jagothemes.com",
+    "code": "uykvjsiujt",
+    "name": "Jagothemes",
+    "tagline": "Classified platform",
+    "domain": "jagothemes.com",
+    "url": "https://jagothemes.com",
+    "description": "A classified site for Jagothemes, built for clean discovery and structured publishing.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "jiyinaicha.com",
+    "code": "vhprfoaudu",
+    "name": "Jiyinaicha",
+    "tagline": "Classified platform",
+    "domain": "jiyinaicha.com",
+    "url": "https://jiyinaicha.com",
+    "description": "A classified site for Jiyinaicha, built for clean discovery and structured publishing.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "josephlaoutaris.com",
+    "code": "r0n8xm9qza",
+    "name": "Josephlaoutaris",
+    "tagline": "Article , Social profile platform",
+    "domain": "josephlaoutaris.com",
+    "url": "https://josephlaoutaris.com",
+    "description": "A article , social profile site for Josephlaoutaris, built for clean discovery and structured publishing.",
+    "tasks": [
+      "article",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "josoore.com",
+    "code": "qxyk67pyu8",
+    "name": "Josoore",
+    "tagline": "Editorial stories and insights",
+    "domain": "josoore.com",
+    "url": "https://josoore.com",
+    "description": "A reading-first article platform for essays, guides, opinions, and long-form publishing.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "kayosportconnect.com",
+    "code": "ks5x9q2m4v",
+    "name": "Kayo Sport Connect",
+    "tagline": "Visual sports moments and fresh coverage",
+    "domain": "kayosportconnect.com",
+    "url": "https://kayosportconnect.com",
+    "description": "A media-led platform combining image-focused discovery with article-based sports coverage.",
+    "tasks": [
+      "article",
+      "image"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "khaosaddon.com",
+    "code": "khaosaddon",
+    "name": "Khaos Addon",
+    "tagline": "Business listing platform",
+    "domain": "khaosaddon.com",
+    "url": "https://khaosaddon.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "ladyframe.com",
+    "code": "qr3tw8nsjq",
+    "name": "Lady Frame",
+    "tagline": "Profile-first community discovery",
+    "domain": "ladyframe.com",
+    "url": "https://ladyframe.com",
+    "description": "A profile-led platform for public identity, updates, and social discovery.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "lakesforocean.com",
+    "code": "6ynahtnp2u",
+    "name": "Lakes For Ocean",
+    "tagline": "Visual profiles and image-led discovery",
+    "domain": "lakesforocean.com",
+    "url": "https://lakesforocean.com",
+    "description": "An image-first platform for galleries, creator profiles, and visually driven discovery.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "lasheminence.com",
+    "code": "le8q4x7m2v",
+    "name": "Lash Eminence",
+    "tagline": "Business listing platform",
+    "domain": "lasheminence.com",
+    "url": "https://lasheminence.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "lashisking.com",
+    "code": "lk4v8m2q7x",
+    "name": "Lash Is King",
+    "tagline": "Business listing platform",
+    "domain": "lashisking.com",
+    "url": "https://lashisking.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "leavesinluxe.com",
+    "code": "ll7x2v9q4m",
+    "name": "Leaves In Luxe",
+    "tagline": "Business listing platform",
+    "domain": "leavesinluxe.com",
+    "url": "https://leavesinluxe.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "image"
+    ],
+    "category": "IMAGE_SHARING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "linedesing.com",
+    "code": "th8c7gywv7",
+    "name": "Line Desing",
+    "tagline": "Visual profiles and image-led discovery",
+    "domain": "linedesing.com",
+    "url": "https://linedesing.com",
+    "description": "An image-first platform for galleries, creator profiles, and visually driven discovery.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "lodenews.com",
+    "code": "ln7x4v2q9m",
+    "name": "Lode News",
+    "tagline": "Local classifieds & marketplace",
+    "domain": "lodenews.com",
+    "url": "https://lodenews.com",
+    "description": "Lode News runs a premium local classifieds marketplace: buy and sell vehicles, housing, electronics, and services with clear photos, pricing, and contact details\u2014built for fast browsing and serious buyers.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "macphersonweb.com",
+    "code": "camzx0t2te",
+    "name": "Macphersonweb",
+    "tagline": "PDF + Profile platform",
+    "domain": "macphersonweb.com",
+    "url": "https://macphersonweb.com",
+    "description": "A pdf + profile site for Macphersonweb, built for clean discovery and structured publishing.",
+    "tasks": [
+      "profile",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "marketingsspot.com",
+    "code": "8k95pv27i1",
+    "name": "Marketingsspot",
+    "tagline": "Listing platform",
+    "domain": "marketingsspot.com",
+    "url": "https://marketingsspot.com",
+    "description": "A listing site for Marketingsspot, built for clean discovery and structured publishing.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "mattralston.net",
+    "code": "mattralston",
+    "name": "Matt R Alston",
+    "tagline": "Business listing platform",
+    "domain": "mattralston.net",
+    "url": "https://mattralston.net",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "profile"
+    ],
+    "category": "PROFILE",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "maytapbung.net",
+    "code": "hu4ks6uhma",
+    "name": "Maytapbung",
+    "tagline": "Listing platform",
+    "domain": "maytapbung.net",
+    "url": "https://maytapbung.net",
+    "description": "A listing site for Maytapbung, built for clean discovery and structured publishing.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "media24press.com",
+    "code": "0poxzufj79",
+    "name": "Media 24 Press",
+    "tagline": "Independent media updates",
+    "domain": "media24press.com",
+    "url": "https://media24press.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Media 24 Press.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "medianewsqo.com",
+    "code": "ak4tkg1y3c",
+    "name": "Medianewsqo",
+    "tagline": "Independent media updates",
+    "domain": "medianewsqo.com",
+    "url": "https://medianewsqo.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Medianewsqo.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "mediasoctrend.com",
+    "code": "gv6wsf0yk4",
+    "name": "Media Soc Trend",
+    "tagline": "Independent media updates",
+    "domain": "mediasoctrend.com",
+    "url": "https://mediasoctrend.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Media Soc Trend.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "mediavoxer.com",
+    "code": "6sa6k1dz0g",
+    "name": "Mediavoxer",
+    "tagline": "Independent media updates",
+    "domain": "mediavoxer.com",
+    "url": "https://mediavoxer.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Mediavoxer.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "mediyahub.com",
+    "code": "x4fp4f7hhk",
+    "name": "Mediya Hub",
+    "tagline": "Independent media updates",
+    "domain": "mediyahub.com",
+    "url": "https://mediyahub.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Mediya Hub.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "mediyao.com",
+    "code": "dw3kvz5v2n",
+    "name": "Mediyao",
+    "tagline": "Independent media updates",
+    "domain": "mediyao.com",
+    "url": "https://mediyao.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Mediyao.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "meivera.com",
+    "code": "mv4x9q2k7p",
+    "name": "Meivera",
+    "tagline": "Curated bookmarking and profile discovery",
+    "domain": "meivera.com",
+    "url": "https://meivera.com",
+    "description": "A social bookmarking platform focused on saved resources, curated collections, and profile-led discovery.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "mikebrewereconomics.com",
+    "code": "mikebrewereconomics",
+    "name": "Mike Brewer Economics",
+    "tagline": "Business listing platform",
+    "domain": "mikebrewereconomics.com",
+    "url": "https://mikebrewereconomics.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "mikegabsolution.com",
+    "code": "fcxna4mpaw",
+    "name": "Mikegabsolution",
+    "tagline": "Classified platform",
+    "domain": "mikegabsolution.com",
+    "url": "https://mikegabsolution.com",
+    "description": "A classified site for Mikegabsolution, built for clean discovery and structured publishing.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "mindful-lotus.com",
+    "code": "kdrek80ng6",
+    "name": "Mindful Lotus",
+    "tagline": "Article platform",
+    "domain": "mindful-lotus.com",
+    "url": "https://mindful-lotus.com",
+    "description": "A article site for Mindful Lotus, built for clean discovery and structured publishing.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "miplaninvu.com",
+    "code": "mi4x8q2v7k",
+    "name": "Mi Plan Invu",
+    "tagline": "Top-rated business listings on miplaninvu.com",
+    "domain": "miplaninvu.com",
+    "url": "https://miplaninvu.com",
+    "description": "miplaninvu.com is a top-rated listing site where people find and compare verified businesses, services, and local spots\u2014clear details, fast scanning, and trustworthy profiles in one directory.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "moonrocketcoin.net",
+    "code": "moonrocketcoin",
+    "name": "Moon Rocket Coin",
+    "tagline": "Business listing platform",
+    "domain": "moonrocketcoin.net",
+    "url": "https://moonrocketcoin.net",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "listing",
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "motivkit.com",
+    "code": "mk7q2v8x4m",
+    "name": "MotivKit",
+    "tagline": "Business listing platform",
+    "domain": "motivkit.com",
+    "url": "https://motivkit.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "mudatealaweb.com",
+    "code": "v4ov52ojwy",
+    "name": "Mudatealaweb",
+    "tagline": "Listing platform",
+    "domain": "mudatealaweb.com",
+    "url": "https://mudatealaweb.com",
+    "description": "A listing site for Mudatealaweb, built for clean discovery and structured publishing.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "mujugranfondo.com",
+    "code": "4xwr2hh2kn",
+    "name": "Mujugranfondo",
+    "tagline": "Classified platform",
+    "domain": "mujugranfondo.com",
+    "url": "https://mujugranfondo.com",
+    "description": "A classified site for Mujugranfondo, built for clean discovery and structured publishing.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "murraypura.com",
+    "code": "3k1bxbzw9e",
+    "name": "Murraypura",
+    "tagline": "SBM , Profile platform",
+    "domain": "murraypura.com",
+    "url": "https://murraypura.com",
+    "description": "A sbm , profile site for Murraypura, built for clean discovery and structured publishing.",
+    "tasks": [
+      "profile",
+      "sbm"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "mysterycoder.com",
+    "code": "mc2x7v9q4k",
+    "name": "Mystery Coder",
+    "tagline": "Business listing platform",
+    "domain": "mysterycoder.com",
+    "url": "https://mysterycoder.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "article",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "mysupergains.com",
+    "code": "mg9q2v7x4k",
+    "name": "My Super Gains",
+    "tagline": "Business listing platform",
+    "domain": "mysupergains.com",
+    "url": "https://mysupergains.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "profile",
+      "sbm"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "narrixa.com",
+    "code": "c68bfaa9id",
+    "name": "Narrixa",
+    "tagline": "Independent media updates",
+    "domain": "narrixa.com",
+    "url": "https://narrixa.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Narrixa.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "newsheadlinepro.com",
+    "code": "4xxbt3f3st",
+    "name": "Newsheadlinepro",
+    "tagline": "Independent media updates",
+    "domain": "newsheadlinepro.com",
+    "url": "https://newsheadlinepro.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Newsheadlinepro.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "newsinsightzone.com",
+    "code": "kwwwxno8lk",
+    "name": "Newsinsightzone",
+    "tagline": "Independent media updates",
+    "domain": "newsinsightzone.com",
+    "url": "https://newsinsightzone.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Newsinsightzone.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "newsmidcentral.com",
+    "code": "u5mpaapst3",
+    "name": "Newsmidcentral",
+    "tagline": "Independent media updates",
+    "domain": "newsmidcentral.com",
+    "url": "https://newsmidcentral.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Newsmidcentral.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "newsnavipress.com",
+    "code": "63b116k48t",
+    "name": "Newsnavipress",
+    "tagline": "Independent media updates",
+    "domain": "newsnavipress.com",
+    "url": "https://newsnavipress.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Newsnavipress.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "newsportalweekly.com",
+    "code": "nw4x7q2m8v",
+    "name": "News Portal Weekly",
+    "tagline": "Weekly reports, stories, and downloads",
+    "domain": "newsportalweekly.com",
+    "url": "https://newsportalweekly.com",
+    "description": "A publication-focused platform for articles, weekly reporting, and downloadable PDF resources.",
+    "tasks": [
+      "article",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "newsprline.com",
+    "code": "ow890kjro8",
+    "name": "Newsprline",
+    "tagline": "Independent media updates",
+    "domain": "newsprline.com",
+    "url": "https://newsprline.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Newsprline.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "newstapy.com",
+    "code": "p8fkstb2u9",
+    "name": "News Tapy",
+    "tagline": "Independent media updates",
+    "domain": "newstapy.com",
+    "url": "https://newstapy.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on News Tapy.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "nybusinessinsights.com",
+    "code": "wmq7ycvi8r",
+    "name": "Nybusinessinsights",
+    "tagline": "Independent media updates",
+    "domain": "nybusinessinsights.com",
+    "url": "https://nybusinessinsights.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Nybusinessinsights.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "nydailynet.com",
+    "code": "vxlk8azusk",
+    "name": "Nydailynet",
+    "tagline": "Independent media updates",
+    "domain": "nydailynet.com",
+    "url": "https://nydailynet.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Nydailynet.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "obsidianimpacts.com",
+    "code": "q4xeunt97f",
+    "name": "Obsidian Impacts",
+    "tagline": "Editorial stories and insights",
+    "domain": "obsidianimpacts.com",
+    "url": "https://obsidianimpacts.com",
+    "description": "A reading-first article platform for essays, guides, opinions, and long-form publishing.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "oscarcrea.com",
+    "code": "c1czudw5kw",
+    "name": "Oscarcrea",
+    "tagline": "Image + Social Profile platform",
+    "domain": "oscarcrea.com",
+    "url": "https://oscarcrea.com",
+    "description": "A image + social profile site for Oscarcrea, built for clean discovery and structured publishing.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "passionunchained.com",
+    "code": "x72ve5dpc7",
+    "name": "Passion Unchained",
+    "tagline": "Editorial stories and insights",
+    "domain": "passionunchained.com",
+    "url": "https://passionunchained.com",
+    "description": "A reading-first article platform for essays, guides, opinions, and long-form publishing.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "pcosremedy.com",
+    "code": "9c57j799bj",
+    "name": "Pcosremedy",
+    "tagline": "SBM , Profile platform",
+    "domain": "pcosremedy.com",
+    "url": "https://pcosremedy.com",
+    "description": "A sbm , profile site for Pcosremedy, built for clean discovery and structured publishing.",
+    "tasks": [
+      "profile",
+      "sbm"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "pixelwebio.com",
+    "code": "70q1e6loqu",
+    "name": "Pixelwebio",
+    "tagline": "Image + Profile platform",
+    "domain": "pixelwebio.com",
+    "url": "https://pixelwebio.com",
+    "description": "A image + profile site for Pixelwebio, built for clean discovery and structured publishing.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "pkkwb.com",
+    "code": "slefk3lu7d",
+    "name": "Pkkwb",
+    "tagline": "SBM , Profile platform",
+    "domain": "pkkwb.com",
+    "url": "https://pkkwb.com",
+    "description": "A sbm , profile site for Pkkwb, built for clean discovery and structured publishing.",
+    "tasks": [
+      "profile",
+      "sbm"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "pquko.com",
+    "code": "32uksxlzv5",
+    "name": "Pquko",
+    "tagline": "SBM , Profile platform",
+    "domain": "pquko.com",
+    "url": "https://pquko.com",
+    "description": "A sbm , profile site for Pquko, built for clean discovery and structured publishing.",
+    "tasks": [
+      "profile",
+      "sbm"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "presslyy.com",
+    "code": "hz87rej5pm",
+    "name": "Presslyy",
+    "tagline": "Independent media updates",
+    "domain": "presslyy.com",
+    "url": "https://presslyy.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Presslyy.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "pressnbcnews.com",
+    "code": "czwohacpm0",
+    "name": "Pressnbcnews",
+    "tagline": "Independent media updates",
+    "domain": "pressnbcnews.com",
+    "url": "https://pressnbcnews.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Pressnbcnews.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "prnews18.com",
+    "code": "9olx86igmw",
+    "name": "P Rnews 18",
+    "tagline": "Independent media updates",
+    "domain": "prnews18.com",
+    "url": "https://prnews18.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on P Rnews 18.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "prnewsprimezone.com",
+    "code": "i1vrepadoz",
+    "name": "Prnewsprimezone",
+    "tagline": "Independent media updates",
+    "domain": "prnewsprimezone.com",
+    "url": "https://prnewsprimezone.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Prnewsprimezone.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "prnowe.com",
+    "code": "pn9w4q7x2m",
+    "name": "PRNowe",
+    "tagline": "Independent media updates",
+    "domain": "prnowe.com",
+    "url": "https://prnowe.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "quickoye.com",
+    "code": "tqopmf6o0j",
+    "name": "Quickoye",
+    "tagline": "SBM , Profile platform",
+    "domain": "quickoye.com",
+    "url": "https://quickoye.com",
+    "description": "A sbm , profile site for Quickoye, built for clean discovery and structured publishing.",
+    "tasks": [
+      "profile",
+      "sbm"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "radianpark.com",
+    "code": "rp2x8q4v7m",
+    "name": "Radian Park",
+    "tagline": "Image sharing & social profiles",
+    "domain": "radianpark.com",
+    "url": "https://radianpark.com",
+    "description": "Share photos, discover visual inspiration, and follow creator profiles in a calm, Pinterest-inspired experience built for community and self-expression.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "rajsattimart.com",
+    "code": "rs8x2q7m4v",
+    "name": "Raj Satti Mart",
+    "tagline": "Business listing platform",
+    "domain": "rajsattimart.com",
+    "url": "https://rajsattimart.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "rayantav.com",
+    "code": "eg8nkgl6ak",
+    "name": "Rayantav",
+    "tagline": "Listing platform",
+    "domain": "rayantav.com",
+    "url": "https://rayantav.com",
+    "description": "A listing site for Rayantav, built for clean discovery and structured publishing.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "redesocialpro.com",
+    "code": "99hwj78t92",
+    "name": "Redesocial Pro",
+    "tagline": "Profile-first community discovery",
+    "domain": "redesocialpro.com",
+    "url": "https://redesocialpro.com",
+    "description": "A profile-led platform for public identity, updates, and social discovery.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "releaseprcore.com",
+    "code": "qwtpd5gupi",
+    "name": "Releasepr Core",
+    "tagline": "Independent media updates",
+    "domain": "releaseprcore.com",
+    "url": "https://releaseprcore.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Releasepr Core.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "rentalhiso.com",
+    "code": "m6xq3v8k",
+    "name": "Rentalhiso",
+    "tagline": "Refined rental and property discovery",
+    "domain": "rentalhiso.com",
+    "url": "https://rentalhiso.com",
+    "description": "A listing-first rental and property discovery platform for finding homes, stays, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "listing",
+      "classified",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "reporterahead.com",
+    "code": "kbkx4b0k60",
+    "name": "Reporterahead",
+    "tagline": "Independent media updates",
+    "domain": "reporterahead.com",
+    "url": "https://reporterahead.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Reporterahead.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "ruihanchemical.com",
+    "code": "4cxh64crma",
+    "name": "Ruihanchemical",
+    "tagline": "Article , Social profile platform",
+    "domain": "ruihanchemical.com",
+    "url": "https://ruihanchemical.com",
+    "description": "A article , social profile site for Ruihanchemical, built for clean discovery and structured publishing.",
+    "tasks": [
+      "article",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "scoreminers.com",
+    "code": "lbwtzmxybb",
+    "name": "Score Miners",
+    "tagline": "Image and profile platform",
+    "domain": "scoreminers.com",
+    "url": "https://scoreminers.com",
+    "description": "A Digg-inspired image and profile platform for surfacing standout visuals, creator pages, and fast-moving discoveries through a sharper feed rhythm.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "septemberzodiac.com",
+    "code": "rsu3g43mc3",
+    "name": "September Zodiac",
+    "tagline": "Editorial stories and insights",
+    "domain": "septemberzodiac.com",
+    "url": "https://septemberzodiac.com",
+    "description": "A reading-first article platform for essays, guides, opinions, and long-form publishing.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "sinclair-theme.com",
+    "code": "st7q4v2m8x",
+    "name": "Sinclair Theme",
+    "tagline": "Straightforward editorial publishing",
+    "domain": "sinclair-theme.com",
+    "url": "https://sinclair-theme.com",
+    "description": "A clean editorial site for article publishing, insights, and topical coverage.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "socialmedixy.com",
+    "code": "b63xmyawgw",
+    "name": "Social Medixy",
+    "tagline": "Independent media updates",
+    "domain": "socialmedixy.com",
+    "url": "https://socialmedixy.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Social Medixy.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "sociopr.com",
+    "code": "w0ahzm2vmx",
+    "name": "Socio PR",
+    "tagline": "Independent media updates",
+    "domain": "sociopr.com",
+    "url": "https://sociopr.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Socio PR.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "softkilldesign.com",
+    "code": "softkilldesign",
+    "name": "Soft Kill Design",
+    "tagline": "Visual discovery boards",
+    "domain": "softkilldesign.com",
+    "url": "https://softkilldesign.com",
+    "description": "A Pinterest-style images site for saving ideas, exploring visual posts, and building collections through a fast, scrollable masonry feed.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "spinevivo.com",
+    "code": "eydtmznb6j",
+    "name": "Spine Vivo",
+    "tagline": "Business listing and local discovery",
+    "domain": "spinevivo.com",
+    "url": "https://spinevivo.com",
+    "description": "A structured business listing platform for services, companies, and local discovery.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "steadfastresults.com",
+    "code": "sr9q2v4x7m",
+    "name": "Steadfast Results",
+    "tagline": "Focused publishing for business insights",
+    "domain": "steadfastresults.com",
+    "url": "https://steadfastresults.com",
+    "description": "An editorial platform for clear article publishing, insights, and practical commentary.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "strathbrockparish.net",
+    "code": "strathbrockparish",
+    "name": "Strathbrok Parish",
+    "tagline": "Social bookmarking and profile board",
+    "domain": "strathbrockparish.net",
+    "url": "https://strathbrockparish.net",
+    "description": "A funky social bookmarking and profile-driven discovery board for browsing curated links, useful resources, and public identity surfaces without changing the underlying multi-task platform logic.",
+    "tasks": [
+      "profile",
+      "sbm"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "studiodiamond.net",
+    "code": "z22mm1frra",
+    "name": "Studiodiamond",
+    "tagline": "PDF + Profile platform",
+    "domain": "studiodiamond.net",
+    "url": "https://studiodiamond.net",
+    "description": "A pdf + profile site for Studiodiamond, built for clean discovery and structured publishing.",
+    "tasks": [
+      "profile",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "switchhigh.com",
+    "code": "sh8x2q4m7v",
+    "name": "Switch High",
+    "tagline": "Articles with a stronger creator layer",
+    "domain": "switchhigh.com",
+    "url": "https://switchhigh.com",
+    "description": "A publishing platform that blends long-form articles with profile-driven discovery and author presence.",
+    "tasks": [
+      "article",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "tabsocal.com",
+    "code": "tabsocal",
+    "name": "Tab Socal",
+    "tagline": "Image and profile studio",
+    "domain": "tabsocal.com",
+    "url": "https://tabsocal.com",
+    "description": "A playful image-first platform for sharing visuals, discovering creators, and helping standout work find the right audience.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "techdemais.com",
+    "code": "azqy334e85",
+    "name": "Tech Demais",
+    "tagline": "Editorial stories and insights",
+    "domain": "techdemais.com",
+    "url": "https://techdemais.com",
+    "description": "A reading-first article platform for essays, guides, opinions, and long-form publishing.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "techmixbr.com",
+    "code": "tb9v4q2m7x",
+    "name": "Techmix BR",
+    "tagline": "Technology and growth journal",
+    "domain": "techmixbr.com",
+    "url": "https://techmixbr.com",
+    "description": "An article-first technology publication focused on AI tools, digital growth, and practical business insights.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "techonlineinfo.com",
+    "code": "8af29rerfb",
+    "name": "Tech Online Info",
+    "tagline": "Editorial stories and insights",
+    "domain": "techonlineinfo.com",
+    "url": "https://techonlineinfo.com",
+    "description": "A reading-first article platform for essays, guides, opinions, and long-form publishing.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "teddyandkitty.com",
+    "code": "9fqwrjg6m9",
+    "name": "Teddy And Kitty",
+    "tagline": "Visual profiles and image-led discovery",
+    "domain": "teddyandkitty.com",
+    "url": "https://teddyandkitty.com",
+    "description": "An image-first platform for galleries, creator profiles, and visually driven discovery.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "teeny-weenytoes.com",
+    "code": "z9l12e97t9",
+    "name": "Teeny Weenytoes",
+    "tagline": "PDF + Profile platform",
+    "domain": "teeny-weenytoes.com",
+    "url": "https://teeny-weenytoes.com",
+    "description": "A pdf + profile site for Teeny Weenytoes, built for clean discovery and structured publishing.",
+    "tasks": [
+      "profile",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "thebalibead.com",
+    "code": "thebalibead",
+    "name": "The Bali Bead",
+    "tagline": "Business listing platform",
+    "domain": "thebalibead.com",
+    "url": "https://thebalibead.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "tobeetoetech.com",
+    "code": "9kypu30ehk",
+    "name": "Tobeetoetech",
+    "tagline": "Classified platform",
+    "domain": "tobeetoetech.com",
+    "url": "https://tobeetoetech.com",
+    "description": "A classified site for Tobeetoetech, built for clean discovery and structured publishing.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "top24headline.com",
+    "code": "e1qxc7k6ca",
+    "name": "Top 24 Headline",
+    "tagline": "Independent media updates",
+    "domain": "top24headline.com",
+    "url": "https://top24headline.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Top 24 Headline.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "topoftheloop.com",
+    "code": "azgzlalx5z",
+    "name": "Topoftheloop",
+    "tagline": "PDF + Profile platform",
+    "domain": "topoftheloop.com",
+    "url": "https://topoftheloop.com",
+    "description": "A pdf + profile site for Topoftheloop, built for clean discovery and structured publishing.",
+    "tasks": [
+      "profile",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "totebagus.com",
+    "code": "tb4m7q9x2v",
+    "name": "Tote Bagus",
+    "tagline": "Image-led finds with deal-driven browsing",
+    "domain": "totebagus.com",
+    "url": "https://totebagus.com",
+    "description": "A visual shopping and classifieds experience built around standout images and quick browsing.",
+    "tasks": [
+      "classified",
+      "image"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "treasurenftcode.com",
+    "code": "tn5q8x2m4v",
+    "name": "Treasure NFT Code",
+    "tagline": "Profiles, creators, and social presence",
+    "domain": "treasurenftcode.com",
+    "url": "https://treasurenftcode.com",
+    "description": "A profile-led social presence platform built for creators, projects, and discovery.",
+    "tasks": [
+      "profile"
+    ],
+    "category": "PROFILE",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "trendiopr.com",
+    "code": "pcc90tnbd0",
+    "name": "Trendio PR",
+    "tagline": "Independent media updates",
+    "domain": "trendiopr.com",
+    "url": "https://trendiopr.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Trendio PR.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "trendopr.com",
+    "code": "1adaex2epo",
+    "name": "Trendo PR",
+    "tagline": "Independent media updates",
+    "domain": "trendopr.com",
+    "url": "https://trendopr.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Trendo PR.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "tynewebdesign.com",
+    "code": "t9p2w7zr",
+    "name": "Tyne Web Design",
+    "tagline": "Business listing platform",
+    "domain": "tynewebdesign.com",
+    "url": "https://tynewebdesign.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "ultimorecursoh.com",
+    "code": "9i3shdwrro",
+    "name": "Ultimorecursoh",
+    "tagline": "PDF + Profile platform",
+    "domain": "ultimorecursoh.com",
+    "url": "https://ultimorecursoh.com",
+    "description": "A pdf + profile site for Ultimorecursoh, built for clean discovery and structured publishing.",
+    "tasks": [
+      "profile",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "updateprnews.com",
+    "code": "9r9164krtx",
+    "name": "Updateprnews",
+    "tagline": "Independent media updates",
+    "domain": "updateprnews.com",
+    "url": "https://updateprnews.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Updateprnews.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "uplandcommerce.com",
+    "code": "uc8q4m2x7v",
+    "name": "Upland Commerce",
+    "tagline": "Marketplace posts with visual discovery",
+    "domain": "uplandcommerce.com",
+    "url": "https://uplandcommerce.com",
+    "description": "A utility-first commerce platform mixing classified posts with image-led product discovery.",
+    "tasks": [
+      "classified",
+      "image"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "vaultofjoseph.com",
+    "code": "n5ocotrvmv",
+    "name": "Vaultofjoseph",
+    "tagline": "Classified platform",
+    "domain": "vaultofjoseph.com",
+    "url": "https://vaultofjoseph.com",
+    "description": "A classified site for Vaultofjoseph, built for clean discovery and structured publishing.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "virobuzz.com",
+    "code": "dtljlsuu6p",
+    "name": "Viro Buzz",
+    "tagline": "Independent media updates",
+    "domain": "virobuzz.com",
+    "url": "https://virobuzz.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Viro Buzz.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "webinfinityhub.com",
+    "code": "1icnb2t14y",
+    "name": "Webinfinityhub",
+    "tagline": "PDF + Profile platform",
+    "domain": "webinfinityhub.com",
+    "url": "https://webinfinityhub.com",
+    "description": "A pdf + profile site for Webinfinityhub, built for clean discovery and structured publishing.",
+    "tasks": [
+      "profile",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "webmansax.com",
+    "code": "orfkb3u0jb",
+    "name": "Webmansax",
+    "tagline": "Article platform",
+    "domain": "webmansax.com",
+    "url": "https://webmansax.com",
+    "description": "A article site for Webmansax, built for clean discovery and structured publishing.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "webwavecom.com",
+    "code": "ww6m2q8x4v",
+    "name": "Web Wave Com",
+    "tagline": "Articles, commentary, and readable insights",
+    "domain": "webwavecom.com",
+    "url": "https://webwavecom.com",
+    "description": "A clean article platform built for readable publishing, commentary, and ongoing editorial updates.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "webweaversonline.com",
+    "code": "1mks45b9jz",
+    "name": "Webweaversonline",
+    "tagline": "Listing platform",
+    "domain": "webweaversonline.com",
+    "url": "https://webweaversonline.com",
+    "description": "A listing site for Webweaversonline, built for clean discovery and structured publishing.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "wedropouts.com",
+    "code": "yertd3syhu",
+    "name": "Wedropouts",
+    "tagline": "PDF + Profile platform",
+    "domain": "wedropouts.com",
+    "url": "https://wedropouts.com",
+    "description": "A pdf + profile site for Wedropouts, built for clean discovery and structured publishing.",
+    "tasks": [
+      "profile",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "welldanet.com",
+    "code": "wd2m8q7v4x",
+    "name": "WellDanet",
+    "tagline": "Listing-first discovery directory",
+    "domain": "welldanet.com",
+    "url": "https://welldanet.com",
+    "description": "A premium listing directory for scanning businesses, services, and categories quickly\u2014with clear CTAs to explore or submit listings.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "wiliin.com",
+    "code": "wl7m2q9x4v",
+    "name": "Wiliin",
+    "tagline": "Business listing platform",
+    "domain": "wiliin.com",
+    "url": "https://wiliin.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "listing",
+      "classified",
+      "article",
+      "image",
+      "profile",
+      "sbm",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "winonaj.com",
+    "code": "wn4q8x2m7v",
+    "name": "Winonaj",
+    "tagline": "Business listing platform",
+    "domain": "winonaj.com",
+    "url": "https://winonaj.com",
+    "description": "A listing-first business discovery platform for browsing services, businesses, spaces, and location-based opportunities through a cleaner browsing experience.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "worldreporter24x7.com",
+    "code": "9cqdadff9g",
+    "name": "Worldreporter 24 X 7",
+    "tagline": "Independent media updates",
+    "domain": "worldreporter24x7.com",
+    "url": "https://worldreporter24x7.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Worldreporter 24 X 7.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "worldtopreport.com",
+    "code": "fqe6ufq5wx",
+    "name": "Worldtopreport",
+    "tagline": "Independent media updates",
+    "domain": "worldtopreport.com",
+    "url": "https://worldtopreport.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Worldtopreport.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "worldworthwandering.com",
+    "code": "worldworthwandering",
+    "name": "World Worth Wandering",
+    "tagline": "Travel stories & field notes",
+    "domain": "worldworthwandering.com",
+    "url": "https://worldworthwandering.com",
+    "description": "Independent travel writing, photo essays, and practical field notes from people who move slowly, look closely, and share what a place actually feels like.",
+    "tasks": [
+      "article",
+      "image"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "xyntraa.com",
+    "code": "7cpeygyzox",
+    "name": "Xyntraa",
+    "tagline": "Independent media updates",
+    "domain": "xyntraa.com",
+    "url": "https://xyntraa.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Xyntraa.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "yehwooyeh.com",
+    "code": "qi10gauj9m",
+    "name": "Yehwooyeh",
+    "tagline": "Listing platform",
+    "domain": "yehwooyeh.com",
+    "url": "https://yehwooyeh.com",
+    "description": "A listing site for Yehwooyeh, built for clean discovery and structured publishing.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "youngerlifestyle.net",
+    "code": "1fwckn4ypf",
+    "name": "Youngerlifestyle",
+    "tagline": "PDF + Profile platform",
+    "domain": "youngerlifestyle.net",
+    "url": "https://youngerlifestyle.net",
+    "description": "A pdf + profile site for Youngerlifestyle, built for clean discovery and structured publishing.",
+    "tasks": [
+      "profile",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS"
+  },
+  {
+    "repo": "zorvixy.com",
+    "code": "nn2acs9ns4",
+    "name": "Zorvixy",
+    "tagline": "Independent media updates",
+    "domain": "zorvixy.com",
+    "url": "https://zorvixy.com",
+    "description": "A simple newsroom-style publication for announcements, coverage, and media updates on Zorvixy.",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "category": "MEDIA_DISTRIBUTION",
+    "framework": "NEXT_JS"
+  }
+]

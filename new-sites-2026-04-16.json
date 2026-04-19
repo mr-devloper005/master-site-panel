@@ -1,0 +1,142 @@
+[
+  {
+    "domain": "infoplatforms.com",
+    "name": "Info Platforms",
+    "tasks": ["article", "pdf"],
+    "siteCode": "if7m2q9x4v",
+    "port": 3070
+  },
+  {
+    "domain": "devcybernexus.com",
+    "name": "Dev Cyber Nexus",
+    "tasks": ["article"],
+    "siteCode": "dc8v4q2m7x",
+    "port": 3071
+  },
+  {
+    "domain": "callgadgets.com",
+    "name": "Call Gadgets",
+    "tasks": ["classified", "image"],
+    "siteCode": "cg4x9m2q7v",
+    "port": 3072
+  },
+  {
+    "domain": "fullprokey.com",
+    "name": "Full Pro Key",
+    "tasks": ["classified"],
+    "siteCode": "fp9q2x7m4v",
+    "port": 3073
+  },
+  {
+    "domain": "choose-your-car.com",
+    "name": "Choose Your Car",
+    "tasks": ["listing", "classified"],
+    "siteCode": "cy6v8q2m4x",
+    "port": 3074
+  },
+  {
+    "domain": "cabanalaemilia.com",
+    "name": "Caban Ala Emilia",
+    "tasks": ["image", "listing"],
+    "siteCode": "ca7m4x9q2v",
+    "port": 3075
+  },
+  {
+    "domain": "treasurenftcode.com",
+    "name": "Treasure NFT Code",
+    "tasks": ["profile"],
+    "siteCode": "tn5q8x2m4v",
+    "port": 3076
+  },
+  {
+    "domain": "totebagus.com",
+    "name": "Tote Bagus",
+    "tasks": ["image", "classified"],
+    "siteCode": "tb4m7q9x2v",
+    "port": 3077
+  },
+  {
+    "domain": "switchhigh.com",
+    "name": "Switch High",
+    "tasks": ["article", "profile"],
+    "siteCode": "sh8x2q4m7v",
+    "port": 3078
+  },
+  {
+    "domain": "sinclair-theme.com",
+    "name": "Sinclair Theme",
+    "tasks": ["article"],
+    "siteCode": "st7q4v2m8x",
+    "port": 3079
+  },
+  {
+    "domain": "housesdecors.com",
+    "name": "Houses Decors",
+    "tasks": ["image"],
+    "siteCode": "hd9m2q7x4v",
+    "port": 3080
+  },
+  {
+    "domain": "aerialmatrix.com",
+    "name": "Aerial Matrix",
+    "tasks": ["image"],
+    "siteCode": "am2x8v4q7m",
+    "port": 3081
+  },
+  {
+    "domain": "arcanumwebs.com",
+    "name": "Arcanum Webs",
+    "tasks": ["article"],
+    "siteCode": "aw7v2m9q4x",
+    "port": 3082
+  },
+  {
+    "domain": "aporiakennels.com",
+    "name": "Aporia Kennels",
+    "tasks": ["image"],
+    "siteCode": "ak4q8x2m7v",
+    "port": 3083
+  },
+  {
+    "domain": "webwavecom.com",
+    "name": "Web Wave Com",
+    "tasks": ["article"],
+    "siteCode": "ww6m2q8x4v",
+    "port": 3084
+  },
+  {
+    "domain": "uplandcommerce.com",
+    "name": "Upland Commerce",
+    "tasks": ["classified", "image"],
+    "siteCode": "uc8q4m2x7v",
+    "port": 3085
+  },
+  {
+    "domain": "newsportalweekly.com",
+    "name": "News Portal Weekly",
+    "tasks": ["article", "pdf"],
+    "siteCode": "nw4x7q2m8v",
+    "port": 3086
+  },
+  {
+    "domain": "steadfastresults.com",
+    "name": "Steadfast Results",
+    "tasks": ["article"],
+    "siteCode": "sr9q2v4x7m",
+    "port": 3087
+  },
+  {
+    "domain": "futurethey.com",
+    "name": "Future They",
+    "tasks": ["article"],
+    "siteCode": "ft7m4q8x2v",
+    "port": 3088
+  },
+  {
+    "domain": "kayosportconnect.com",
+    "name": "Kayo Sport Connect",
+    "tasks": ["image", "article"],
+    "siteCode": "ks5x9q2m4v",
+    "port": 3089
+  }
+]

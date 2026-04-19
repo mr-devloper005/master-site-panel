@@ -34,9 +34,10 @@ ssh "${SSH_ARGS[@]}" "${VPS_USER}@${VPS_HOST}" bash <<EOF_REMOTE
 set -euo pipefail
 mkdir -p "${VPS_ROOT}"
 if [[ ! -d "${APP_DIR}/.git" ]]; then
-  git clone "git@github.com:${GITHUB_OWNER}/${DOMAIN}.git" "${APP_DIR}"
+  git clone "https://github.com/${GITHUB_OWNER}/${DOMAIN}.git" "${APP_DIR}"
 fi
 cd "${APP_DIR}"
+git remote set-url origin "https://github.com/${GITHUB_OWNER}/${DOMAIN}.git" || true
 git fetch origin main
 git checkout main
 git reset --hard origin/main
@@ -64,7 +65,7 @@ done
 docker compose -f docker-compose.vps.yml up -d --build --remove-orphans
 
 docker ps --filter "name=${CONTAINER_NAME}"
-curl -I "http://127.0.0.1:${PORT}" || true
+curl --max-time 10 -I "http://127.0.0.1:${PORT}" || true
 EOF_REMOTE
 
 echo

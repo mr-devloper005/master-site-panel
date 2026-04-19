@@ -142,7 +142,7 @@ export const loginMock = async (email, password) => {
 
 export const fetchDashboardData = async () => {
   const [sitesResponse, postsResponse] = await Promise.all([
-    request("/api/v1/sites"),
+    request("/api/v1/sites?limit=500"),
     request("/api/v1/posts?limit=200"),
   ]);
 

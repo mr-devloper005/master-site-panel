@@ -1,0 +1,464 @@
+[
+  {
+    "domain": "aidteck.com",
+    "name": "Aidteck",
+    "taskLabel": "Article",
+    "tasks": [
+      "article"
+    ],
+    "siteCode": "bnd4acecef",
+    "port": 3200
+  },
+  {
+    "domain": "earthskydesign.com",
+    "name": "Earthskydesign",
+    "taskLabel": "Image + Social Profile",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "siteCode": "7q611x3ckp",
+    "port": 3201
+  },
+  {
+    "domain": "mindful-lotus.com",
+    "name": "Mindful Lotus",
+    "taskLabel": "Article",
+    "tasks": [
+      "article"
+    ],
+    "siteCode": "kdrek80ng6",
+    "port": 3202
+  },
+  {
+    "domain": "oscarcrea.com",
+    "name": "Oscarcrea",
+    "taskLabel": "Image + Social Profile",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "siteCode": "c1czudw5kw",
+    "port": 3203
+  },
+  {
+    "domain": "webmansax.com",
+    "name": "Webmansax",
+    "taskLabel": "Article",
+    "tasks": [
+      "article"
+    ],
+    "siteCode": "orfkb3u0jb",
+    "port": 3204
+  },
+  {
+    "domain": "isanexpert.com",
+    "name": "Isanexpert",
+    "taskLabel": "Listing",
+    "tasks": [
+      "listing"
+    ],
+    "siteCode": "sarpaeva1f",
+    "port": 3205
+  },
+  {
+    "domain": "macphersonweb.com",
+    "name": "Macphersonweb",
+    "taskLabel": "PDF + Profile",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "siteCode": "camzx0t2te",
+    "port": 3206
+  },
+  {
+    "domain": "digitalvirtuose.com",
+    "name": "Digitalvirtuose",
+    "taskLabel": "Listing",
+    "tasks": [
+      "listing"
+    ],
+    "siteCode": "uq3jnkf9yb",
+    "port": 3207
+  },
+  {
+    "domain": "wedropouts.com",
+    "name": "Wedropouts",
+    "taskLabel": "PDF + Profile",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "siteCode": "yertd3syhu",
+    "port": 3208
+  },
+  {
+    "domain": "topoftheloop.com",
+    "name": "Topoftheloop",
+    "taskLabel": "PDF + Profile",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "siteCode": "azgzlalx5z",
+    "port": 3209
+  },
+  {
+    "domain": "ideovera.com",
+    "name": "Ideovera",
+    "taskLabel": "Listing",
+    "tasks": [
+      "listing"
+    ],
+    "siteCode": "et5bb5xy6l",
+    "port": 3210
+  },
+  {
+    "domain": "pixelwebio.com",
+    "name": "Pixelwebio",
+    "taskLabel": "Image + Profile",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "siteCode": "70q1e6loqu",
+    "port": 3211
+  },
+  {
+    "domain": "happysignups.com",
+    "name": "Happysignups",
+    "taskLabel": "Listing",
+    "tasks": [
+      "listing"
+    ],
+    "siteCode": "259b0233yz",
+    "port": 3212
+  },
+  {
+    "domain": "teeny-weenytoes.com",
+    "name": "Teeny Weenytoes",
+    "taskLabel": "PDF + Profile",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "siteCode": "z9l12e97t9",
+    "port": 3213
+  },
+  {
+    "domain": "webweaversonline.com",
+    "name": "Webweaversonline",
+    "taskLabel": "Listing",
+    "tasks": [
+      "listing"
+    ],
+    "siteCode": "1mks45b9jz",
+    "port": 3214
+  },
+  {
+    "domain": "webinfinityhub.com",
+    "name": "Webinfinityhub",
+    "taskLabel": "PDF + Profile",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "siteCode": "1icnb2t14y",
+    "port": 3215
+  },
+  {
+    "domain": "marketingsspot.com",
+    "name": "Marketingsspot",
+    "taskLabel": "Listing",
+    "tasks": [
+      "listing"
+    ],
+    "siteCode": "8k95pv27i1",
+    "port": 3216
+  },
+  {
+    "domain": "herotherblog.com",
+    "name": "Herotherblog",
+    "taskLabel": "PDF + Profile",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "siteCode": "rzeqiand5b",
+    "port": 3217
+  },
+  {
+    "domain": "creationtable.com",
+    "name": "Creationtable",
+    "taskLabel": "Image + Profile",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "siteCode": "xjex0s30s1",
+    "port": 3218
+  },
+  {
+    "domain": "ethicsites.com",
+    "name": "Ethicsites",
+    "taskLabel": "PDF + Profile",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "siteCode": "zq23bs9wgs",
+    "port": 3219
+  },
+  {
+    "domain": "studiodiamond.net",
+    "name": "Studiodiamond",
+    "taskLabel": "PDF + Profile",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "siteCode": "z22mm1frra",
+    "port": 3220
+  },
+  {
+    "domain": "youngerlifestyle.net",
+    "name": "Youngerlifestyle",
+    "taskLabel": "PDF + Profile",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "siteCode": "1fwckn4ypf",
+    "port": 3221
+  },
+  {
+    "domain": "maytapbung.net",
+    "name": "Maytapbung",
+    "taskLabel": "Listing",
+    "tasks": [
+      "listing"
+    ],
+    "siteCode": "hu4ks6uhma",
+    "port": 3222
+  },
+  {
+    "domain": "ultimorecursoh.com",
+    "name": "Ultimorecursoh",
+    "taskLabel": "PDF + Profile",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "siteCode": "9i3shdwrro",
+    "port": 3223
+  },
+  {
+    "domain": "mudatealaweb.com",
+    "name": "Mudatealaweb",
+    "taskLabel": "Listing",
+    "tasks": [
+      "listing"
+    ],
+    "siteCode": "v4ov52ojwy",
+    "port": 3224
+  },
+  {
+    "domain": "alwadidates.com",
+    "name": "Alwadidates",
+    "taskLabel": "SBM , Profile",
+    "tasks": [
+      "profile",
+      "sbm"
+    ],
+    "siteCode": "3fqjbz14e7",
+    "port": 3225
+  },
+  {
+    "domain": "pcosremedy.com",
+    "name": "Pcosremedy",
+    "taskLabel": "SBM , Profile",
+    "tasks": [
+      "profile",
+      "sbm"
+    ],
+    "siteCode": "9c57j799bj",
+    "port": 3226
+  },
+  {
+    "domain": "rayantav.com",
+    "name": "Rayantav",
+    "taskLabel": "Listing",
+    "tasks": [
+      "listing"
+    ],
+    "siteCode": "eg8nkgl6ak",
+    "port": 3227
+  },
+  {
+    "domain": "quickoye.com",
+    "name": "Quickoye",
+    "taskLabel": "SBM , Profile",
+    "tasks": [
+      "profile",
+      "sbm"
+    ],
+    "siteCode": "tqopmf6o0j",
+    "port": 3228
+  },
+  {
+    "domain": "murraypura.com",
+    "name": "Murraypura",
+    "taskLabel": "SBM , Profile",
+    "tasks": [
+      "profile",
+      "sbm"
+    ],
+    "siteCode": "3k1bxbzw9e",
+    "port": 3229
+  },
+  {
+    "domain": "pquko.com",
+    "name": "Pquko",
+    "taskLabel": "SBM , Profile",
+    "tasks": [
+      "profile",
+      "sbm"
+    ],
+    "siteCode": "32uksxlzv5",
+    "port": 3230
+  },
+  {
+    "domain": "pkkwb.com",
+    "name": "Pkkwb",
+    "taskLabel": "SBM , Profile",
+    "tasks": [
+      "profile",
+      "sbm"
+    ],
+    "siteCode": "slefk3lu7d",
+    "port": 3231
+  },
+  {
+    "domain": "ruihanchemical.com",
+    "name": "Ruihanchemical",
+    "taskLabel": "Article , Social profile",
+    "tasks": [
+      "article",
+      "profile"
+    ],
+    "siteCode": "4cxh64crma",
+    "port": 3232
+  },
+  {
+    "domain": "yehwooyeh.com",
+    "name": "Yehwooyeh",
+    "taskLabel": "Listing",
+    "tasks": [
+      "listing"
+    ],
+    "siteCode": "qi10gauj9m",
+    "port": 3233
+  },
+  {
+    "domain": "mujugranfondo.com",
+    "name": "Mujugranfondo",
+    "taskLabel": "Classified",
+    "tasks": [
+      "classified"
+    ],
+    "siteCode": "4xwr2hh2kn",
+    "port": 3234
+  },
+  {
+    "domain": "josephlaoutaris.com",
+    "name": "Josephlaoutaris",
+    "taskLabel": "Article , Social profile",
+    "tasks": [
+      "article",
+      "profile"
+    ],
+    "siteCode": "r0n8xm9qza",
+    "port": 3235
+  },
+  {
+    "domain": "datazynxllc.com",
+    "name": "Datazynxllc",
+    "taskLabel": "Listing",
+    "tasks": [
+      "listing"
+    ],
+    "siteCode": "8mv0ihf1rx",
+    "port": 3236
+  },
+  {
+    "domain": "jagothemes.com",
+    "name": "Jagothemes",
+    "taskLabel": "Classified",
+    "tasks": [
+      "classified"
+    ],
+    "siteCode": "uykvjsiujt",
+    "port": 3237
+  },
+  {
+    "domain": "habibyasmaharun.com",
+    "name": "Habibyasmaharun",
+    "taskLabel": "Classified",
+    "tasks": [
+      "classified"
+    ],
+    "siteCode": "k4a910n0j1",
+    "port": 3238
+  },
+  {
+    "domain": "tobeetoetech.com",
+    "name": "Tobeetoetech",
+    "taskLabel": "Classified",
+    "tasks": [
+      "classified"
+    ],
+    "siteCode": "9kypu30ehk",
+    "port": 3239
+  },
+  {
+    "domain": "mikegabsolution.com",
+    "name": "Mikegabsolution",
+    "taskLabel": "Classified",
+    "tasks": [
+      "classified"
+    ],
+    "siteCode": "fcxna4mpaw",
+    "port": 3240
+  },
+  {
+    "domain": "vaultofjoseph.com",
+    "name": "Vaultofjoseph",
+    "taskLabel": "Classified",
+    "tasks": [
+      "classified"
+    ],
+    "siteCode": "n5ocotrvmv",
+    "port": 3241
+  },
+  {
+    "domain": "jiyinaicha.com",
+    "name": "Jiyinaicha",
+    "taskLabel": "Classified",
+    "tasks": [
+      "classified"
+    ],
+    "siteCode": "vhprfoaudu",
+    "port": 3242
+  },
+  {
+    "domain": "fflowlink.com",
+    "name": "Fflowlink",
+    "taskLabel": "Article",
+    "tasks": [
+      "article"
+    ],
+    "siteCode": "fjkb3lw2rs",
+    "port": 3243
+  }
+]

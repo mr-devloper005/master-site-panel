@@ -1,0 +1,452 @@
+[
+  {
+    "domain": "feedopr.com",
+    "name": "Feedopr",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "eimxpghq85",
+    "port": 3090
+  },
+  {
+    "domain": "iodailynews.com",
+    "name": "Iodailynews",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "5qmn2ecm2v",
+    "port": 3091
+  },
+  {
+    "domain": "releaseprcore.com",
+    "name": "Releasepr Core",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "qwtpd5gupi",
+    "port": 3092
+  },
+  {
+    "domain": "newstapy.com",
+    "name": "News Tapy",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "p8fkstb2u9",
+    "port": 3093
+  },
+  {
+    "domain": "hutdailynews.com",
+    "name": "Hutdaily News",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "zsyi08145i",
+    "port": 3094
+  },
+  {
+    "domain": "mediyao.com",
+    "name": "Mediyao",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "dw3kvz5v2n",
+    "port": 3095
+  },
+  {
+    "domain": "mediyahub.com",
+    "name": "Mediya Hub",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "x4fp4f7hhk",
+    "port": 3096
+  },
+  {
+    "domain": "medianewsqo.com",
+    "name": "Medianewsqo",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "ak4tkg1y3c",
+    "port": 3097
+  },
+  {
+    "domain": "socialmedixy.com",
+    "name": "Social Medixy",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "b63xmyawgw",
+    "port": 3098
+  },
+  {
+    "domain": "sociopr.com",
+    "name": "Socio PR",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "w0ahzm2vmx",
+    "port": 3099
+  },
+  {
+    "domain": "mediasoctrend.com",
+    "name": "Media Soc Trend",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "gv6wsf0yk4",
+    "port": 3100
+  },
+  {
+    "domain": "trendopr.com",
+    "name": "Trendo PR",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "1adaex2epo",
+    "port": 3101
+  },
+  {
+    "domain": "presslyy.com",
+    "name": "Presslyy",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "hz87rej5pm",
+    "port": 3102
+  },
+  {
+    "domain": "virobuzz.com",
+    "name": "Viro Buzz",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "dtljlsuu6p",
+    "port": 3103
+  },
+  {
+    "domain": "trendiopr.com",
+    "name": "Trendio PR",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "pcc90tnbd0",
+    "port": 3104
+  },
+  {
+    "domain": "pressnbcnews.com",
+    "name": "Pressnbcnews",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "czwohacpm0",
+    "port": 3105
+  },
+  {
+    "domain": "updateprnews.com",
+    "name": "Updateprnews",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "9r9164krtx",
+    "port": 3106
+  },
+  {
+    "domain": "prnews18.com",
+    "name": "P Rnews 18",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "9olx86igmw",
+    "port": 3107
+  },
+  {
+    "domain": "bestpressnews.com",
+    "name": "Bestpressnews",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "4azpfk7bp0",
+    "port": 3108
+  },
+  {
+    "domain": "24x7newspress.com",
+    "name": "24 X 7 Newspress",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "n8ol4yatbt",
+    "port": 3109
+  },
+  {
+    "domain": "currentprpress.com",
+    "name": "Currentprpress",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "p1ek5iqqxj",
+    "port": 3110
+  },
+  {
+    "domain": "bestprnews24.com",
+    "name": "Bestprnews 24",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "00y43amk68",
+    "port": 3111
+  },
+  {
+    "domain": "dailytrendpress.com",
+    "name": "Dailytrendpress",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "fyvzw7y1ku",
+    "port": 3112
+  },
+  {
+    "domain": "expressainewsdaily.com",
+    "name": "Expressainewsdaily",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "sfvh06zltv",
+    "port": 3113
+  },
+  {
+    "domain": "globalbriefingai.com",
+    "name": "Globalbriefingai",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "p9r0vd3fr3",
+    "port": 3114
+  },
+  {
+    "domain": "globalnewsdock.com",
+    "name": "Globalnewsdock",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "1ynmhb0zdn",
+    "port": 3115
+  },
+  {
+    "domain": "top24headline.com",
+    "name": "Top 24 Headline",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "e1qxc7k6ca",
+    "port": 3116
+  },
+  {
+    "domain": "media24press.com",
+    "name": "Media 24 Press",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "0poxzufj79",
+    "port": 3117
+  },
+  {
+    "domain": "newsprline.com",
+    "name": "Newsprline",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "ow890kjro8",
+    "port": 3118
+  },
+  {
+    "domain": "newsheadlinepro.com",
+    "name": "Newsheadlinepro",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "4xxbt3f3st",
+    "port": 3119
+  },
+  {
+    "domain": "newsinsightzone.com",
+    "name": "Newsinsightzone",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "kwwwxno8lk",
+    "port": 3120
+  },
+  {
+    "domain": "newsnavipress.com",
+    "name": "Newsnavipress",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "63b116k48t",
+    "port": 3121
+  },
+  {
+    "domain": "prnewsprimezone.com",
+    "name": "Prnewsprimezone",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "i1vrepadoz",
+    "port": 3122
+  },
+  {
+    "domain": "newsmidcentral.com",
+    "name": "Newsmidcentral",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "u5mpaapst3",
+    "port": 3123
+  },
+  {
+    "domain": "reporterahead.com",
+    "name": "Reporterahead",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "kbkx4b0k60",
+    "port": 3124
+  },
+  {
+    "domain": "worldreporter24x7.com",
+    "name": "Worldreporter 24 X 7",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "9cqdadff9g",
+    "port": 3125
+  },
+  {
+    "domain": "zorvixy.com",
+    "name": "Zorvixy",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "nn2acs9ns4",
+    "port": 3126
+  },
+  {
+    "domain": "mediavoxer.com",
+    "name": "Mediavoxer",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "6sa6k1dz0g",
+    "port": 3127
+  },
+  {
+    "domain": "narrixa.com",
+    "name": "Narrixa",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "c68bfaa9id",
+    "port": 3128
+  },
+  {
+    "domain": "elitepressa.com",
+    "name": "Elite Pressa",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "zrxq3yq26q",
+    "port": 3129
+  },
+  {
+    "domain": "globalpressy.com",
+    "name": "Global Pressy",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "wfk5fi68b3",
+    "port": 3130
+  },
+  {
+    "domain": "authixo.com",
+    "name": "Authixo",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "4p64jqmx8o",
+    "port": 3131
+  },
+  {
+    "domain": "xyntraa.com",
+    "name": "Xyntraa",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "7cpeygyzox",
+    "port": 3132
+  },
+  {
+    "domain": "growthixa.com",
+    "name": "Growthixa",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "qpzsrstilh",
+    "port": 3133
+  },
+  {
+    "domain": "authorityxa.com",
+    "name": "Authorityxa",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "f955vfu9tm",
+    "port": 3134
+  },
+  {
+    "domain": "dailyhubglobal.com",
+    "name": "Dailyhubglobal",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "4acww0g5o2",
+    "port": 3135
+  },
+  {
+    "domain": "worldtopreport.com",
+    "name": "Worldtopreport",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "fqe6ufq5wx",
+    "port": 3136
+  },
+  {
+    "domain": "nybusinessinsights.com",
+    "name": "Nybusinessinsights",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "wmq7ycvi8r",
+    "port": 3137
+  },
+  {
+    "domain": "hubusatoday.com",
+    "name": "Hubusatoday",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "7tb0tmyino",
+    "port": 3138
+  },
+  {
+    "domain": "nydailynet.com",
+    "name": "Nydailynet",
+    "tasks": [
+      "mediaDistribution"
+    ],
+    "siteCode": "vxlk8azusk",
+    "port": 3139
+  }
+]
