@@ -18,7 +18,7 @@ export const TASK_SCOPE_PRESETS: Record<SiteTask, string[]> = Object.fromEntries
 
 export const EXTRA_SCOPE_PRESETS = {
   runtime: ["sites:read"],
-  siteMaster: [...baseSiteScopes, SITE_MASTER_SCOPE],
+  siteMaster: [...baseSiteScopes, "sites:write", "keys:write", SITE_MASTER_SCOPE],
 } as const;
 
 export type KeyPreset = SiteTask | keyof typeof EXTRA_SCOPE_PRESETS;

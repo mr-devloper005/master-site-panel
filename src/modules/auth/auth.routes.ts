@@ -31,6 +31,32 @@ const normalizeTaskValue = (value?: string | string[] | null): string | null => 
   return normalized;
 };
 
+router.get("/integration", requireApiKey("sites:read"), asyncHandler(async (req, res) => {
+  const apiKey = req.apiKey;
+  if (!apiKey) {
+    throw new ApiError(401, "API key context missing.");
+  }
+
+  res.json({
+    success: true,
+    data: {
+      keyId: apiKey.id,
+      name: apiKey.name,
+      scopes: apiKey.scopes,
+      capabilities: {
+        canReadSites: apiKey.scopes.includes("*") || apiKey.scopes.includes("sites:read"),
+        canWriteSites: apiKey.scopes.includes("*") || apiKey.scopes.includes("sites:write"),
+        canReadPosts: apiKey.scopes.includes("*") || apiKey.scopes.includes("posts:read"),
+        canWritePosts: apiKey.scopes.includes("*") || apiKey.scopes.includes("posts:write"),
+        canManageKeys: apiKey.scopes.includes("*") || apiKey.scopes.includes("keys:write"),
+        isSiteMaster:
+          apiKey.scopes.includes("*") ||
+          apiKey.scopes.includes("site:master"),
+      },
+    },
+  });
+}));
+
 router.get("/keys", requireApiKey("keys:write"), asyncHandler(async (_req, res) => {
   const keys = await prisma.apiKey.findMany({
     orderBy: { createdAt: "desc" },

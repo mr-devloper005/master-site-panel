@@ -1,4 +1,8 @@
-const DEFAULT_BACKEND_URL = "http://localhost:4000";
+const DEFAULT_BACKEND_URL =
+  import.meta.env.VITE_BACKEND_URL ||
+  (typeof window !== "undefined" && /localhost|127\.0\.0\.1/.test(window.location.hostname)
+    ? "http://localhost:4000"
+    : "https://masterpanel.seoparadox.com");
 export const BACKEND_URL_KEY = "site-master-backend-url";
 export const API_KEY_STORAGE_KEY = "site-master-api-key";
 
@@ -12,6 +16,7 @@ const parseJson = async (response) => {
 
 const request = async (path, options = {}) => {
   const apiKey = options.apiKey ?? getApiKey();
+  const backendUrl = options.backendUrl ?? getBackendUrl();
   const headers = {
     "Content-Type": "application/json",
     ...(options.headers || {}),
@@ -21,7 +26,7 @@ const request = async (path, options = {}) => {
     headers["x-api-key"] = apiKey;
   }
 
-  const response = await fetch(`${getBackendUrl()}${path}`, {
+  const response = await fetch(`${backendUrl}${path}`, {
     ...options,
     headers,
   });
@@ -245,6 +250,11 @@ export const resetMockDb = async () => {
 
 export const fetchApiKeys = async () => {
   const response = await request("/api/v1/auth/keys");
+  return response.data;
+};
+
+export const validateIntegration = async (options = {}) => {
+  const response = await request("/api/v1/auth/integration", options);
   return response.data;
 };
 

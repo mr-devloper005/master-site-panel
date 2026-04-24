@@ -18,7 +18,7 @@ const baseSiteScopes = ["posts:write", "posts:read", "sites:read"];
 exports.TASK_SCOPE_PRESETS = Object.fromEntries(site_contract_1.SITE_TASKS.map((task) => [task, [...baseSiteScopes, (0, exports.getTaskScope)(task)]]));
 exports.EXTRA_SCOPE_PRESETS = {
     runtime: ["sites:read"],
-    siteMaster: [...baseSiteScopes, exports.SITE_MASTER_SCOPE],
+    siteMaster: [...baseSiteScopes, "sites:write", "keys:write", exports.SITE_MASTER_SCOPE],
 };
 const inferTask = (scopes) => {
     const matched = site_contract_1.SITE_TASKS.find((task) => scopes.includes((0, exports.getTaskScope)(task)));

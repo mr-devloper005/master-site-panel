@@ -8,6 +8,7 @@ import {
   fetchSiteBlueprint,
   getIntegrationSettings,
   saveIntegrationSettings,
+  validateIntegration,
 } from "../utils/api";
 
 export default function Settings() {
@@ -21,11 +22,38 @@ export default function Settings() {
   const [apiKey, setApiKey] = useState(integration.apiKey);
   const [blueprint, setBlueprint] = useState(null);
   const [selectedBlueprintSiteId, setSelectedBlueprintSiteId] = useState("");
+  const [integrationStatus, setIntegrationStatus] = useState(null);
 
   const saveIntegration = async () => {
-    saveIntegrationSettings({ backendUrl, apiKey });
+    const normalizedBackendUrl = backendUrl.trim();
+    const normalizedApiKey = apiKey.trim();
+    if (!normalizedBackendUrl || !normalizedApiKey) {
+      toast.error("Backend URL and Master API Key are required.");
+      return;
+    }
+    const status = await validateIntegration({
+      backendUrl: normalizedBackendUrl,
+      apiKey: normalizedApiKey,
+      headers: {},
+    });
+
+    saveIntegrationSettings({ backendUrl: normalizedBackendUrl, apiKey: normalizedApiKey });
+    setIntegrationStatus(status);
     await hydrate();
-    toast.success("Backend integration saved");
+    if (status.capabilities.canReadSites && status.capabilities.canReadPosts) {
+      const missing = [];
+      if (!status.capabilities.canWriteSites) missing.push("sites:write");
+      if (!status.capabilities.canManageKeys) missing.push("keys:write");
+
+      toast.success(
+        missing.length
+          ? `Backend connected. Limited scopes: missing ${missing.join(", ")}`
+          : "Backend integration saved"
+      );
+      return;
+    }
+
+    toast.error("API key connected, but it does not have enough read access for the panel.");
   };
 
   const loadBlueprint = async (siteId) => {
@@ -104,6 +132,20 @@ export default function Settings() {
           <button className="mt-3 rounded-lg bg-blue-600 px-4 py-2 text-white" onClick={saveIntegration}>
             Save Integration
           </button>
+          {integrationStatus ? (
+            <div className="mt-3 rounded-lg border border-[var(--border-color)] p-3 text-sm">
+              <p className="font-medium">{integrationStatus.name}</p>
+              <p className="mt-1 text-xs text-[var(--text-secondary)] break-all">
+                Scopes: {integrationStatus.scopes.join(", ")}
+              </p>
+              <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                <span className={`rounded-full px-2 py-1 ${integrationStatus.capabilities.canReadSites ? "bg-emerald-500/15 text-emerald-600" : "bg-rose-500/15 text-rose-600"}`}>sites:read</span>
+                <span className={`rounded-full px-2 py-1 ${integrationStatus.capabilities.canReadPosts ? "bg-emerald-500/15 text-emerald-600" : "bg-rose-500/15 text-rose-600"}`}>posts:read</span>
+                <span className={`rounded-full px-2 py-1 ${integrationStatus.capabilities.canWriteSites ? "bg-emerald-500/15 text-emerald-600" : "bg-amber-500/15 text-amber-700"}`}>sites:write</span>
+                <span className={`rounded-full px-2 py-1 ${integrationStatus.capabilities.canManageKeys ? "bg-emerald-500/15 text-emerald-600" : "bg-amber-500/15 text-amber-700"}`}>keys:write</span>
+              </div>
+            </div>
+          ) : null}
         </section>
 
         <section className="glass rounded-panel p-4">

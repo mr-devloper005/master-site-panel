@@ -1,0 +1,2889 @@
+[
+  {
+    "repo": "apcreatiu.com",
+    "code": "v7kq2m9x",
+    "name": "Apcreatiu",
+    "tagline": "Listing-first discovery platform",
+    "domain": "apcreatiu.com",
+    "url": "https://apcreatiu.com",
+    "description": "A listing-first discovery platform for browsing businesses, services, categories, and local opportunities through a clearer structured experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Listing",
+    "frontendUrl": "https://apcreatiu.com",
+    "liveUrl": "https://apcreatiu.com",
+    "siteUrl": "https://apcreatiu.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    }
+  },
+  {
+    "repo": "welldanet.com",
+    "code": "wd2m8q7v4x",
+    "name": "WellDanet",
+    "tagline": "Listing-first discovery platform",
+    "domain": "welldanet.com",
+    "url": "https://welldanet.com",
+    "description": "A listing-first discovery platform for browsing businesses, services, categories, and local opportunities through a clearer structured experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Listing",
+    "frontendUrl": "https://welldanet.com",
+    "liveUrl": "https://welldanet.com",
+    "siteUrl": "https://welldanet.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    }
+  },
+  {
+    "repo": "rentalhiso.com",
+    "code": "m6xq3v8k",
+    "name": "Rentalhiso",
+    "tagline": "Listing-first discovery platform",
+    "domain": "rentalhiso.com",
+    "url": "https://rentalhiso.com",
+    "description": "A listing-first discovery platform for browsing businesses, services, categories, and local opportunities through a clearer structured experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Listing",
+    "frontendUrl": "https://rentalhiso.com",
+    "liveUrl": "https://rentalhiso.com",
+    "siteUrl": "https://rentalhiso.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    }
+  },
+  {
+    "repo": "tynewebdesign.com",
+    "code": "t9p2w7zr",
+    "name": "Tyne Web Design",
+    "tagline": "Visual discovery + Profile-driven community",
+    "domain": "tynewebdesign.com",
+    "url": "https://tynewebdesign.com",
+    "description": "A multi-surface platform combining image and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "image sharing , Social profile",
+    "frontendUrl": "https://tynewebdesign.com",
+    "liveUrl": "https://tynewebdesign.com",
+    "siteUrl": "https://tynewebdesign.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "codepixelmedia.com",
+    "code": "q8v1m4kx",
+    "name": "Code Pixel Media",
+    "tagline": "Visual discovery + Profile-driven community",
+    "domain": "codepixelmedia.com",
+    "url": "https://codepixelmedia.com",
+    "description": "A multi-surface platform combining image and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "image sharing , Social profile",
+    "frontendUrl": "https://codepixelmedia.com",
+    "liveUrl": "https://codepixelmedia.com",
+    "siteUrl": "https://codepixelmedia.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "winonaj.com",
+    "code": "wn4q8x2m7v",
+    "name": "Winonaj",
+    "tagline": "Editorial publishing platform",
+    "domain": "winonaj.com",
+    "url": "https://winonaj.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://winonaj.com",
+    "liveUrl": "https://winonaj.com",
+    "siteUrl": "https://winonaj.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "wiliin.com",
+    "code": "wl7m2q9x4v",
+    "name": "Wiliin",
+    "tagline": "Editorial publishing platform",
+    "domain": "wiliin.com",
+    "url": "https://wiliin.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://wiliin.com",
+    "liveUrl": "https://wiliin.com",
+    "siteUrl": "https://wiliin.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "djlservicios.com",
+    "code": "dj6x4q8m2v",
+    "name": "DJL Servicios",
+    "tagline": "Classified browsing platform",
+    "domain": "djlservicios.com",
+    "url": "https://djlservicios.com",
+    "description": "A classified-first platform for local offers, deals, notices, and opportunity discovery.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Classified",
+    "frontendUrl": "https://djlservicios.com",
+    "liveUrl": "https://djlservicios.com",
+    "siteUrl": "https://djlservicios.com",
+    "siteType": "classified",
+    "feedPath": "/classifieds",
+    "taskViews": {
+      "classified": "/classifieds"
+    }
+  },
+  {
+    "repo": "linkriseup.com",
+    "code": "linkriseup-production",
+    "name": "linkriseup",
+    "tagline": "Editorial publishing platform",
+    "domain": "linkriseup.com",
+    "url": "https://linkriseup.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "frontendUrl": "https://linkriseup.com",
+    "liveUrl": "https://linkriseup.com",
+    "siteUrl": "https://linkriseup.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "meivera.com",
+    "code": "mv4x9q2k7p",
+    "name": "Meivera",
+    "tagline": "Curated bookmarking + Profile-driven community",
+    "domain": "meivera.com",
+    "url": "https://meivera.com",
+    "description": "A multi-surface platform combining sbm and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "sbm",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "SBM , profile",
+    "frontendUrl": "https://meivera.com",
+    "liveUrl": "https://meivera.com",
+    "siteUrl": "https://meivera.com",
+    "siteType": "social",
+    "feedPath": "/sbm",
+    "taskViews": {
+      "sbm": "/sbm",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "motivkit.com",
+    "code": "mk7q2v8x4m",
+    "name": "MotivKit",
+    "tagline": "Editorial publishing platform",
+    "domain": "motivkit.com",
+    "url": "https://motivkit.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://motivkit.com",
+    "liveUrl": "https://motivkit.com",
+    "siteUrl": "https://motivkit.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "dlkautoparts.com",
+    "code": "da8m4q7v2x",
+    "name": "DLK Auto Parts",
+    "tagline": "Listing-first discovery platform",
+    "domain": "dlkautoparts.com",
+    "url": "https://dlkautoparts.com",
+    "description": "A listing-first discovery platform for browsing businesses, services, categories, and local opportunities through a clearer structured experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "listing",
+    "frontendUrl": "https://dlkautoparts.com",
+    "liveUrl": "https://dlkautoparts.com",
+    "siteUrl": "https://dlkautoparts.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    }
+  },
+  {
+    "repo": "mysterycoder.com",
+    "code": "mc2x7v9q4k",
+    "name": "Mystery Coder",
+    "tagline": "Editorial publishing + Profile-driven community",
+    "domain": "mysterycoder.com",
+    "url": "https://mysterycoder.com",
+    "description": "A multi-surface platform combining article and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "article",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article , Social profile",
+    "frontendUrl": "https://mysterycoder.com",
+    "liveUrl": "https://mysterycoder.com",
+    "siteUrl": "https://mysterycoder.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "techmixbr.com",
+    "code": "tb9v4q2m7x",
+    "name": "Techmix BR",
+    "tagline": "Editorial publishing platform",
+    "domain": "techmixbr.com",
+    "url": "https://techmixbr.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://techmixbr.com",
+    "liveUrl": "https://techmixbr.com",
+    "siteUrl": "https://techmixbr.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "bharatamayu.com",
+    "code": "ba9q4m7x2v",
+    "name": "Bharat Amayu",
+    "tagline": "Curated bookmarking + Profile-driven community",
+    "domain": "bharatamayu.com",
+    "url": "https://bharatamayu.com",
+    "description": "A multi-surface platform combining sbm and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "sbm",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "SBM , Profile",
+    "frontendUrl": "https://bharatamayu.com",
+    "liveUrl": "https://bharatamayu.com",
+    "siteUrl": "https://bharatamayu.com",
+    "siteType": "social",
+    "feedPath": "/sbm",
+    "taskViews": {
+      "sbm": "/sbm",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "celebriches.com",
+    "code": "cb7v2q8m4x",
+    "name": "Celebriches",
+    "tagline": "Curated bookmarking + Profile-driven community",
+    "domain": "celebriches.com",
+    "url": "https://celebriches.com",
+    "description": "A multi-surface platform combining sbm and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "sbm",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "SBM , Profile",
+    "frontendUrl": "https://celebriches.com",
+    "liveUrl": "https://celebriches.com",
+    "siteUrl": "https://celebriches.com",
+    "siteType": "social",
+    "feedPath": "/sbm",
+    "taskViews": {
+      "sbm": "/sbm",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "miplaninvu.com",
+    "code": "mi4x8q2v7k",
+    "name": "Mi Plan Invu",
+    "tagline": "Listing-first discovery platform",
+    "domain": "miplaninvu.com",
+    "url": "https://miplaninvu.com",
+    "description": "A listing-first discovery platform for browsing businesses, services, categories, and local opportunities through a clearer structured experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "listing",
+    "frontendUrl": "https://miplaninvu.com",
+    "liveUrl": "https://miplaninvu.com",
+    "siteUrl": "https://miplaninvu.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    }
+  },
+  {
+    "repo": "beingadviser.com",
+    "code": "bd8q2m7x4v",
+    "name": "Being Adviser",
+    "tagline": "Listing-first discovery platform",
+    "domain": "beingadviser.com",
+    "url": "https://beingadviser.com",
+    "description": "A listing-first discovery platform for browsing businesses, services, categories, and local opportunities through a clearer structured experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "listing",
+    "frontendUrl": "https://beingadviser.com",
+    "liveUrl": "https://beingadviser.com",
+    "siteUrl": "https://beingadviser.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    }
+  },
+  {
+    "repo": "lodenews.com",
+    "code": "ln7x4v2q9m",
+    "name": "Lode News",
+    "tagline": "Classified browsing platform",
+    "domain": "lodenews.com",
+    "url": "https://lodenews.com",
+    "description": "A classified-first platform for local offers, deals, notices, and opportunity discovery.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "classified",
+    "frontendUrl": "https://lodenews.com",
+    "liveUrl": "https://lodenews.com",
+    "siteUrl": "https://lodenews.com",
+    "siteType": "classified",
+    "feedPath": "/classifieds",
+    "taskViews": {
+      "classified": "/classifieds"
+    }
+  },
+  {
+    "repo": "rajsattimart.com",
+    "code": "rs8x2q7m4v",
+    "name": "Raj Satti Mart",
+    "tagline": "Classified browsing platform",
+    "domain": "rajsattimart.com",
+    "url": "https://rajsattimart.com",
+    "description": "A classified-first platform for local offers, deals, notices, and opportunity discovery.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "classified",
+    "frontendUrl": "https://rajsattimart.com",
+    "liveUrl": "https://rajsattimart.com",
+    "siteUrl": "https://rajsattimart.com",
+    "siteType": "classified",
+    "feedPath": "/classifieds",
+    "taskViews": {
+      "classified": "/classifieds"
+    }
+  },
+  {
+    "repo": "bokunotrends.com",
+    "code": "bt4q9x2m7v",
+    "name": "Bokuno Trends",
+    "tagline": "Classified browsing platform",
+    "domain": "bokunotrends.com",
+    "url": "https://bokunotrends.com",
+    "description": "A classified-first platform for local offers, deals, notices, and opportunity discovery.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "classified",
+    "frontendUrl": "https://bokunotrends.com",
+    "liveUrl": "https://bokunotrends.com",
+    "siteUrl": "https://bokunotrends.com",
+    "siteType": "classified",
+    "feedPath": "/classifieds",
+    "taskViews": {
+      "classified": "/classifieds"
+    }
+  },
+  {
+    "repo": "radianpark.com",
+    "code": "rp2x8q4v7m",
+    "name": "Radian Park",
+    "tagline": "Visual discovery + Profile-driven community",
+    "domain": "radianpark.com",
+    "url": "https://radianpark.com",
+    "description": "A multi-surface platform combining image and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "image sharing , Social profile",
+    "frontendUrl": "https://radianpark.com",
+    "liveUrl": "https://radianpark.com",
+    "siteUrl": "https://radianpark.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "mysupergains.com",
+    "code": "mg9q2v7x4k",
+    "name": "My Super Gains",
+    "tagline": "Curated bookmarking + Profile-driven community",
+    "domain": "mysupergains.com",
+    "url": "https://mysupergains.com",
+    "description": "A multi-surface platform combining sbm and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "sbm",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "SBM , Profile",
+    "frontendUrl": "https://mysupergains.com",
+    "liveUrl": "https://mysupergains.com",
+    "siteUrl": "https://mysupergains.com",
+    "siteType": "social",
+    "feedPath": "/sbm",
+    "taskViews": {
+      "sbm": "/sbm",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "lashisking.com",
+    "code": "lk4v8m2q7x",
+    "name": "Lash Is King",
+    "tagline": "Visual discovery + Profile-driven community",
+    "domain": "lashisking.com",
+    "url": "https://lashisking.com",
+    "description": "A multi-surface platform combining image and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "image sharing , Social profile",
+    "frontendUrl": "https://lashisking.com",
+    "liveUrl": "https://lashisking.com",
+    "siteUrl": "https://lashisking.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "lasheminence.com",
+    "code": "le8q4x7m2v",
+    "name": "Lash Eminence",
+    "tagline": "Listing-first discovery platform",
+    "domain": "lasheminence.com",
+    "url": "https://lasheminence.com",
+    "description": "A listing-first discovery platform for browsing businesses, services, categories, and local opportunities through a clearer structured experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Listing",
+    "frontendUrl": "https://lasheminence.com",
+    "liveUrl": "https://lasheminence.com",
+    "siteUrl": "https://lasheminence.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    }
+  },
+  {
+    "repo": "leavesinluxe.com",
+    "code": "ll7x2v9q4m",
+    "name": "Leaves In Luxe",
+    "tagline": "Visual discovery platform",
+    "domain": "leavesinluxe.com",
+    "url": "https://leavesinluxe.com",
+    "description": "An image-led discovery platform for visual posts, media browsing, and creative exploration.",
+    "tasks": [
+      "image"
+    ],
+    "category": "IMAGE_SHARING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "image sharing",
+    "frontendUrl": "https://leavesinluxe.com",
+    "liveUrl": "https://leavesinluxe.com",
+    "siteUrl": "https://leavesinluxe.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images"
+    }
+  },
+  {
+    "repo": "comtelesis.net",
+    "code": "comtelesis",
+    "name": "ComTelesis",
+    "tagline": "Editorial publishing platform",
+    "domain": "comtelesis.net",
+    "url": "https://comtelesis.net",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://comtelesis.net",
+    "liveUrl": "https://comtelesis.net",
+    "siteUrl": "https://comtelesis.net",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "enginecrib.com",
+    "code": "enginecrib",
+    "name": "EngineCrib",
+    "tagline": "Listing-first discovery platform",
+    "domain": "enginecrib.com",
+    "url": "https://enginecrib.com",
+    "description": "A listing-first discovery platform for browsing businesses, services, categories, and local opportunities through a clearer structured experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Listing",
+    "frontendUrl": "https://enginecrib.com",
+    "liveUrl": "https://enginecrib.com",
+    "siteUrl": "https://enginecrib.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    }
+  },
+  {
+    "repo": "finscoastal.com",
+    "code": "finscoastal",
+    "name": "Fins Coastal",
+    "tagline": "Classified browsing platform",
+    "domain": "finscoastal.com",
+    "url": "https://finscoastal.com",
+    "description": "A classified-first platform for local offers, deals, notices, and opportunity discovery.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Classified",
+    "frontendUrl": "https://finscoastal.com",
+    "liveUrl": "https://finscoastal.com",
+    "siteUrl": "https://finscoastal.com",
+    "siteType": "classified",
+    "feedPath": "/classifieds",
+    "taskViews": {
+      "classified": "/classifieds"
+    }
+  },
+  {
+    "repo": "khaosaddon.com",
+    "code": "khaosaddon",
+    "name": "Khaos Addon",
+    "tagline": "Editorial publishing platform",
+    "domain": "khaosaddon.com",
+    "url": "https://khaosaddon.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://khaosaddon.com",
+    "liveUrl": "https://khaosaddon.com",
+    "siteUrl": "https://khaosaddon.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "mattralston.net",
+    "code": "mattralston",
+    "name": "Matt R Alston",
+    "tagline": "Profile-driven community platform",
+    "domain": "mattralston.net",
+    "url": "https://mattralston.net",
+    "description": "A profile-led platform for creator identity, public presence, and community discovery.",
+    "tasks": [
+      "profile"
+    ],
+    "category": "PROFILE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Profile",
+    "frontendUrl": "https://mattralston.net",
+    "liveUrl": "https://mattralston.net",
+    "siteUrl": "https://mattralston.net",
+    "siteType": "profile",
+    "feedPath": "/profile",
+    "taskViews": {
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "mikebrewereconomics.com",
+    "code": "mikebrewereconomics",
+    "name": "Mike Brewer Economics",
+    "tagline": "Editorial publishing platform",
+    "domain": "mikebrewereconomics.com",
+    "url": "https://mikebrewereconomics.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://mikebrewereconomics.com",
+    "liveUrl": "https://mikebrewereconomics.com",
+    "siteUrl": "https://mikebrewereconomics.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "moonrocketcoin.net",
+    "code": "moonrocketcoin",
+    "name": "Moon Rocket Coin",
+    "tagline": "Listing-first discovery platform",
+    "domain": "moonrocketcoin.net",
+    "url": "https://moonrocketcoin.net",
+    "description": "A listing-first discovery platform for browsing businesses, services, categories, and local opportunities through a clearer structured experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Listing",
+    "frontendUrl": "https://moonrocketcoin.net",
+    "liveUrl": "https://moonrocketcoin.net",
+    "siteUrl": "https://moonrocketcoin.net",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    }
+  },
+  {
+    "repo": "softkilldesign.com",
+    "code": "softkilldesign",
+    "name": "Soft Kill Design",
+    "tagline": "Visual discovery + Profile-driven community",
+    "domain": "softkilldesign.com",
+    "url": "https://softkilldesign.com",
+    "description": "A multi-surface platform combining image and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Image + Social Profile",
+    "frontendUrl": "https://softkilldesign.com",
+    "liveUrl": "https://softkilldesign.com",
+    "siteUrl": "https://softkilldesign.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "strathbrockparish.net",
+    "code": "strathbrockparish",
+    "name": "Strathbrok Parish",
+    "tagline": "Curated bookmarking + Profile-driven community",
+    "domain": "strathbrockparish.net",
+    "url": "https://strathbrockparish.net",
+    "description": "A multi-surface platform combining sbm and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "sbm",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "SBM + Profile",
+    "frontendUrl": "https://strathbrockparish.net",
+    "liveUrl": "https://strathbrockparish.net",
+    "siteUrl": "https://strathbrockparish.net",
+    "siteType": "social",
+    "feedPath": "/sbm",
+    "taskViews": {
+      "sbm": "/sbm",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "tabsocal.com",
+    "code": "tabsocal",
+    "name": "Tab Socal",
+    "tagline": "Visual discovery + Profile-driven community",
+    "domain": "tabsocal.com",
+    "url": "https://tabsocal.com",
+    "description": "A multi-surface platform combining image and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Image + Profile",
+    "frontendUrl": "https://tabsocal.com",
+    "liveUrl": "https://tabsocal.com",
+    "siteUrl": "https://tabsocal.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "thebalibead.com",
+    "code": "thebalibead",
+    "name": "The Bali Bead",
+    "tagline": "Visual discovery + Profile-driven community",
+    "domain": "thebalibead.com",
+    "url": "https://thebalibead.com",
+    "description": "A multi-surface platform combining image and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Image + Profile",
+    "frontendUrl": "https://thebalibead.com",
+    "liveUrl": "https://thebalibead.com",
+    "siteUrl": "https://thebalibead.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "worldworthwandering.com",
+    "code": "worldworthwandering",
+    "name": "World Worth Wandering",
+    "tagline": "Editorial publishing platform",
+    "domain": "worldworthwandering.com",
+    "url": "https://worldworthwandering.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://worldworthwandering.com",
+    "liveUrl": "https://worldworthwandering.com",
+    "siteUrl": "https://worldworthwandering.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "scoreminers.com",
+    "code": "lbwtzmxybb",
+    "name": "Score Miners",
+    "tagline": "Visual discovery + Profile-driven community",
+    "domain": "scoreminers.com",
+    "url": "https://scoreminers.com",
+    "description": "A multi-surface platform combining image and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Image + profile",
+    "frontendUrl": "https://scoreminers.com",
+    "liveUrl": "https://scoreminers.com",
+    "siteUrl": "https://scoreminers.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "linedesing.com",
+    "code": "th8c7gywv7",
+    "name": "Line Desing",
+    "tagline": "Visual discovery + Profile-driven community",
+    "domain": "linedesing.com",
+    "url": "https://linedesing.com",
+    "description": "A multi-surface platform combining image and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Image + profile",
+    "frontendUrl": "https://linedesing.com",
+    "liveUrl": "https://linedesing.com",
+    "siteUrl": "https://linedesing.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "helloartcity.com",
+    "code": "thufpa2gp8",
+    "name": "Hello Art City",
+    "tagline": "Visual discovery + Profile-driven community",
+    "domain": "helloartcity.com",
+    "url": "https://helloartcity.com",
+    "description": "A multi-surface platform combining image and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Image + profile",
+    "frontendUrl": "https://helloartcity.com",
+    "liveUrl": "https://helloartcity.com",
+    "siteUrl": "https://helloartcity.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "alefcoach.com",
+    "code": "3fxxsmjztv",
+    "name": "Alef Coach",
+    "tagline": "Editorial publishing platform",
+    "domain": "alefcoach.com",
+    "url": "https://alefcoach.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://alefcoach.com",
+    "liveUrl": "https://alefcoach.com",
+    "siteUrl": "https://alefcoach.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "ladyframe.com",
+    "code": "qr3tw8nsjq",
+    "name": "Lady Frame",
+    "tagline": "Curated bookmarking + Profile-driven community",
+    "domain": "ladyframe.com",
+    "url": "https://ladyframe.com",
+    "description": "A multi-surface platform combining sbm and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "sbm",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "SBM + Social Profile",
+    "frontendUrl": "https://ladyframe.com",
+    "liveUrl": "https://ladyframe.com",
+    "siteUrl": "https://ladyframe.com",
+    "siteType": "social",
+    "feedPath": "/sbm",
+    "taskViews": {
+      "sbm": "/sbm",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "josoore.com",
+    "code": "qxyk67pyu8",
+    "name": "Josoore",
+    "tagline": "Editorial publishing platform",
+    "domain": "josoore.com",
+    "url": "https://josoore.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://josoore.com",
+    "liveUrl": "https://josoore.com",
+    "siteUrl": "https://josoore.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "techonlineinfo.com",
+    "code": "8af29rerfb",
+    "name": "Tech Online Info",
+    "tagline": "Editorial publishing platform",
+    "domain": "techonlineinfo.com",
+    "url": "https://techonlineinfo.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://techonlineinfo.com",
+    "liveUrl": "https://techonlineinfo.com",
+    "siteUrl": "https://techonlineinfo.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "techdemais.com",
+    "code": "azqy334e85",
+    "name": "Tech Demais",
+    "tagline": "Editorial publishing platform",
+    "domain": "techdemais.com",
+    "url": "https://techdemais.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://techdemais.com",
+    "liveUrl": "https://techdemais.com",
+    "siteUrl": "https://techdemais.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "fluxyogaretreats.com",
+    "code": "5psvhebc8g",
+    "name": "Flux Yoga Retreats",
+    "tagline": "Editorial publishing platform",
+    "domain": "fluxyogaretreats.com",
+    "url": "https://fluxyogaretreats.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://fluxyogaretreats.com",
+    "liveUrl": "https://fluxyogaretreats.com",
+    "siteUrl": "https://fluxyogaretreats.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "spinevivo.com",
+    "code": "eydtmznb6j",
+    "name": "Spine Vivo",
+    "tagline": "Listing-first discovery platform",
+    "domain": "spinevivo.com",
+    "url": "https://spinevivo.com",
+    "description": "A listing-first discovery platform for browsing businesses, services, categories, and local opportunities through a clearer structured experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Business Listing",
+    "frontendUrl": "https://spinevivo.com",
+    "liveUrl": "https://spinevivo.com",
+    "siteUrl": "https://spinevivo.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    }
+  },
+  {
+    "repo": "blogmiki.com",
+    "code": "4ckgtndj82",
+    "name": "Blog Miki",
+    "tagline": "Editorial publishing platform",
+    "domain": "blogmiki.com",
+    "url": "https://blogmiki.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://blogmiki.com",
+    "liveUrl": "https://blogmiki.com",
+    "siteUrl": "https://blogmiki.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "choicemakerscrew.com",
+    "code": "jmhn2dfxz4",
+    "name": "Choice Makers Crew",
+    "tagline": "Editorial publishing platform",
+    "domain": "choicemakerscrew.com",
+    "url": "https://choicemakerscrew.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://choicemakerscrew.com",
+    "liveUrl": "https://choicemakerscrew.com",
+    "siteUrl": "https://choicemakerscrew.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "passionunchained.com",
+    "code": "x72ve5dpc7",
+    "name": "Passion Unchained",
+    "tagline": "Editorial publishing platform",
+    "domain": "passionunchained.com",
+    "url": "https://passionunchained.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://passionunchained.com",
+    "liveUrl": "https://passionunchained.com",
+    "siteUrl": "https://passionunchained.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "hiddengemsreno.com",
+    "code": "47hed3cu5a",
+    "name": "Hidden Gems Reno",
+    "tagline": "Visual discovery + Profile-driven community",
+    "domain": "hiddengemsreno.com",
+    "url": "https://hiddengemsreno.com",
+    "description": "A multi-surface platform combining image and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Image + profile",
+    "frontendUrl": "https://hiddengemsreno.com",
+    "liveUrl": "https://hiddengemsreno.com",
+    "siteUrl": "https://hiddengemsreno.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "lakesforocean.com",
+    "code": "6ynahtnp2u",
+    "name": "Lakes For Ocean",
+    "tagline": "Visual discovery + Profile-driven community",
+    "domain": "lakesforocean.com",
+    "url": "https://lakesforocean.com",
+    "description": "A multi-surface platform combining image and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Image + profile",
+    "frontendUrl": "https://lakesforocean.com",
+    "liveUrl": "https://lakesforocean.com",
+    "siteUrl": "https://lakesforocean.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "dotsdeveloper.com",
+    "code": "acws7qn8hm",
+    "name": "Dots Developer",
+    "tagline": "Editorial publishing platform",
+    "domain": "dotsdeveloper.com",
+    "url": "https://dotsdeveloper.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://dotsdeveloper.com",
+    "liveUrl": "https://dotsdeveloper.com",
+    "siteUrl": "https://dotsdeveloper.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "teddyandkitty.com",
+    "code": "9fqwrjg6m9",
+    "name": "Teddy And Kitty",
+    "tagline": "Visual discovery + Profile-driven community",
+    "domain": "teddyandkitty.com",
+    "url": "https://teddyandkitty.com",
+    "description": "A multi-surface platform combining image and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Image + profile",
+    "frontendUrl": "https://teddyandkitty.com",
+    "liveUrl": "https://teddyandkitty.com",
+    "siteUrl": "https://teddyandkitty.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "septemberzodiac.com",
+    "code": "rsu3g43mc3",
+    "name": "September Zodiac",
+    "tagline": "Editorial publishing platform",
+    "domain": "septemberzodiac.com",
+    "url": "https://septemberzodiac.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://septemberzodiac.com",
+    "liveUrl": "https://septemberzodiac.com",
+    "siteUrl": "https://septemberzodiac.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "obsidianimpacts.com",
+    "code": "q4xeunt97f",
+    "name": "Obsidian Impacts",
+    "tagline": "Editorial publishing platform",
+    "domain": "obsidianimpacts.com",
+    "url": "https://obsidianimpacts.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://obsidianimpacts.com",
+    "liveUrl": "https://obsidianimpacts.com",
+    "siteUrl": "https://obsidianimpacts.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "redesocialpro.com",
+    "code": "99hwj78t92",
+    "name": "Redesocial Pro",
+    "tagline": "Visual discovery + Profile-driven community",
+    "domain": "redesocialpro.com",
+    "url": "https://redesocialpro.com",
+    "description": "A multi-surface platform combining image and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Image + Social Profile",
+    "frontendUrl": "https://redesocialpro.com",
+    "liveUrl": "https://redesocialpro.com",
+    "siteUrl": "https://redesocialpro.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "infoplatforms.com",
+    "code": "if7m2q9x4v",
+    "name": "Info Platforms",
+    "tagline": "Editorial publishing + Document publishing",
+    "domain": "infoplatforms.com",
+    "url": "https://infoplatforms.com",
+    "description": "A multi-surface platform combining article and pdf experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "article",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article + PDF",
+    "frontendUrl": "https://infoplatforms.com",
+    "liveUrl": "https://infoplatforms.com",
+    "siteUrl": "https://infoplatforms.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles",
+      "pdf": "/pdf"
+    }
+  },
+  {
+    "repo": "devcybernexus.com",
+    "code": "dc8v4q2m7x",
+    "name": "Dev Cyber Nexus",
+    "tagline": "Editorial publishing platform",
+    "domain": "devcybernexus.com",
+    "url": "https://devcybernexus.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://devcybernexus.com",
+    "liveUrl": "https://devcybernexus.com",
+    "siteUrl": "https://devcybernexus.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "callgadgets.com",
+    "code": "cg4x9m2q7v",
+    "name": "Call Gadgets",
+    "tagline": "Classified browsing + Visual discovery",
+    "domain": "callgadgets.com",
+    "url": "https://callgadgets.com",
+    "description": "A multi-surface platform combining classified and image experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "classified",
+      "image"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Classified + Image Sharing",
+    "frontendUrl": "https://callgadgets.com",
+    "liveUrl": "https://callgadgets.com",
+    "siteUrl": "https://callgadgets.com",
+    "siteType": "classified",
+    "feedPath": "/classifieds",
+    "taskViews": {
+      "classified": "/classifieds",
+      "image": "/images"
+    }
+  },
+  {
+    "repo": "fullprokey.com",
+    "code": "fp9q2x7m4v",
+    "name": "Full Pro Key",
+    "tagline": "Classified browsing platform",
+    "domain": "fullprokey.com",
+    "url": "https://fullprokey.com",
+    "description": "A classified-first platform for local offers, deals, notices, and opportunity discovery.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Classified",
+    "frontendUrl": "https://fullprokey.com",
+    "liveUrl": "https://fullprokey.com",
+    "siteUrl": "https://fullprokey.com",
+    "siteType": "classified",
+    "feedPath": "/classifieds",
+    "taskViews": {
+      "classified": "/classifieds"
+    }
+  },
+  {
+    "repo": "choose-your-car.com",
+    "code": "cy6v8q2m4x",
+    "name": "Choose Your Car",
+    "tagline": "Listing-first discovery + Classified browsing",
+    "domain": "choose-your-car.com",
+    "url": "https://choose-your-car.com",
+    "description": "A multi-surface platform combining listing and classified experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "listing",
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Business Listing + Classified",
+    "frontendUrl": "https://choose-your-car.com",
+    "liveUrl": "https://choose-your-car.com",
+    "siteUrl": "https://choose-your-car.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings",
+      "classified": "/classifieds"
+    }
+  },
+  {
+    "repo": "cabanalaemilia.com",
+    "code": "ca7m4x9q2v",
+    "name": "Caban Ala Emilia",
+    "tagline": "Visual discovery + Listing-first discovery",
+    "domain": "cabanalaemilia.com",
+    "url": "https://cabanalaemilia.com",
+    "description": "A multi-surface platform combining image and listing experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "image",
+      "listing"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Image Sharing + Business Listing",
+    "frontendUrl": "https://cabanalaemilia.com",
+    "liveUrl": "https://cabanalaemilia.com",
+    "siteUrl": "https://cabanalaemilia.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images",
+      "listing": "/listings"
+    }
+  },
+  {
+    "repo": "treasurenftcode.com",
+    "code": "tn5q8x2m4v",
+    "name": "Treasure NFT Code",
+    "tagline": "Profile-driven community platform",
+    "domain": "treasurenftcode.com",
+    "url": "https://treasurenftcode.com",
+    "description": "A profile-led platform for creator identity, public presence, and community discovery.",
+    "tasks": [
+      "profile"
+    ],
+    "category": "PROFILE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Social Profile",
+    "frontendUrl": "https://treasurenftcode.com",
+    "liveUrl": "https://treasurenftcode.com",
+    "siteUrl": "https://treasurenftcode.com",
+    "siteType": "profile",
+    "feedPath": "/profile",
+    "taskViews": {
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "totebagus.com",
+    "code": "tb4m7q9x2v",
+    "name": "Tote Bagus",
+    "tagline": "Visual discovery + Classified browsing",
+    "domain": "totebagus.com",
+    "url": "https://totebagus.com",
+    "description": "A multi-surface platform combining image and classified experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "image",
+      "classified"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Image Sharing + Classified",
+    "frontendUrl": "https://totebagus.com",
+    "liveUrl": "https://totebagus.com",
+    "siteUrl": "https://totebagus.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images",
+      "classified": "/classifieds"
+    }
+  },
+  {
+    "repo": "switchhigh.com",
+    "code": "sh8x2q4m7v",
+    "name": "Switch High",
+    "tagline": "Editorial publishing + Profile-driven community",
+    "domain": "switchhigh.com",
+    "url": "https://switchhigh.com",
+    "description": "A multi-surface platform combining article and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "article",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article + Social Profile",
+    "frontendUrl": "https://switchhigh.com",
+    "liveUrl": "https://switchhigh.com",
+    "siteUrl": "https://switchhigh.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "sinclair-theme.com",
+    "code": "st7q4v2m8x",
+    "name": "Sinclair Theme",
+    "tagline": "Editorial publishing platform",
+    "domain": "sinclair-theme.com",
+    "url": "https://sinclair-theme.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://sinclair-theme.com",
+    "liveUrl": "https://sinclair-theme.com",
+    "siteUrl": "https://sinclair-theme.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "housesdecors.com",
+    "code": "hd9m2q7x4v",
+    "name": "Houses Decors",
+    "tagline": "Visual discovery platform",
+    "domain": "housesdecors.com",
+    "url": "https://housesdecors.com",
+    "description": "An image-led discovery platform for visual posts, media browsing, and creative exploration.",
+    "tasks": [
+      "image"
+    ],
+    "category": "IMAGE_SHARING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Image Sharing",
+    "frontendUrl": "https://housesdecors.com",
+    "liveUrl": "https://housesdecors.com",
+    "siteUrl": "https://housesdecors.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images"
+    }
+  },
+  {
+    "repo": "arcanumwebs.com",
+    "code": "aw7v2m9q4x",
+    "name": "Arcanum Webs",
+    "tagline": "Editorial publishing platform",
+    "domain": "arcanumwebs.com",
+    "url": "https://arcanumwebs.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://arcanumwebs.com",
+    "liveUrl": "https://arcanumwebs.com",
+    "siteUrl": "https://arcanumwebs.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "aporiakennels.com",
+    "code": "ak4q8x2m7v",
+    "name": "Aporia Kennels",
+    "tagline": "Visual discovery platform",
+    "domain": "aporiakennels.com",
+    "url": "https://aporiakennels.com",
+    "description": "An image-led discovery platform for visual posts, media browsing, and creative exploration.",
+    "tasks": [
+      "image"
+    ],
+    "category": "IMAGE_SHARING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Image Sharing",
+    "frontendUrl": "https://aporiakennels.com",
+    "liveUrl": "https://aporiakennels.com",
+    "siteUrl": "https://aporiakennels.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images"
+    }
+  },
+  {
+    "repo": "webwavecom.com",
+    "code": "ww6m2q8x4v",
+    "name": "Web Wave Com",
+    "tagline": "Editorial publishing platform",
+    "domain": "webwavecom.com",
+    "url": "https://webwavecom.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://webwavecom.com",
+    "liveUrl": "https://webwavecom.com",
+    "siteUrl": "https://webwavecom.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "uplandcommerce.com",
+    "code": "uc8q4m2x7v",
+    "name": "Upland Commerce",
+    "tagline": "Classified browsing + Visual discovery",
+    "domain": "uplandcommerce.com",
+    "url": "https://uplandcommerce.com",
+    "description": "A multi-surface platform combining classified and image experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "classified",
+      "image"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Classified + Image Sharing",
+    "frontendUrl": "https://uplandcommerce.com",
+    "liveUrl": "https://uplandcommerce.com",
+    "siteUrl": "https://uplandcommerce.com",
+    "siteType": "classified",
+    "feedPath": "/classifieds",
+    "taskViews": {
+      "classified": "/classifieds",
+      "image": "/images"
+    }
+  },
+  {
+    "repo": "newsportalweekly.com",
+    "code": "nw4x7q2m8v",
+    "name": "News Portal Weekly",
+    "tagline": "Editorial publishing + Document publishing",
+    "domain": "newsportalweekly.com",
+    "url": "https://newsportalweekly.com",
+    "description": "A multi-surface platform combining article and pdf experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "article",
+      "pdf"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article + PDF",
+    "frontendUrl": "https://newsportalweekly.com",
+    "liveUrl": "https://newsportalweekly.com",
+    "siteUrl": "https://newsportalweekly.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles",
+      "pdf": "/pdf"
+    }
+  },
+  {
+    "repo": "steadfastresults.com",
+    "code": "sr9q2v4x7m",
+    "name": "Steadfast Results",
+    "tagline": "Editorial publishing platform",
+    "domain": "steadfastresults.com",
+    "url": "https://steadfastresults.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://steadfastresults.com",
+    "liveUrl": "https://steadfastresults.com",
+    "siteUrl": "https://steadfastresults.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "futurethey.com",
+    "code": "ft7m4q8x2v",
+    "name": "Future They",
+    "tagline": "Editorial publishing platform",
+    "domain": "futurethey.com",
+    "url": "https://futurethey.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://futurethey.com",
+    "liveUrl": "https://futurethey.com",
+    "siteUrl": "https://futurethey.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "kayosportconnect.com",
+    "code": "ks5x9q2m4v",
+    "name": "Kayo Sport Connect",
+    "tagline": "Visual discovery + Editorial publishing",
+    "domain": "kayosportconnect.com",
+    "url": "https://kayosportconnect.com",
+    "description": "A multi-surface platform combining image and article experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "image",
+      "article"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Image Sharing + Article",
+    "frontendUrl": "https://kayosportconnect.com",
+    "liveUrl": "https://kayosportconnect.com",
+    "siteUrl": "https://kayosportconnect.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images",
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "aidteck.com",
+    "code": "bnd4acecef",
+    "name": "Aidteck",
+    "tagline": "Editorial publishing platform",
+    "domain": "aidteck.com",
+    "url": "https://aidteck.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://aidteck.com",
+    "liveUrl": "https://aidteck.com",
+    "siteUrl": "https://aidteck.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "earthskydesign.com",
+    "code": "7q611x3ckp",
+    "name": "Earthskydesign",
+    "tagline": "Visual discovery + Profile-driven community",
+    "domain": "earthskydesign.com",
+    "url": "https://earthskydesign.com",
+    "description": "A multi-surface platform combining image and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Image + Social Profile",
+    "frontendUrl": "https://earthskydesign.com",
+    "liveUrl": "https://earthskydesign.com",
+    "siteUrl": "https://earthskydesign.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "mindful-lotus.com",
+    "code": "kdrek80ng6",
+    "name": "Mindful Lotus",
+    "tagline": "Editorial publishing platform",
+    "domain": "mindful-lotus.com",
+    "url": "https://mindful-lotus.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://mindful-lotus.com",
+    "liveUrl": "https://mindful-lotus.com",
+    "siteUrl": "https://mindful-lotus.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "oscarcrea.com",
+    "code": "c1czudw5kw",
+    "name": "Oscarcrea",
+    "tagline": "Visual discovery + Profile-driven community",
+    "domain": "oscarcrea.com",
+    "url": "https://oscarcrea.com",
+    "description": "A multi-surface platform combining image and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Image + Social Profile",
+    "frontendUrl": "https://oscarcrea.com",
+    "liveUrl": "https://oscarcrea.com",
+    "siteUrl": "https://oscarcrea.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "webmansax.com",
+    "code": "orfkb3u0jb",
+    "name": "Webmansax",
+    "tagline": "Editorial publishing platform",
+    "domain": "webmansax.com",
+    "url": "https://webmansax.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://webmansax.com",
+    "liveUrl": "https://webmansax.com",
+    "siteUrl": "https://webmansax.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  },
+  {
+    "repo": "isanexpert.com",
+    "code": "sarpaeva1f",
+    "name": "Isanexpert",
+    "tagline": "Listing-first discovery platform",
+    "domain": "isanexpert.com",
+    "url": "https://isanexpert.com",
+    "description": "A listing-first discovery platform for browsing businesses, services, categories, and local opportunities through a clearer structured experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Listing",
+    "frontendUrl": "https://isanexpert.com",
+    "liveUrl": "https://isanexpert.com",
+    "siteUrl": "https://isanexpert.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    }
+  },
+  {
+    "repo": "macphersonweb.com",
+    "code": "camzx0t2te",
+    "name": "Macphersonweb",
+    "tagline": "Document publishing + Profile-driven community",
+    "domain": "macphersonweb.com",
+    "url": "https://macphersonweb.com",
+    "description": "A multi-surface platform combining pdf and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "PDF + Profile",
+    "frontendUrl": "https://macphersonweb.com",
+    "liveUrl": "https://macphersonweb.com",
+    "siteUrl": "https://macphersonweb.com",
+    "siteType": "pdf",
+    "feedPath": "/pdf",
+    "taskViews": {
+      "pdf": "/pdf",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "digitalvirtuose.com",
+    "code": "uq3jnkf9yb",
+    "name": "Digitalvirtuose",
+    "tagline": "Listing-first discovery platform",
+    "domain": "digitalvirtuose.com",
+    "url": "https://digitalvirtuose.com",
+    "description": "A listing-first discovery platform for browsing businesses, services, categories, and local opportunities through a clearer structured experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Listing",
+    "frontendUrl": "https://digitalvirtuose.com",
+    "liveUrl": "https://digitalvirtuose.com",
+    "siteUrl": "https://digitalvirtuose.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    }
+  },
+  {
+    "repo": "wedropouts.com",
+    "code": "yertd3syhu",
+    "name": "Wedropouts",
+    "tagline": "Document publishing + Profile-driven community",
+    "domain": "wedropouts.com",
+    "url": "https://wedropouts.com",
+    "description": "A multi-surface platform combining pdf and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "PDF + Profile",
+    "frontendUrl": "https://wedropouts.com",
+    "liveUrl": "https://wedropouts.com",
+    "siteUrl": "https://wedropouts.com",
+    "siteType": "pdf",
+    "feedPath": "/pdf",
+    "taskViews": {
+      "pdf": "/pdf",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "topoftheloop.com",
+    "code": "azgzlalx5z",
+    "name": "Topoftheloop",
+    "tagline": "Document publishing + Profile-driven community",
+    "domain": "topoftheloop.com",
+    "url": "https://topoftheloop.com",
+    "description": "A multi-surface platform combining pdf and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "PDF + Profile",
+    "frontendUrl": "https://topoftheloop.com",
+    "liveUrl": "https://topoftheloop.com",
+    "siteUrl": "https://topoftheloop.com",
+    "siteType": "pdf",
+    "feedPath": "/pdf",
+    "taskViews": {
+      "pdf": "/pdf",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "ideovera.com",
+    "code": "et5bb5xy6l",
+    "name": "Ideovera",
+    "tagline": "Listing-first discovery platform",
+    "domain": "ideovera.com",
+    "url": "https://ideovera.com",
+    "description": "A listing-first discovery platform for browsing businesses, services, categories, and local opportunities through a clearer structured experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Listing",
+    "frontendUrl": "https://ideovera.com",
+    "liveUrl": "https://ideovera.com",
+    "siteUrl": "https://ideovera.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    }
+  },
+  {
+    "repo": "pixelwebio.com",
+    "code": "70q1e6loqu",
+    "name": "Pixelwebio",
+    "tagline": "Visual discovery + Profile-driven community",
+    "domain": "pixelwebio.com",
+    "url": "https://pixelwebio.com",
+    "description": "A multi-surface platform combining image and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Image + Profile",
+    "frontendUrl": "https://pixelwebio.com",
+    "liveUrl": "https://pixelwebio.com",
+    "siteUrl": "https://pixelwebio.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "happysignups.com",
+    "code": "259b0233yz",
+    "name": "Happysignups",
+    "tagline": "Listing-first discovery platform",
+    "domain": "happysignups.com",
+    "url": "https://happysignups.com",
+    "description": "A listing-first discovery platform for browsing businesses, services, categories, and local opportunities through a clearer structured experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Listing",
+    "frontendUrl": "https://happysignups.com",
+    "liveUrl": "https://happysignups.com",
+    "siteUrl": "https://happysignups.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    }
+  },
+  {
+    "repo": "teeny-weenytoes.com",
+    "code": "z9l12e97t9",
+    "name": "Teeny Weenytoes",
+    "tagline": "Document publishing + Profile-driven community",
+    "domain": "teeny-weenytoes.com",
+    "url": "https://teeny-weenytoes.com",
+    "description": "A multi-surface platform combining pdf and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "PDF + Profile",
+    "frontendUrl": "https://teeny-weenytoes.com",
+    "liveUrl": "https://teeny-weenytoes.com",
+    "siteUrl": "https://teeny-weenytoes.com",
+    "siteType": "pdf",
+    "feedPath": "/pdf",
+    "taskViews": {
+      "pdf": "/pdf",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "webweaversonline.com",
+    "code": "1mks45b9jz",
+    "name": "Webweaversonline",
+    "tagline": "Listing-first discovery platform",
+    "domain": "webweaversonline.com",
+    "url": "https://webweaversonline.com",
+    "description": "A listing-first discovery platform for browsing businesses, services, categories, and local opportunities through a clearer structured experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Listing",
+    "frontendUrl": "https://webweaversonline.com",
+    "liveUrl": "https://webweaversonline.com",
+    "siteUrl": "https://webweaversonline.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    }
+  },
+  {
+    "repo": "webinfinityhub.com",
+    "code": "1icnb2t14y",
+    "name": "Webinfinityhub",
+    "tagline": "Document publishing + Profile-driven community",
+    "domain": "webinfinityhub.com",
+    "url": "https://webinfinityhub.com",
+    "description": "A multi-surface platform combining pdf and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "PDF + Profile",
+    "frontendUrl": "https://webinfinityhub.com",
+    "liveUrl": "https://webinfinityhub.com",
+    "siteUrl": "https://webinfinityhub.com",
+    "siteType": "pdf",
+    "feedPath": "/pdf",
+    "taskViews": {
+      "pdf": "/pdf",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "marketingsspot.com",
+    "code": "8k95pv27i1",
+    "name": "Marketingsspot",
+    "tagline": "Listing-first discovery platform",
+    "domain": "marketingsspot.com",
+    "url": "https://marketingsspot.com",
+    "description": "A listing-first discovery platform for browsing businesses, services, categories, and local opportunities through a clearer structured experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Listing",
+    "frontendUrl": "https://marketingsspot.com",
+    "liveUrl": "https://marketingsspot.com",
+    "siteUrl": "https://marketingsspot.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    }
+  },
+  {
+    "repo": "herotherblog.com",
+    "code": "rzeqiand5b",
+    "name": "Herotherblog",
+    "tagline": "Document publishing + Profile-driven community",
+    "domain": "herotherblog.com",
+    "url": "https://herotherblog.com",
+    "description": "A multi-surface platform combining pdf and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "PDF + Profile",
+    "frontendUrl": "https://herotherblog.com",
+    "liveUrl": "https://herotherblog.com",
+    "siteUrl": "https://herotherblog.com",
+    "siteType": "pdf",
+    "feedPath": "/pdf",
+    "taskViews": {
+      "pdf": "/pdf",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "creationtable.com",
+    "code": "xjex0s30s1",
+    "name": "Creationtable",
+    "tagline": "Visual discovery + Profile-driven community",
+    "domain": "creationtable.com",
+    "url": "https://creationtable.com",
+    "description": "A multi-surface platform combining image and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "image",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Image + Profile",
+    "frontendUrl": "https://creationtable.com",
+    "liveUrl": "https://creationtable.com",
+    "siteUrl": "https://creationtable.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "ethicsites.com",
+    "code": "zq23bs9wgs",
+    "name": "Ethicsites",
+    "tagline": "Document publishing + Profile-driven community",
+    "domain": "ethicsites.com",
+    "url": "https://ethicsites.com",
+    "description": "A multi-surface platform combining pdf and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "PDF + Profile",
+    "frontendUrl": "https://ethicsites.com",
+    "liveUrl": "https://ethicsites.com",
+    "siteUrl": "https://ethicsites.com",
+    "siteType": "pdf",
+    "feedPath": "/pdf",
+    "taskViews": {
+      "pdf": "/pdf",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "studiodiamond.net",
+    "code": "z22mm1frra",
+    "name": "Studiodiamond",
+    "tagline": "Document publishing + Profile-driven community",
+    "domain": "studiodiamond.net",
+    "url": "https://studiodiamond.net",
+    "description": "A multi-surface platform combining pdf and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "PDF + Profile",
+    "frontendUrl": "https://studiodiamond.net",
+    "liveUrl": "https://studiodiamond.net",
+    "siteUrl": "https://studiodiamond.net",
+    "siteType": "pdf",
+    "feedPath": "/pdf",
+    "taskViews": {
+      "pdf": "/pdf",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "youngerlifestyle.net",
+    "code": "1fwckn4ypf",
+    "name": "Youngerlifestyle",
+    "tagline": "Document publishing + Profile-driven community",
+    "domain": "youngerlifestyle.net",
+    "url": "https://youngerlifestyle.net",
+    "description": "A multi-surface platform combining pdf and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "PDF + Profile",
+    "frontendUrl": "https://youngerlifestyle.net",
+    "liveUrl": "https://youngerlifestyle.net",
+    "siteUrl": "https://youngerlifestyle.net",
+    "siteType": "pdf",
+    "feedPath": "/pdf",
+    "taskViews": {
+      "pdf": "/pdf",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "maytapbung.net",
+    "code": "hu4ks6uhma",
+    "name": "Maytapbung",
+    "tagline": "Listing-first discovery platform",
+    "domain": "maytapbung.net",
+    "url": "https://maytapbung.net",
+    "description": "A listing-first discovery platform for browsing businesses, services, categories, and local opportunities through a clearer structured experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Listing",
+    "frontendUrl": "https://maytapbung.net",
+    "liveUrl": "https://maytapbung.net",
+    "siteUrl": "https://maytapbung.net",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    }
+  },
+  {
+    "repo": "ultimorecursoh.com",
+    "code": "9i3shdwrro",
+    "name": "Ultimorecursoh",
+    "tagline": "Document publishing + Profile-driven community",
+    "domain": "ultimorecursoh.com",
+    "url": "https://ultimorecursoh.com",
+    "description": "A multi-surface platform combining pdf and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "PDF + Profile",
+    "frontendUrl": "https://ultimorecursoh.com",
+    "liveUrl": "https://ultimorecursoh.com",
+    "siteUrl": "https://ultimorecursoh.com",
+    "siteType": "pdf",
+    "feedPath": "/pdf",
+    "taskViews": {
+      "pdf": "/pdf",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "mudatealaweb.com",
+    "code": "v4ov52ojwy",
+    "name": "Mudatealaweb",
+    "tagline": "Listing-first discovery platform",
+    "domain": "mudatealaweb.com",
+    "url": "https://mudatealaweb.com",
+    "description": "A listing-first discovery platform for browsing businesses, services, categories, and local opportunities through a clearer structured experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Listing",
+    "frontendUrl": "https://mudatealaweb.com",
+    "liveUrl": "https://mudatealaweb.com",
+    "siteUrl": "https://mudatealaweb.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    }
+  },
+  {
+    "repo": "alwadidates.com",
+    "code": "3fqjbz14e7",
+    "name": "Alwadidates",
+    "tagline": "Curated bookmarking + Profile-driven community",
+    "domain": "alwadidates.com",
+    "url": "https://alwadidates.com",
+    "description": "A multi-surface platform combining sbm and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "sbm",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "SBM , Profile",
+    "frontendUrl": "https://alwadidates.com",
+    "liveUrl": "https://alwadidates.com",
+    "siteUrl": "https://alwadidates.com",
+    "siteType": "social",
+    "feedPath": "/sbm",
+    "taskViews": {
+      "sbm": "/sbm",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "pcosremedy.com",
+    "code": "9c57j799bj",
+    "name": "Pcosremedy",
+    "tagline": "Curated bookmarking + Profile-driven community",
+    "domain": "pcosremedy.com",
+    "url": "https://pcosremedy.com",
+    "description": "A multi-surface platform combining sbm and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "sbm",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "SBM , Profile",
+    "frontendUrl": "https://pcosremedy.com",
+    "liveUrl": "https://pcosremedy.com",
+    "siteUrl": "https://pcosremedy.com",
+    "siteType": "social",
+    "feedPath": "/sbm",
+    "taskViews": {
+      "sbm": "/sbm",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "rayantav.com",
+    "code": "eg8nkgl6ak",
+    "name": "Rayantav",
+    "tagline": "Listing-first discovery platform",
+    "domain": "rayantav.com",
+    "url": "https://rayantav.com",
+    "description": "A listing-first discovery platform for browsing businesses, services, categories, and local opportunities through a clearer structured experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Listing",
+    "frontendUrl": "https://rayantav.com",
+    "liveUrl": "https://rayantav.com",
+    "siteUrl": "https://rayantav.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    }
+  },
+  {
+    "repo": "quickoye.com",
+    "code": "tqopmf6o0j",
+    "name": "Quickoye",
+    "tagline": "Curated bookmarking + Profile-driven community",
+    "domain": "quickoye.com",
+    "url": "https://quickoye.com",
+    "description": "A multi-surface platform combining sbm and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "sbm",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "SBM , Profile",
+    "frontendUrl": "https://quickoye.com",
+    "liveUrl": "https://quickoye.com",
+    "siteUrl": "https://quickoye.com",
+    "siteType": "social",
+    "feedPath": "/sbm",
+    "taskViews": {
+      "sbm": "/sbm",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "murraypura.com",
+    "code": "3k1bxbzw9e",
+    "name": "Murraypura",
+    "tagline": "Curated bookmarking + Profile-driven community",
+    "domain": "murraypura.com",
+    "url": "https://murraypura.com",
+    "description": "A multi-surface platform combining sbm and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "sbm",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "SBM , Profile",
+    "frontendUrl": "https://murraypura.com",
+    "liveUrl": "https://murraypura.com",
+    "siteUrl": "https://murraypura.com",
+    "siteType": "social",
+    "feedPath": "/sbm",
+    "taskViews": {
+      "sbm": "/sbm",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "pquko.com",
+    "code": "32uksxlzv5",
+    "name": "Pquko",
+    "tagline": "Curated bookmarking + Profile-driven community",
+    "domain": "pquko.com",
+    "url": "https://pquko.com",
+    "description": "A multi-surface platform combining sbm and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "sbm",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "SBM , Profile",
+    "frontendUrl": "https://pquko.com",
+    "liveUrl": "https://pquko.com",
+    "siteUrl": "https://pquko.com",
+    "siteType": "social",
+    "feedPath": "/sbm",
+    "taskViews": {
+      "sbm": "/sbm",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "pkkwb.com",
+    "code": "slefk3lu7d",
+    "name": "Pkkwb",
+    "tagline": "Curated bookmarking + Profile-driven community",
+    "domain": "pkkwb.com",
+    "url": "https://pkkwb.com",
+    "description": "A multi-surface platform combining sbm and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "sbm",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "SBM , Profile",
+    "frontendUrl": "https://pkkwb.com",
+    "liveUrl": "https://pkkwb.com",
+    "siteUrl": "https://pkkwb.com",
+    "siteType": "social",
+    "feedPath": "/sbm",
+    "taskViews": {
+      "sbm": "/sbm",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "ruihanchemical.com",
+    "code": "4cxh64crma",
+    "name": "Ruihanchemical",
+    "tagline": "Editorial publishing + Profile-driven community",
+    "domain": "ruihanchemical.com",
+    "url": "https://ruihanchemical.com",
+    "description": "A multi-surface platform combining article and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "article",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article , Social profile",
+    "frontendUrl": "https://ruihanchemical.com",
+    "liveUrl": "https://ruihanchemical.com",
+    "siteUrl": "https://ruihanchemical.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "yehwooyeh.com",
+    "code": "qi10gauj9m",
+    "name": "Yehwooyeh",
+    "tagline": "Listing-first discovery platform",
+    "domain": "yehwooyeh.com",
+    "url": "https://yehwooyeh.com",
+    "description": "A listing-first discovery platform for browsing businesses, services, categories, and local opportunities through a clearer structured experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Listing",
+    "frontendUrl": "https://yehwooyeh.com",
+    "liveUrl": "https://yehwooyeh.com",
+    "siteUrl": "https://yehwooyeh.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    }
+  },
+  {
+    "repo": "mujugranfondo.com",
+    "code": "4xwr2hh2kn",
+    "name": "Mujugranfondo",
+    "tagline": "Classified browsing platform",
+    "domain": "mujugranfondo.com",
+    "url": "https://mujugranfondo.com",
+    "description": "A classified-first platform for local offers, deals, notices, and opportunity discovery.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Classified",
+    "frontendUrl": "https://mujugranfondo.com",
+    "liveUrl": "https://mujugranfondo.com",
+    "siteUrl": "https://mujugranfondo.com",
+    "siteType": "classified",
+    "feedPath": "/classifieds",
+    "taskViews": {
+      "classified": "/classifieds"
+    }
+  },
+  {
+    "repo": "josephlaoutaris.com",
+    "code": "r0n8xm9qza",
+    "name": "Josephlaoutaris",
+    "tagline": "Editorial publishing + Profile-driven community",
+    "domain": "josephlaoutaris.com",
+    "url": "https://josephlaoutaris.com",
+    "description": "A multi-surface platform combining article and profile experiences through one connected publishing and discovery system.",
+    "tasks": [
+      "article",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article , Social profile",
+    "frontendUrl": "https://josephlaoutaris.com",
+    "liveUrl": "https://josephlaoutaris.com",
+    "siteUrl": "https://josephlaoutaris.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles",
+      "profile": "/profile"
+    }
+  },
+  {
+    "repo": "datazynxllc.com",
+    "code": "8mv0ihf1rx",
+    "name": "Datazynxllc",
+    "tagline": "Listing-first discovery platform",
+    "domain": "datazynxllc.com",
+    "url": "https://datazynxllc.com",
+    "description": "A listing-first discovery platform for browsing businesses, services, categories, and local opportunities through a clearer structured experience.",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Listing",
+    "frontendUrl": "https://datazynxllc.com",
+    "liveUrl": "https://datazynxllc.com",
+    "siteUrl": "https://datazynxllc.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    }
+  },
+  {
+    "repo": "jagothemes.com",
+    "code": "uykvjsiujt",
+    "name": "Jagothemes",
+    "tagline": "Classified browsing platform",
+    "domain": "jagothemes.com",
+    "url": "https://jagothemes.com",
+    "description": "A classified-first platform for local offers, deals, notices, and opportunity discovery.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Classified",
+    "frontendUrl": "https://jagothemes.com",
+    "liveUrl": "https://jagothemes.com",
+    "siteUrl": "https://jagothemes.com",
+    "siteType": "classified",
+    "feedPath": "/classifieds",
+    "taskViews": {
+      "classified": "/classifieds"
+    }
+  },
+  {
+    "repo": "habibyasmaharun.com",
+    "code": "k4a910n0j1",
+    "name": "Habibyasmaharun",
+    "tagline": "Classified browsing platform",
+    "domain": "habibyasmaharun.com",
+    "url": "https://habibyasmaharun.com",
+    "description": "A classified-first platform for local offers, deals, notices, and opportunity discovery.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Classified",
+    "frontendUrl": "https://habibyasmaharun.com",
+    "liveUrl": "https://habibyasmaharun.com",
+    "siteUrl": "https://habibyasmaharun.com",
+    "siteType": "classified",
+    "feedPath": "/classifieds",
+    "taskViews": {
+      "classified": "/classifieds"
+    }
+  },
+  {
+    "repo": "tobeetoetech.com",
+    "code": "9kypu30ehk",
+    "name": "Tobeetoetech",
+    "tagline": "Classified browsing platform",
+    "domain": "tobeetoetech.com",
+    "url": "https://tobeetoetech.com",
+    "description": "A classified-first platform for local offers, deals, notices, and opportunity discovery.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Classified",
+    "frontendUrl": "https://tobeetoetech.com",
+    "liveUrl": "https://tobeetoetech.com",
+    "siteUrl": "https://tobeetoetech.com",
+    "siteType": "classified",
+    "feedPath": "/classifieds",
+    "taskViews": {
+      "classified": "/classifieds"
+    }
+  },
+  {
+    "repo": "mikegabsolution.com",
+    "code": "fcxna4mpaw",
+    "name": "Mikegabsolution",
+    "tagline": "Classified browsing platform",
+    "domain": "mikegabsolution.com",
+    "url": "https://mikegabsolution.com",
+    "description": "A classified-first platform for local offers, deals, notices, and opportunity discovery.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Classified",
+    "frontendUrl": "https://mikegabsolution.com",
+    "liveUrl": "https://mikegabsolution.com",
+    "siteUrl": "https://mikegabsolution.com",
+    "siteType": "classified",
+    "feedPath": "/classifieds",
+    "taskViews": {
+      "classified": "/classifieds"
+    }
+  },
+  {
+    "repo": "vaultofjoseph.com",
+    "code": "n5ocotrvmv",
+    "name": "Vaultofjoseph",
+    "tagline": "Classified browsing platform",
+    "domain": "vaultofjoseph.com",
+    "url": "https://vaultofjoseph.com",
+    "description": "A classified-first platform for local offers, deals, notices, and opportunity discovery.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Classified",
+    "frontendUrl": "https://vaultofjoseph.com",
+    "liveUrl": "https://vaultofjoseph.com",
+    "siteUrl": "https://vaultofjoseph.com",
+    "siteType": "classified",
+    "feedPath": "/classifieds",
+    "taskViews": {
+      "classified": "/classifieds"
+    }
+  },
+  {
+    "repo": "jiyinaicha.com",
+    "code": "vhprfoaudu",
+    "name": "Jiyinaicha",
+    "tagline": "Classified browsing platform",
+    "domain": "jiyinaicha.com",
+    "url": "https://jiyinaicha.com",
+    "description": "A classified-first platform for local offers, deals, notices, and opportunity discovery.",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Classified",
+    "frontendUrl": "https://jiyinaicha.com",
+    "liveUrl": "https://jiyinaicha.com",
+    "siteUrl": "https://jiyinaicha.com",
+    "siteType": "classified",
+    "feedPath": "/classifieds",
+    "taskViews": {
+      "classified": "/classifieds"
+    }
+  },
+  {
+    "repo": "fflowlink.com",
+    "code": "fjkb3lw2rs",
+    "name": "Fflowlink",
+    "tagline": "Editorial publishing platform",
+    "domain": "fflowlink.com",
+    "url": "https://fflowlink.com",
+    "description": "An article-led publishing platform for structured insights, stories, and long-form content discovery.",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "requestedTaskLabel": "Article",
+    "frontendUrl": "https://fflowlink.com",
+    "liveUrl": "https://fflowlink.com",
+    "siteUrl": "https://fflowlink.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    }
+  }
+]

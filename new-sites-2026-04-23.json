@@ -1,0 +1,896 @@
+[
+  {
+    "domain": "sourosa.com",
+    "repo": "sourosa.com",
+    "code": "xfhogylmks",
+    "name": "Sourosa",
+    "requestedTaskLabel": "Social Profile",
+    "tasks": [
+      "profile"
+    ],
+    "category": "PROFILE",
+    "framework": "NEXT_JS",
+    "port": 3244,
+    "url": "https://sourosa.com",
+    "frontendUrl": "https://sourosa.com",
+    "liveUrl": "https://sourosa.com",
+    "siteUrl": "https://sourosa.com",
+    "siteType": "profile",
+    "feedPath": "/profile",
+    "taskViews": {
+      "profile": "/profile"
+    },
+    "tagline": "Social Profile platform",
+    "description": "A social profile platform for public identity, creator pages, and community discovery."
+  },
+  {
+    "domain": "digginfordirt.com",
+    "repo": "digginfordirt.com",
+    "code": "e6biavwtxx",
+    "name": "Digginfordirt",
+    "requestedTaskLabel": "Social Bookmarking",
+    "tasks": [
+      "sbm"
+    ],
+    "category": "SBM",
+    "framework": "NEXT_JS",
+    "port": 3245,
+    "url": "https://digginfordirt.com",
+    "frontendUrl": "https://digginfordirt.com",
+    "liveUrl": "https://digginfordirt.com",
+    "siteUrl": "https://digginfordirt.com",
+    "siteType": "social",
+    "feedPath": "/sbm",
+    "taskViews": {
+      "sbm": "/sbm"
+    },
+    "tagline": "Social Bookmarking platform",
+    "description": "A social bookmarking platform for curated links, saved resources, and organized discovery."
+  },
+  {
+    "domain": "frocadeco.com",
+    "repo": "frocadeco.com",
+    "code": "hfvmo9r9vl",
+    "name": "Frocadeco",
+    "requestedTaskLabel": "Image Sharing",
+    "tasks": [
+      "image"
+    ],
+    "category": "IMAGE_SHARING",
+    "framework": "NEXT_JS",
+    "port": 3246,
+    "url": "https://frocadeco.com",
+    "frontendUrl": "https://frocadeco.com",
+    "liveUrl": "https://frocadeco.com",
+    "siteUrl": "https://frocadeco.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images"
+    },
+    "tagline": "Image Sharing platform",
+    "description": "A visual discovery platform for image-led posts, galleries, and creative media browsing."
+  },
+  {
+    "domain": "sandlore.com",
+    "repo": "sandlore.com",
+    "code": "oed3htonlc",
+    "name": "Sandlore",
+    "requestedTaskLabel": "Article",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "port": 3247,
+    "url": "https://sandlore.com",
+    "frontendUrl": "https://sandlore.com",
+    "liveUrl": "https://sandlore.com",
+    "siteUrl": "https://sandlore.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    },
+    "tagline": "Article platform",
+    "description": "An article-led publishing platform for insights, stories, guides, and long-form discovery."
+  },
+  {
+    "domain": "trippinbros.com",
+    "repo": "trippinbros.com",
+    "code": "g0b9ol0ov6",
+    "name": "Trippinbros",
+    "requestedTaskLabel": "Social Bookmarking",
+    "tasks": [
+      "sbm"
+    ],
+    "category": "SBM",
+    "framework": "NEXT_JS",
+    "port": 3248,
+    "url": "https://trippinbros.com",
+    "frontendUrl": "https://trippinbros.com",
+    "liveUrl": "https://trippinbros.com",
+    "siteUrl": "https://trippinbros.com",
+    "siteType": "social",
+    "feedPath": "/sbm",
+    "taskViews": {
+      "sbm": "/sbm"
+    },
+    "tagline": "Social Bookmarking platform",
+    "description": "A social bookmarking platform for curated links, saved resources, and organized discovery."
+  },
+  {
+    "domain": "callredcape.com",
+    "repo": "callredcape.com",
+    "code": "ft00jus04r",
+    "name": "Callredcape",
+    "requestedTaskLabel": "Classified",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "port": 3249,
+    "url": "https://callredcape.com",
+    "frontendUrl": "https://callredcape.com",
+    "liveUrl": "https://callredcape.com",
+    "siteUrl": "https://callredcape.com",
+    "siteType": "classified",
+    "feedPath": "/classifieds",
+    "taskViews": {
+      "classified": "/classifieds"
+    },
+    "tagline": "Classified platform",
+    "description": "A classified platform for browsing local posts, deals, offers, and quick marketplace-style updates."
+  },
+  {
+    "domain": "viscountwhite.com",
+    "repo": "viscountwhite.com",
+    "code": "w1uwdpqyzq",
+    "name": "Viscountwhite",
+    "requestedTaskLabel": "Article",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "port": 3250,
+    "url": "https://viscountwhite.com",
+    "frontendUrl": "https://viscountwhite.com",
+    "liveUrl": "https://viscountwhite.com",
+    "siteUrl": "https://viscountwhite.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    },
+    "tagline": "Article platform",
+    "description": "An article-led publishing platform for insights, stories, guides, and long-form discovery."
+  },
+  {
+    "domain": "starcoworkers.com",
+    "repo": "starcoworkers.com",
+    "code": "w4j352ia9i",
+    "name": "Starcoworkers",
+    "requestedTaskLabel": "Business Listing",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "port": 3251,
+    "url": "https://starcoworkers.com",
+    "frontendUrl": "https://starcoworkers.com",
+    "liveUrl": "https://starcoworkers.com",
+    "siteUrl": "https://starcoworkers.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    },
+    "tagline": "Business Listing platform",
+    "description": "A business listing platform for discovering services, companies, and local opportunities with structured browsing."
+  },
+  {
+    "domain": "singpre.com",
+    "repo": "singpre.com",
+    "code": "xbrxfem7fx",
+    "name": "Singpre",
+    "requestedTaskLabel": "Social Profile",
+    "tasks": [
+      "profile"
+    ],
+    "category": "PROFILE",
+    "framework": "NEXT_JS",
+    "port": 3252,
+    "url": "https://singpre.com",
+    "frontendUrl": "https://singpre.com",
+    "liveUrl": "https://singpre.com",
+    "siteUrl": "https://singpre.com",
+    "siteType": "profile",
+    "feedPath": "/profile",
+    "taskViews": {
+      "profile": "/profile"
+    },
+    "tagline": "Social Profile platform",
+    "description": "A social profile platform for public identity, creator pages, and community discovery."
+  },
+  {
+    "domain": "kong-vr.com",
+    "repo": "kong-vr.com",
+    "code": "msfq5yds11",
+    "name": "Kong Vr",
+    "requestedTaskLabel": "Image",
+    "tasks": [
+      "image"
+    ],
+    "category": "IMAGE_SHARING",
+    "framework": "NEXT_JS",
+    "port": 3253,
+    "url": "https://kong-vr.com",
+    "frontendUrl": "https://kong-vr.com",
+    "liveUrl": "https://kong-vr.com",
+    "siteUrl": "https://kong-vr.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images"
+    },
+    "tagline": "Image platform",
+    "description": "A visual discovery platform for image-led posts, galleries, and creative media browsing."
+  },
+  {
+    "domain": "fermenterspirit.com",
+    "repo": "fermenterspirit.com",
+    "code": "whcgckiep6",
+    "name": "Fermenterspirit",
+    "requestedTaskLabel": "Article",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "port": 3254,
+    "url": "https://fermenterspirit.com",
+    "frontendUrl": "https://fermenterspirit.com",
+    "liveUrl": "https://fermenterspirit.com",
+    "siteUrl": "https://fermenterspirit.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    },
+    "tagline": "Article platform",
+    "description": "An article-led publishing platform for insights, stories, guides, and long-form discovery."
+  },
+  {
+    "domain": "netpromine.com",
+    "repo": "netpromine.com",
+    "code": "w6iv4fqi8l",
+    "name": "Netpromine",
+    "requestedTaskLabel": "Business Listing",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "port": 3255,
+    "url": "https://netpromine.com",
+    "frontendUrl": "https://netpromine.com",
+    "liveUrl": "https://netpromine.com",
+    "siteUrl": "https://netpromine.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    },
+    "tagline": "Business Listing platform",
+    "description": "A business listing platform for discovering services, companies, and local opportunities with structured browsing."
+  },
+  {
+    "domain": "agenisfree.com",
+    "repo": "agenisfree.com",
+    "code": "zmftg928t8",
+    "name": "Agenisfree",
+    "requestedTaskLabel": "Classified",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "port": 3256,
+    "url": "https://agenisfree.com",
+    "frontendUrl": "https://agenisfree.com",
+    "liveUrl": "https://agenisfree.com",
+    "siteUrl": "https://agenisfree.com",
+    "siteType": "classified",
+    "feedPath": "/classifieds",
+    "taskViews": {
+      "classified": "/classifieds"
+    },
+    "tagline": "Classified platform",
+    "description": "A classified platform for browsing local posts, deals, offers, and quick marketplace-style updates."
+  },
+  {
+    "domain": "digi-optic.com",
+    "repo": "digi-optic.com",
+    "code": "nkzqoie4b0",
+    "name": "Digi Optic",
+    "requestedTaskLabel": "Image Sharing",
+    "tasks": [
+      "image"
+    ],
+    "category": "IMAGE_SHARING",
+    "framework": "NEXT_JS",
+    "port": 3257,
+    "url": "https://digi-optic.com",
+    "frontendUrl": "https://digi-optic.com",
+    "liveUrl": "https://digi-optic.com",
+    "siteUrl": "https://digi-optic.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images"
+    },
+    "tagline": "Image Sharing platform",
+    "description": "A visual discovery platform for image-led posts, galleries, and creative media browsing."
+  },
+  {
+    "domain": "safehavenannuity.com",
+    "repo": "safehavenannuity.com",
+    "code": "wylzsmg3m4",
+    "name": "Safehavenannuity",
+    "requestedTaskLabel": "Business Listing",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "port": 3258,
+    "url": "https://safehavenannuity.com",
+    "frontendUrl": "https://safehavenannuity.com",
+    "liveUrl": "https://safehavenannuity.com",
+    "siteUrl": "https://safehavenannuity.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    },
+    "tagline": "Business Listing platform",
+    "description": "A business listing platform for discovering services, companies, and local opportunities with structured browsing."
+  },
+  {
+    "domain": "guadalupepro.com",
+    "repo": "guadalupepro.com",
+    "code": "qhqtybe8pw",
+    "name": "Guadalupepro",
+    "requestedTaskLabel": "Social Profile",
+    "tasks": [
+      "profile"
+    ],
+    "category": "PROFILE",
+    "framework": "NEXT_JS",
+    "port": 3259,
+    "url": "https://guadalupepro.com",
+    "frontendUrl": "https://guadalupepro.com",
+    "liveUrl": "https://guadalupepro.com",
+    "siteUrl": "https://guadalupepro.com",
+    "siteType": "profile",
+    "feedPath": "/profile",
+    "taskViews": {
+      "profile": "/profile"
+    },
+    "tagline": "Social Profile platform",
+    "description": "A social profile platform for public identity, creator pages, and community discovery."
+  },
+  {
+    "domain": "cooltapas.com",
+    "repo": "cooltapas.com",
+    "code": "s9edg61w6f",
+    "name": "Cooltapas",
+    "requestedTaskLabel": "Social Bookmarking",
+    "tasks": [
+      "sbm"
+    ],
+    "category": "SBM",
+    "framework": "NEXT_JS",
+    "port": 3260,
+    "url": "https://cooltapas.com",
+    "frontendUrl": "https://cooltapas.com",
+    "liveUrl": "https://cooltapas.com",
+    "siteUrl": "https://cooltapas.com",
+    "siteType": "social",
+    "feedPath": "/sbm",
+    "taskViews": {
+      "sbm": "/sbm"
+    },
+    "tagline": "Social Bookmarking platform",
+    "description": "A social bookmarking platform for curated links, saved resources, and organized discovery."
+  },
+  {
+    "domain": "teebute.com",
+    "repo": "teebute.com",
+    "code": "8jra7hkub9",
+    "name": "Teebute",
+    "requestedTaskLabel": "Classified",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "port": 3261,
+    "url": "https://teebute.com",
+    "frontendUrl": "https://teebute.com",
+    "liveUrl": "https://teebute.com",
+    "siteUrl": "https://teebute.com",
+    "siteType": "classified",
+    "feedPath": "/classifieds",
+    "taskViews": {
+      "classified": "/classifieds"
+    },
+    "tagline": "Classified platform",
+    "description": "A classified platform for browsing local posts, deals, offers, and quick marketplace-style updates."
+  },
+  {
+    "domain": "altmeetyou.com",
+    "repo": "altmeetyou.com",
+    "code": "185e2k8cco",
+    "name": "Altmeetyou",
+    "requestedTaskLabel": "Social Profile",
+    "tasks": [
+      "profile"
+    ],
+    "category": "PROFILE",
+    "framework": "NEXT_JS",
+    "port": 3262,
+    "url": "https://altmeetyou.com",
+    "frontendUrl": "https://altmeetyou.com",
+    "liveUrl": "https://altmeetyou.com",
+    "siteUrl": "https://altmeetyou.com",
+    "siteType": "profile",
+    "feedPath": "/profile",
+    "taskViews": {
+      "profile": "/profile"
+    },
+    "tagline": "Social Profile platform",
+    "description": "A social profile platform for public identity, creator pages, and community discovery."
+  },
+  {
+    "domain": "floatyourbrand.com",
+    "repo": "floatyourbrand.com",
+    "code": "8pah2t3izx",
+    "name": "Floatyourbrand",
+    "requestedTaskLabel": "Article",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "port": 3263,
+    "url": "https://floatyourbrand.com",
+    "frontendUrl": "https://floatyourbrand.com",
+    "liveUrl": "https://floatyourbrand.com",
+    "siteUrl": "https://floatyourbrand.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    },
+    "tagline": "Article platform",
+    "description": "An article-led publishing platform for insights, stories, guides, and long-form discovery."
+  },
+  {
+    "domain": "nubsant.com",
+    "repo": "nubsant.com",
+    "code": "kmifkqebjf",
+    "name": "Nubsant",
+    "requestedTaskLabel": "PDF + Social Profile",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "port": 3264,
+    "url": "https://nubsant.com",
+    "frontendUrl": "https://nubsant.com",
+    "liveUrl": "https://nubsant.com",
+    "siteUrl": "https://nubsant.com",
+    "siteType": "pdf",
+    "feedPath": "/pdf",
+    "taskViews": {
+      "pdf": "/pdf",
+      "profile": "/profile"
+    },
+    "tagline": "PDF + Social Profile platform",
+    "description": "A multi-task publishing platform combining pdf, profile experiences in one connected site."
+  },
+  {
+    "domain": "shindantool.com",
+    "repo": "shindantool.com",
+    "code": "d0jvjcymxu",
+    "name": "Shindantool",
+    "requestedTaskLabel": "Business Listing",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "port": 3265,
+    "url": "https://shindantool.com",
+    "frontendUrl": "https://shindantool.com",
+    "liveUrl": "https://shindantool.com",
+    "siteUrl": "https://shindantool.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    },
+    "tagline": "Business Listing platform",
+    "description": "A business listing platform for discovering services, companies, and local opportunities with structured browsing."
+  },
+  {
+    "domain": "deswebcol.com",
+    "repo": "deswebcol.com",
+    "code": "oeehcok4v9",
+    "name": "Deswebcol",
+    "requestedTaskLabel": "Business Listing",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "port": 3266,
+    "url": "https://deswebcol.com",
+    "frontendUrl": "https://deswebcol.com",
+    "liveUrl": "https://deswebcol.com",
+    "siteUrl": "https://deswebcol.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    },
+    "tagline": "Business Listing platform",
+    "description": "A business listing platform for discovering services, companies, and local opportunities with structured browsing."
+  },
+  {
+    "domain": "empoweryouroad.com",
+    "repo": "empoweryouroad.com",
+    "code": "o6kr7a9xvb",
+    "name": "Empoweryouroad",
+    "requestedTaskLabel": "Article",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "port": 3267,
+    "url": "https://empoweryouroad.com",
+    "frontendUrl": "https://empoweryouroad.com",
+    "liveUrl": "https://empoweryouroad.com",
+    "siteUrl": "https://empoweryouroad.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    },
+    "tagline": "Article platform",
+    "description": "An article-led publishing platform for insights, stories, guides, and long-form discovery."
+  },
+  {
+    "domain": "blacktiefuture.com",
+    "repo": "blacktiefuture.com",
+    "code": "bwal2rxe11",
+    "name": "Blacktiefuture",
+    "requestedTaskLabel": "Article",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "port": 3268,
+    "url": "https://blacktiefuture.com",
+    "frontendUrl": "https://blacktiefuture.com",
+    "liveUrl": "https://blacktiefuture.com",
+    "siteUrl": "https://blacktiefuture.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    },
+    "tagline": "Article platform",
+    "description": "An article-led publishing platform for insights, stories, guides, and long-form discovery."
+  },
+  {
+    "domain": "thetinytierant.com",
+    "repo": "thetinytierant.com",
+    "code": "qscr5xr29e",
+    "name": "Thetinytierant",
+    "requestedTaskLabel": "Image Sharing",
+    "tasks": [
+      "image"
+    ],
+    "category": "IMAGE_SHARING",
+    "framework": "NEXT_JS",
+    "port": 3269,
+    "url": "https://thetinytierant.com",
+    "frontendUrl": "https://thetinytierant.com",
+    "liveUrl": "https://thetinytierant.com",
+    "siteUrl": "https://thetinytierant.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images"
+    },
+    "tagline": "Image Sharing platform",
+    "description": "A visual discovery platform for image-led posts, galleries, and creative media browsing."
+  },
+  {
+    "domain": "emeraldtoucanet.com",
+    "repo": "emeraldtoucanet.com",
+    "code": "hqz8w5459i",
+    "name": "Emeraldtoucanet",
+    "requestedTaskLabel": "Image Sharing",
+    "tasks": [
+      "image"
+    ],
+    "category": "IMAGE_SHARING",
+    "framework": "NEXT_JS",
+    "port": 3270,
+    "url": "https://emeraldtoucanet.com",
+    "frontendUrl": "https://emeraldtoucanet.com",
+    "liveUrl": "https://emeraldtoucanet.com",
+    "siteUrl": "https://emeraldtoucanet.com",
+    "siteType": "image",
+    "feedPath": "/images",
+    "taskViews": {
+      "image": "/images"
+    },
+    "tagline": "Image Sharing platform",
+    "description": "A visual discovery platform for image-led posts, galleries, and creative media browsing."
+  },
+  {
+    "domain": "creativeguyink.com",
+    "repo": "creativeguyink.com",
+    "code": "ahfah5zv78",
+    "name": "Creativeguyink",
+    "requestedTaskLabel": "Social Profile",
+    "tasks": [
+      "profile"
+    ],
+    "category": "PROFILE",
+    "framework": "NEXT_JS",
+    "port": 3271,
+    "url": "https://creativeguyink.com",
+    "frontendUrl": "https://creativeguyink.com",
+    "liveUrl": "https://creativeguyink.com",
+    "siteUrl": "https://creativeguyink.com",
+    "siteType": "profile",
+    "feedPath": "/profile",
+    "taskViews": {
+      "profile": "/profile"
+    },
+    "tagline": "Social Profile platform",
+    "description": "A social profile platform for public identity, creator pages, and community discovery."
+  },
+  {
+    "domain": "interawesome.com",
+    "repo": "interawesome.com",
+    "code": "ltiebjz23v",
+    "name": "Interawesome",
+    "requestedTaskLabel": "Business Listing",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "port": 3272,
+    "url": "https://interawesome.com",
+    "frontendUrl": "https://interawesome.com",
+    "liveUrl": "https://interawesome.com",
+    "siteUrl": "https://interawesome.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    },
+    "tagline": "Business Listing platform",
+    "description": "A business listing platform for discovering services, companies, and local opportunities with structured browsing."
+  },
+  {
+    "domain": "upgreeno.com",
+    "repo": "upgreeno.com",
+    "code": "uukv3n8eix",
+    "name": "Upgreeno",
+    "requestedTaskLabel": "Business Listing",
+    "tasks": [
+      "listing"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "port": 3273,
+    "url": "https://upgreeno.com",
+    "frontendUrl": "https://upgreeno.com",
+    "liveUrl": "https://upgreeno.com",
+    "siteUrl": "https://upgreeno.com",
+    "siteType": "listing",
+    "feedPath": "/listings",
+    "taskViews": {
+      "listing": "/listings"
+    },
+    "tagline": "Business Listing platform",
+    "description": "A business listing platform for discovering services, companies, and local opportunities with structured browsing."
+  },
+  {
+    "domain": "sendingsos.com",
+    "repo": "sendingsos.com",
+    "code": "gdh9licoul",
+    "name": "Sendingsos",
+    "requestedTaskLabel": "Classified",
+    "tasks": [
+      "classified"
+    ],
+    "category": "LOCAL_LISTING",
+    "framework": "NEXT_JS",
+    "port": 3274,
+    "url": "https://sendingsos.com",
+    "frontendUrl": "https://sendingsos.com",
+    "liveUrl": "https://sendingsos.com",
+    "siteUrl": "https://sendingsos.com",
+    "siteType": "classified",
+    "feedPath": "/classifieds",
+    "taskViews": {
+      "classified": "/classifieds"
+    },
+    "tagline": "Classified platform",
+    "description": "A classified platform for browsing local posts, deals, offers, and quick marketplace-style updates."
+  },
+  {
+    "domain": "bugscast.com",
+    "repo": "bugscast.com",
+    "code": "t4hp9ewlcc",
+    "name": "Bugscast",
+    "requestedTaskLabel": "Social Bookmarking",
+    "tasks": [
+      "sbm"
+    ],
+    "category": "SBM",
+    "framework": "NEXT_JS",
+    "port": 3275,
+    "url": "https://bugscast.com",
+    "frontendUrl": "https://bugscast.com",
+    "liveUrl": "https://bugscast.com",
+    "siteUrl": "https://bugscast.com",
+    "siteType": "social",
+    "feedPath": "/sbm",
+    "taskViews": {
+      "sbm": "/sbm"
+    },
+    "tagline": "Social Bookmarking platform",
+    "description": "A social bookmarking platform for curated links, saved resources, and organized discovery."
+  },
+  {
+    "domain": "noroadsideas.com",
+    "repo": "noroadsideas.com",
+    "code": "5qg7dh9200",
+    "name": "Noroadsideas",
+    "requestedTaskLabel": "Article",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "port": 3276,
+    "url": "https://noroadsideas.com",
+    "frontendUrl": "https://noroadsideas.com",
+    "liveUrl": "https://noroadsideas.com",
+    "siteUrl": "https://noroadsideas.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    },
+    "tagline": "Article platform",
+    "description": "An article-led publishing platform for insights, stories, guides, and long-form discovery."
+  },
+  {
+    "domain": "threebykeep.com",
+    "repo": "threebykeep.com",
+    "code": "4nwinz9vxf",
+    "name": "Threebykeep",
+    "requestedTaskLabel": "Social Bookmarking",
+    "tasks": [
+      "sbm"
+    ],
+    "category": "SBM",
+    "framework": "NEXT_JS",
+    "port": 3277,
+    "url": "https://threebykeep.com",
+    "frontendUrl": "https://threebykeep.com",
+    "liveUrl": "https://threebykeep.com",
+    "siteUrl": "https://threebykeep.com",
+    "siteType": "social",
+    "feedPath": "/sbm",
+    "taskViews": {
+      "sbm": "/sbm"
+    },
+    "tagline": "Social Bookmarking platform",
+    "description": "A social bookmarking platform for curated links, saved resources, and organized discovery."
+  },
+  {
+    "domain": "gutsbranding.com",
+    "repo": "gutsbranding.com",
+    "code": "ptrylpufvh",
+    "name": "Gutsbranding",
+    "requestedTaskLabel": "Article",
+    "tasks": [
+      "article"
+    ],
+    "category": "ARTICLE",
+    "framework": "NEXT_JS",
+    "port": 3278,
+    "url": "https://gutsbranding.com",
+    "frontendUrl": "https://gutsbranding.com",
+    "liveUrl": "https://gutsbranding.com",
+    "siteUrl": "https://gutsbranding.com",
+    "siteType": "article",
+    "feedPath": "/articles",
+    "taskViews": {
+      "article": "/articles"
+    },
+    "tagline": "Article platform",
+    "description": "An article-led publishing platform for insights, stories, guides, and long-form discovery."
+  },
+  {
+    "domain": "railsfreaks.com",
+    "repo": "railsfreaks.com",
+    "code": "fgm44o8zll",
+    "name": "Railsfreaks",
+    "requestedTaskLabel": "PDF + Social Profile",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "port": 3279,
+    "url": "https://railsfreaks.com",
+    "frontendUrl": "https://railsfreaks.com",
+    "liveUrl": "https://railsfreaks.com",
+    "siteUrl": "https://railsfreaks.com",
+    "siteType": "pdf",
+    "feedPath": "/pdf",
+    "taskViews": {
+      "pdf": "/pdf",
+      "profile": "/profile"
+    },
+    "tagline": "PDF + Social Profile platform",
+    "description": "A multi-task publishing platform combining pdf, profile experiences in one connected site."
+  },
+  {
+    "domain": "mootankala.com",
+    "repo": "mootankala.com",
+    "code": "9xo1in07t2",
+    "name": "Mootankala",
+    "requestedTaskLabel": "PDF + Social Profile",
+    "tasks": [
+      "pdf",
+      "profile"
+    ],
+    "category": "MULTI_TASK",
+    "framework": "NEXT_JS",
+    "port": 3280,
+    "url": "https://mootankala.com",
+    "frontendUrl": "https://mootankala.com",
+    "liveUrl": "https://mootankala.com",
+    "siteUrl": "https://mootankala.com",
+    "siteType": "pdf",
+    "feedPath": "/pdf",
+    "taskViews": {
+      "pdf": "/pdf",
+      "profile": "/profile"
+    },
+    "tagline": "PDF + Social Profile platform",
+    "description": "A multi-task publishing platform combining pdf, profile experiences in one connected site."
+  }
+]
