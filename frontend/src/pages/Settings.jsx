@@ -142,6 +142,7 @@ export default function Settings() {
                 <span className={`rounded-full px-2 py-1 ${integrationStatus.capabilities.canReadSites ? "bg-emerald-500/15 text-emerald-600" : "bg-rose-500/15 text-rose-600"}`}>sites:read</span>
                 <span className={`rounded-full px-2 py-1 ${integrationStatus.capabilities.canReadPosts ? "bg-emerald-500/15 text-emerald-600" : "bg-rose-500/15 text-rose-600"}`}>posts:read</span>
                 <span className={`rounded-full px-2 py-1 ${integrationStatus.capabilities.canWriteSites ? "bg-emerald-500/15 text-emerald-600" : "bg-amber-500/15 text-amber-700"}`}>sites:write</span>
+                <span className={`rounded-full px-2 py-1 ${integrationStatus.capabilities.canWritePosts ? "bg-emerald-500/15 text-emerald-600" : "bg-amber-500/15 text-amber-700"}`}>posts:write</span>
                 <span className={`rounded-full px-2 py-1 ${integrationStatus.capabilities.canManageKeys ? "bg-emerald-500/15 text-emerald-600" : "bg-amber-500/15 text-amber-700"}`}>keys:write</span>
               </div>
             </div>

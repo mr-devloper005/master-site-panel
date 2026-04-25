@@ -108,9 +108,14 @@ export const AppProvider = ({ children }) => {
   };
 
   const runPostBulkAction = async (payload) => {
-    await bulkPostAction(payload);
-    await hydrate();
-    toast.success(`Post bulk ${payload.action} complete`);
+    try {
+      await bulkPostAction(payload);
+      await hydrate();
+      toast.success(`Post bulk ${payload.action} complete`);
+    } catch (error) {
+      toast.error(error.message || `Failed to ${payload.action} selected posts`);
+      throw error;
+    }
   };
 
   const reorderSiteList = async (orderedIds) => {
