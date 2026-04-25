@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 
 import SiteProvisioningModal from "../components/sites/SiteProvisioningModal";
 import SiteTaskModal from "../components/sites/SiteTaskModal";
+import SearchableSelect from "../components/ui/SearchableSelect";
 import { useAppData } from "../context/AppContext";
 import { fetchApiKeys, issueSiteTaskToken } from "../utils/api";
 
@@ -43,6 +44,7 @@ export default function Tasks() {
   const [packageData, setPackageData] = useState(null);
   const [keys, setKeys] = useState([]);
   const [tokenCache, setTokenCache] = useState(() => loadTokenCache());
+  const [siteSearch, setSiteSearch] = useState("");
 
   useEffect(() => {
     const loadKeys = async () => {
@@ -93,6 +95,16 @@ export default function Tasks() {
     });
   }, [enabledTasks, siteKeys, selectedSite, selectedSiteCode, tokenCache, taskCatalog]);
 
+  const siteOptions = useMemo(
+    () =>
+      sites.map((site) => ({
+        value: site.id,
+        label: site.name,
+        meta: `${site.code} ${site.url || ""}`,
+      })),
+    [sites]
+  );
+
   return (
     <div className="flex h-full min-h-0 flex-col gap-4 overflow-hidden">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -106,19 +118,17 @@ export default function Tasks() {
 
       <div className="rounded-panel border border-[var(--border-color)] bg-[var(--bg-secondary)] p-4">
         <div className="flex flex-wrap items-center gap-3">
-          <label className="text-sm font-medium">Select Site</label>
-          <select
-            className="min-h-11 w-full rounded-lg border border-[var(--border-color)] px-3 md:w-[320px]"
+          <SearchableSelect
+            label="Select Site"
             value={selectedSiteId}
-            onChange={(event) => setSelectedSiteId(event.target.value)}
-          >
-            <option value="">Choose a site</option>
-            {sites.map((site) => (
-              <option key={site.id} value={site.id}>
-                {site.name}
-              </option>
-            ))}
-          </select>
+            onChange={setSelectedSiteId}
+            searchValue={siteSearch}
+            onSearchChange={setSiteSearch}
+            options={siteOptions}
+            placeholder="Choose a site"
+            searchPlaceholder="Search site by name, code, or URL"
+            className="w-full md:w-[360px]"
+          />
           <button
             type="button"
             className="min-h-11 rounded-lg bg-blue-600 px-4 py-2 text-sm text-white disabled:opacity-50"

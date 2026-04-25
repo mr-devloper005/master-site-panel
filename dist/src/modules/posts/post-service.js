@@ -128,13 +128,22 @@ const createPublishedPost = async ({ apiKey, siteCode, title, slug, summary, met
     const normalizedRequestedTask = normalizeTaskValue(requestedTask);
     const contentTask = typeof contentRecord?.type === "string" ? contentRecord.type : null;
     const normalizedContentTask = normalizeTaskValue(contentTask);
-    const resolvedTask = normalizedRequestedTask && (0, site_contract_1.isSiteTask)(normalizedRequestedTask)
+    let resolvedTask = normalizedRequestedTask && (0, site_contract_1.isSiteTask)(normalizedRequestedTask)
         ? normalizedRequestedTask
         : normalizedContentTask && (0, site_contract_1.isSiteTask)(normalizedContentTask)
             ? normalizedContentTask
             : null;
     const rawCategory = typeof contentRecord?.category === "string" ? contentRecord.category : null;
     const normalizedCategory = rawCategory ? (0, category_constants_1.normalizeCategory)(rawCategory) : null;
+    // Backward-compatibility: some posting tools still send "social" for
+    // bookmarking-style sites. When a site explicitly supports SBM but not
+    // social posts, treat that legacy task value as SBM.
+    if (resolvedTask === "social" &&
+        Array.isArray(siteConfig.supportedTasks) &&
+        siteConfig.supportedTasks.includes("sbm") &&
+        !siteConfig.supportedTasks.includes("social")) {
+        resolvedTask = "sbm";
+    }
     if (!resolvedTask) {
         throw new api_error_1.ApiError(400, "Task is required. Set content.type or use the task-specific endpoint.");
     }
@@ -153,8 +162,13 @@ const createPublishedPost = async ({ apiKey, siteCode, title, slug, summary, met
             throw new api_error_1.ApiError(403, `API key is not allowed to post ${resolvedTask} content.`);
         }
     }
-    if (contentRecord && normalizedContentTask && contentRecord.type !== normalizedContentTask) {
-        contentRecord.type = normalizedContentTask;
+    if (contentRecord && normalizedContentTask) {
+        const normalizedContentType = normalizedContentTask === "social" && resolvedTask === "sbm"
+            ? "sbm"
+            : normalizedContentTask;
+        if (contentRecord.type !== normalizedContentType) {
+            contentRecord.type = normalizedContentType;
+        }
     }
     if (contentRecord && !contentRecord.type) {
         contentRecord.type = resolvedTask;

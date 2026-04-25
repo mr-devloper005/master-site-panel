@@ -2,9 +2,24 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import PostTable from "../components/posts/PostTable";
 import PostEditorModal from "../components/posts/PostEditorModal";
+import SearchableSelect from "../components/ui/SearchableSelect";
 import { useAppData } from "../context/AppContext";
 
 const PAGE_SIZE = 15;
+const TASK_LABELS = {
+  listing: "Listing",
+  article: "Article",
+  image: "Images",
+  mediaDistribution: "Media Distribution",
+  profile: "Profile",
+  classified: "Classified",
+  social: "Social",
+  sbm: "SBM",
+  comment: "Comment",
+  pdf: "PDF",
+  org: "Organization",
+  general: "General",
+};
 
 export default function Posts() {
   const { posts: allPosts, filteredPosts, sites, globalQuery, setGlobalQuery, runPostBulkAction, editPost } = useAppData();
@@ -15,7 +30,9 @@ export default function Posts() {
   const [tab, setTab] = useState(initialSiteId === "all" ? "all" : "site");
   const [siteFilter, setSiteFilter] = useState(initialSiteId);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [taskFilter, setTaskFilter] = useState("all");
   const [query, setQuery] = useState(initialSearch || globalQuery || "");
+  const [siteSearch, setSiteSearch] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [selected, setSelected] = useState([]);
@@ -30,6 +47,26 @@ export default function Posts() {
 
   const selectedSite = sites.find((site) => site.id === siteFilter);
   const posts = globalQuery.trim() ? filteredPosts : allPosts;
+  const siteOptions = useMemo(
+    () =>
+      sites.map((site) => ({
+        value: site.id,
+        label: site.name,
+        meta: `${site.code} ${site.url || ""}`,
+      })),
+    [sites]
+  );
+
+  const taskOptions = useMemo(() => {
+    const uniqueTasks = Array.from(new Set(posts.map((post) => post.taskType).filter(Boolean)));
+    return uniqueTasks
+      .sort((a, b) => (TASK_LABELS[a] || a).localeCompare(TASK_LABELS[b] || b))
+      .map((task) => ({
+        value: task,
+        label: TASK_LABELS[task] || task,
+        meta: task,
+      }));
+  }, [posts]);
 
   const filtered = useMemo(() => {
     const effectiveQuery = query.trim() || globalQuery.trim();
@@ -42,6 +79,7 @@ export default function Posts() {
         post.siteId === siteFilter ||
         (selectedSite ? post.siteName === selectedSite.name : false);
       const matchStatus = statusFilter === "all" ? true : post.status === statusFilter;
+      const matchTask = taskFilter === "all" ? true : post.taskType === taskFilter;
       const matchSearch = !effectiveQuery
         ? true
         : [post.title, post.excerpt, post.author, post.siteName, post.date].some((field) =>
@@ -50,7 +88,7 @@ export default function Posts() {
       const date = new Date(post.date).getTime();
       const matchFrom = dateFrom ? date >= new Date(dateFrom).getTime() : true;
       const matchTo = dateTo ? date <= new Date(dateTo).getTime() + 24 * 60 * 60 * 1000 : true;
-      return matchTab && matchStatus && matchSearch && matchFrom && matchTo;
+      return matchTab && matchStatus && matchTask && matchSearch && matchFrom && matchTo;
     });
 
     result = result.sort((a, b) => {
@@ -59,12 +97,12 @@ export default function Posts() {
     });
 
     return result;
-  }, [posts, tab, siteFilter, selectedSite, statusFilter, query, globalQuery, dateFrom, dateTo, sortBy]);
+  }, [posts, tab, siteFilter, selectedSite, statusFilter, taskFilter, query, globalQuery, dateFrom, dateTo, sortBy]);
 
   useEffect(() => {
     setPage(1);
     setSelected([]);
-  }, [tab, siteFilter, statusFilter, query, dateFrom, dateTo, sortBy]);
+  }, [tab, siteFilter, statusFilter, taskFilter, query, dateFrom, dateTo, sortBy]);
 
   useEffect(() => {
     const paramSearch = params.get("search") || "";
@@ -87,7 +125,7 @@ export default function Posts() {
           <button
             className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
             onClick={() => {
-              const next = [...savedSearches, { tab, siteFilter, statusFilter, query, dateFrom, dateTo }].slice(-8);
+              const next = [...savedSearches, { tab, siteFilter, statusFilter, taskFilter, query, dateFrom, dateTo }].slice(-8);
               setSavedSearches(next);
               localStorage.setItem("site-master-saved-searches", JSON.stringify(next));
             }}
@@ -104,11 +142,25 @@ export default function Posts() {
           <button className={`rounded-lg px-3 py-2 text-sm ${tab === "all" ? "bg-blue-600 text-white" : "border border-[var(--border-color)]"}`} onClick={() => { setTab("all"); setSiteFilter("all"); }}>All Posts</button>
           <button className={`rounded-lg px-3 py-2 text-sm ${tab === "site" ? "bg-blue-600 text-white" : "border border-[var(--border-color)]"}`} onClick={() => setTab("site")}>By Site</button>
           {tab === "site" && (
-            <select className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm" value={siteFilter} onChange={(e) => setSiteFilter(e.target.value)}>
-              <option value="all">All sites</option>
-              {sites.map((site) => <option key={site.id} value={site.id}>{site.name}</option>)}
-            </select>
+            <SearchableSelect
+              value={siteFilter === "all" ? "" : siteFilter}
+              onChange={(value) => setSiteFilter(value || "all")}
+              searchValue={siteSearch}
+              onSearchChange={setSiteSearch}
+              options={siteOptions}
+              placeholder="All sites"
+              searchPlaceholder="Search site by name, code, or URL"
+              className="min-w-[260px]"
+            />
           )}
+          <select className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm" value={taskFilter} onChange={(e) => setTaskFilter(e.target.value)}>
+            <option value="all">All Tasks</option>
+            {taskOptions.map((task) => (
+              <option key={task.value} value={task.value}>
+                {task.label}
+              </option>
+            ))}
+          </select>
           <select className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
             <option value="all">All Status</option>
             <option value="Published">Published</option>
@@ -137,6 +189,7 @@ export default function Posts() {
                   setTab(s.tab);
                   setSiteFilter(s.siteFilter);
                   setStatusFilter(s.statusFilter);
+                  setTaskFilter(s.taskFilter || "all");
                   setQuery(s.query);
                   setDateFrom(s.dateFrom);
                   setDateTo(s.dateTo);

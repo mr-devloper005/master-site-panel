@@ -101,6 +101,24 @@ const inferCategory = (post) => {
   return "General";
 };
 
+const inferTaskType = (post) => {
+  const content = post.content && typeof post.content === "object" ? post.content : {};
+  const explicit = String(content.type || content.postType || content.taskType || "").toLowerCase();
+  const tags = Array.isArray(post.tags) ? post.tags.map((tag) => String(tag).toLowerCase()) : [];
+
+  if (explicit.includes("mediadistribution") || explicit.includes("media-distribution")) return "mediaDistribution";
+  if (explicit.includes("listing") || tags.includes("listing")) return "listing";
+  if (explicit.includes("classified") || tags.includes("classified")) return "classified";
+  if (explicit.includes("article") || tags.includes("article") || tags.includes("blog")) return "article";
+  if (explicit.includes("image") || explicit.includes("gallery") || tags.includes("image") || tags.includes("gallery")) return "image";
+  if (explicit.includes("profile") || tags.includes("profile")) return "profile";
+  if (explicit.includes("sbm") || explicit.includes("bookmark") || tags.includes("sbm") || tags.includes("bookmark")) return "sbm";
+  if (explicit.includes("social") || tags.includes("social")) return "social";
+  if (explicit.includes("pdf") || tags.includes("pdf")) return "pdf";
+  if (explicit.includes("comment") || tags.includes("comment")) return "comment";
+  return explicit || "general";
+};
+
 const deriveViews = (post) => {
   const content = post.content && typeof post.content === "object" ? post.content : {};
   if (Number.isFinite(Number(content.views))) return Number(content.views);
@@ -127,6 +145,7 @@ const mapPost = (post) => ({
   tags: Array.isArray(post.tags) ? post.tags : [],
   slug: post.slug || "",
   category: inferCategory(post),
+  taskType: inferTaskType(post),
   views: deriveViews(post),
   likes: deriveLikes(post),
   raw: post,

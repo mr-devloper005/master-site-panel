@@ -179,7 +179,7 @@ export const createPublishedPost = async ({
   const normalizedRequestedTask = normalizeTaskValue(requestedTask);
   const contentTask = typeof contentRecord?.type === "string" ? contentRecord.type : null;
   const normalizedContentTask = normalizeTaskValue(contentTask);
-  const resolvedTask =
+  let resolvedTask =
     normalizedRequestedTask && isSiteTask(normalizedRequestedTask)
       ? normalizedRequestedTask
       : normalizedContentTask && isSiteTask(normalizedContentTask)
@@ -188,6 +188,18 @@ export const createPublishedPost = async ({
   const rawCategory =
     typeof contentRecord?.category === "string" ? contentRecord.category : null;
   const normalizedCategory = rawCategory ? normalizeCategory(rawCategory) : null;
+
+  // Backward-compatibility: some posting tools still send "social" for
+  // bookmarking-style sites. When a site explicitly supports SBM but not
+  // social posts, treat that legacy task value as SBM.
+  if (
+    resolvedTask === "social" &&
+    Array.isArray(siteConfig.supportedTasks) &&
+    siteConfig.supportedTasks.includes("sbm") &&
+    !siteConfig.supportedTasks.includes("social")
+  ) {
+    resolvedTask = "sbm";
+  }
 
   if (!resolvedTask) {
     throw new ApiError(400, "Task is required. Set content.type or use the task-specific endpoint.");
@@ -212,8 +224,14 @@ export const createPublishedPost = async ({
     }
   }
 
-  if (contentRecord && normalizedContentTask && contentRecord.type !== normalizedContentTask) {
-    contentRecord.type = normalizedContentTask;
+  if (contentRecord && normalizedContentTask) {
+    const normalizedContentType =
+      normalizedContentTask === "social" && resolvedTask === "sbm"
+        ? "sbm"
+        : normalizedContentTask;
+    if (contentRecord.type !== normalizedContentType) {
+      contentRecord.type = normalizedContentType;
+    }
   }
   if (contentRecord && !contentRecord.type) {
     contentRecord.type = resolvedTask;

@@ -1,5 +1,20 @@
 import { Eye, Trash2 } from "lucide-react";
 
+const TASK_LABELS = {
+  listing: "Listing",
+  article: "Article",
+  image: "Images",
+  mediaDistribution: "Media Distribution",
+  profile: "Profile",
+  classified: "Classified",
+  social: "Social",
+  sbm: "SBM",
+  comment: "Comment",
+  pdf: "PDF",
+  org: "Organization",
+  general: "General",
+};
+
 export default function PostTable({
   posts,
   selectedIds,
@@ -38,7 +53,14 @@ export default function PostTable({
               <tr key={post.id} className="border-t border-[var(--border-color)] align-top">
                 <td className="px-3 py-2"><input type="checkbox" checked={selectedIds.includes(post.id)} onChange={() => onSelect(post.id)} /></td>
                 <td className="px-3 py-2 text-xs text-[var(--text-secondary)]">{post.id}</td>
-                <td className="px-3 py-2 font-medium">{post.title}</td>
+                <td className="px-3 py-2 font-medium">
+                  <div className="flex flex-col gap-1">
+                    <span className="inline-flex w-fit items-center rounded-full border border-[var(--border-color)] bg-slate-50 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.18em] text-[var(--text-secondary)] dark:bg-slate-800/60">
+                      {TASK_LABELS[post.taskType] || post.taskType || "General"}
+                    </span>
+                    <span>{post.title}</span>
+                  </div>
+                </td>
                 <td className="px-3 py-2">{post.siteName}</td>
                 <td className="px-3 py-2">{post.author}</td>
                 <td className="px-3 py-2">{new Date(post.date).toLocaleDateString()}</td>
