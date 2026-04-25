@@ -222,13 +222,19 @@ router.post("/bulk/delete", (0, auth_1.requireApiKey)("posts:write"), (0, async_
     if (!apiKey)
         throw new api_error_1.ApiError(401, "API key context missing.");
     const postIds = Array.isArray(req.body.postIds) ? req.body.postIds : [];
-    if (postIds.length === 0) {
+    const deleteAll = req.body.deleteAll === true;
+    if (!deleteAll && postIds.length === 0) {
         throw new api_error_1.ApiError(400, "postIds[] is required.");
     }
+    const where = deleteAll ? {} : { id: { in: postIds } };
     const posts = await db_1.prisma.post.findMany({
-        where: { id: { in: postIds } },
+        where,
         select: { id: true, siteId: true },
     });
+    if (posts.length === 0) {
+        res.json({ success: true, data: { deletedCount: 0 } });
+        return;
+    }
     if (!canBypassSitePermissions(apiKey.scopes)) {
         const allowedSiteIds = await (0, auth_1.getAllowedSiteIds)(apiKey.id, "post");
         const unauthorized = posts.some((post) => !allowedSiteIds.includes(post.siteId));

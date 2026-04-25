@@ -240,6 +240,14 @@ export const bulkPostAction = async ({ postIds, action, data }) => {
     return true;
   }
 
+  if (action === "deleteAll") {
+    await request("/api/v1/posts/bulk/delete", {
+      method: "POST",
+      body: JSON.stringify({ deleteAll: true }),
+    });
+    return true;
+  }
+
   if (action === "publish") {
     await request("/api/v1/posts/bulk/update", {
       method: "POST",

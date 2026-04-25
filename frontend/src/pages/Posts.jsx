@@ -132,6 +132,18 @@ export default function Posts() {
           >
             Save Search
           </button>
+          <button
+            className="rounded-lg border border-rose-400 bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:bg-rose-950/30 dark:text-rose-300"
+            onClick={async () => {
+              const confirmed = window.confirm(
+                "Delete ALL posts from all sites? This cannot be undone."
+              );
+              if (!confirmed) return;
+              await runPostBulkAction({ action: "deleteAll" });
+            }}
+          >
+            Delete All Posts
+          </button>
           <button className="rounded-lg bg-blue-600 px-3 py-2 text-sm text-white" onClick={() => runPostBulkAction({ postIds: selected, action: "publish" })} disabled={!selected.length}>Bulk Publish</button>
           <button className="rounded-lg border border-red-300 px-3 py-2 text-sm text-red-600" onClick={() => runPostBulkAction({ postIds: selected, action: "delete" })} disabled={!selected.length}>Bulk Delete</button>
         </div>
