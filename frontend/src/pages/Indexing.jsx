@@ -188,6 +188,7 @@ export default function Indexing() {
   const summary = indexingStatus?.summary || {
     total: 0,
     sitemapSubmitted: 0,
+    sitemapSeen: 0,
     discovered: 0,
     indexed: 0,
     byStatus: {},
@@ -205,12 +206,12 @@ export default function Indexing() {
   };
   const byStatus = summary.byStatus || {};
   const indexedRate = summary.total ? Math.round((summary.indexed / summary.total) * 100) : 0;
-  const discoveredRate = summary.total ? Math.round((summary.discovered / summary.total) * 100) : 0;
+  const sitemapSeenRate = summary.total ? Math.round((Number(summary.sitemapSeen || 0) / summary.total) * 100) : 0;
   const trackedUrls = Number(diagnostics.trackedPosts || summary.total || 0);
   const indexedUrls = Number(summary.indexed || 0);
   const notIndexedUrls = Number(byStatus.NOT_INDEXED || 0);
   const submittedUrls = Number(summary.sitemapSubmitted || 0);
-  const discoveredUrls = Number(summary.discovered || 0);
+  const sitemapSeenUrls = Number(summary.sitemapSeen || 0);
   const awaitingUrls = Math.max(trackedUrls - indexedUrls - notIndexedUrls, 0);
   const linkHealthResult = linkHealth?.result || null;
   const brokenLinks = Array.isArray(linkHealthResult?.broken) ? linkHealthResult.broken : [];
@@ -219,13 +220,14 @@ export default function Indexing() {
   const googleState = useMemo(() => {
     if (!selectedSiteId) return "Select site";
     if (!diagnostics.googleConfigured) return "Config Missing";
-    if (summary.indexed > 0 || summary.discovered > 0 || summary.sitemapSubmitted > 0) return "Connected";
+    if (summary.indexed > 0 || summary.discovered > 0 || summary.sitemapSeen > 0 || summary.sitemapSubmitted > 0) return "Connected";
     return "Waiting for first sync";
   }, [
     selectedSiteId,
     diagnostics.googleConfigured,
     summary.indexed,
     summary.discovered,
+    summary.sitemapSeen,
     summary.sitemapSubmitted,
   ]);
 
@@ -249,7 +251,7 @@ export default function Indexing() {
 
   const pipelineBarData = useMemo(
     () => ({
-      labels: ["Sitemap URLs", "Submitted", "Discovered", "Indexed"],
+      labels: ["Sitemap URLs", "Submitted", "Seen in Sitemap", "Indexed"],
       datasets: [
         {
           label: "Count",
@@ -336,7 +338,7 @@ export default function Indexing() {
         </div>
       </div>
 
-      <section className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-6">
+      <section className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-7">
         <article className="rounded-panel bg-gradient-to-br from-blue-600 to-cyan-500 p-4 text-white shadow-panel">
           <p className="text-xs text-white/80">Sitemap URLs</p>
           <p className="mt-2 text-3xl font-bold">{Number(sitemapStatus?.urlCount || 0)}</p>
@@ -348,7 +350,12 @@ export default function Indexing() {
         <article className="rounded-panel bg-gradient-to-br from-sky-600 to-indigo-500 p-4 text-white shadow-panel">
           <p className="text-xs text-white/80">Discovered</p>
           <p className="mt-2 text-3xl font-bold">{Number(summary.discovered || 0)}</p>
-          <p className="text-xs text-white/80">{discoveredRate}% of tracked</p>
+          <p className="text-xs text-white/80">Google says discovered, not indexed</p>
+        </article>
+        <article className="rounded-panel bg-gradient-to-br from-cyan-600 to-blue-500 p-4 text-white shadow-panel">
+          <p className="text-xs text-white/80">Seen in Sitemap</p>
+          <p className="mt-2 text-3xl font-bold">{Number(summary.sitemapSeen || 0)}</p>
+          <p className="text-xs text-white/80">{sitemapSeenRate}% of tracked</p>
         </article>
         <article className="rounded-panel bg-gradient-to-br from-emerald-600 to-teal-500 p-4 text-white shadow-panel">
           <p className="text-xs text-white/80">Indexed</p>
@@ -418,6 +425,8 @@ export default function Indexing() {
               <p>Indexed URLs (Google confirmed): <span className="font-semibold text-emerald-600">{indexedUrls}</span></p>
               <p>Not Indexed (Google confirmed): <span className="font-semibold text-rose-600">{notIndexedUrls}</span></p>
               <p>Awaiting confirmation: <span className="font-semibold text-amber-600">{awaitingUrls}</span></p>
+              <p>Discovered (Google confirmed): <span className="font-semibold text-indigo-600">{Number(summary.discovered || 0)}</span></p>
+              <p>Seen in Sitemap: <span className="font-semibold text-sky-600">{sitemapSeenUrls}</span></p>
             </div>
           </article>
 

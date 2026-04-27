@@ -1084,7 +1084,7 @@ router.get("/:siteId/indexing-status", (0, auth_1.requireApiKey)("sites:read"), 
     catch (error) {
         console.warn("Failed to sync sitemap seen URLs", error);
     }
-    const [records, totalRecords, sitemapSubmittedCount, discoveredCount, indexedCount, notIndexedCount, errorCount, groupedStatuses, publishedPostsCount,] = await Promise.all([
+    const [records, totalRecords, sitemapSubmittedCount, sitemapSeenCount, discoveredCount, indexedCount, notIndexedCount, errorCount, groupedStatuses, publishedPostsCount,] = await Promise.all([
         db_1.prisma.siteIndexingRecord.findMany({
             where: { siteId: site.id },
             include: {
@@ -1107,6 +1107,9 @@ router.get("/:siteId/indexing-status", (0, auth_1.requireApiKey)("sites:read"), 
         }),
         db_1.prisma.siteIndexingRecord.count({
             where: { siteId: site.id, sitemapSeenAt: { not: null } },
+        }),
+        db_1.prisma.siteIndexingRecord.count({
+            where: { siteId: site.id, inspectionStatus: "DISCOVERED" },
         }),
         db_1.prisma.siteIndexingRecord.count({
             where: { siteId: site.id, inspectionStatus: "INDEXED" },
@@ -1138,6 +1141,7 @@ router.get("/:siteId/indexing-status", (0, auth_1.requireApiKey)("sites:read"), 
     const summary = {
         total: totalRecords,
         sitemapSubmitted: sitemapSubmittedCount,
+        sitemapSeen: sitemapSeenCount,
         discovered: discoveredCount,
         indexed: indexedCount,
         notIndexed: notIndexedCount,

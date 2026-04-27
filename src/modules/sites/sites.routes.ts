@@ -1271,6 +1271,7 @@ router.get("/:siteId/indexing-status", requireApiKey("sites:read"), asyncHandler
     records,
     totalRecords,
     sitemapSubmittedCount,
+    sitemapSeenCount,
     discoveredCount,
     indexedCount,
     notIndexedCount,
@@ -1300,6 +1301,9 @@ router.get("/:siteId/indexing-status", requireApiKey("sites:read"), asyncHandler
     }),
     prisma.siteIndexingRecord.count({
       where: { siteId: site.id, sitemapSeenAt: { not: null } },
+    }),
+    prisma.siteIndexingRecord.count({
+      where: { siteId: site.id, inspectionStatus: "DISCOVERED" },
     }),
     prisma.siteIndexingRecord.count({
       where: { siteId: site.id, inspectionStatus: "INDEXED" },
@@ -1335,6 +1339,7 @@ router.get("/:siteId/indexing-status", requireApiKey("sites:read"), asyncHandler
   const summary = {
     total: totalRecords,
     sitemapSubmitted: sitemapSubmittedCount,
+    sitemapSeen: sitemapSeenCount,
     discovered: discoveredCount,
     indexed: indexedCount,
     notIndexed: notIndexedCount,
