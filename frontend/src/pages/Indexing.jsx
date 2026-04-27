@@ -258,7 +258,7 @@ export default function Indexing() {
           data: [
             Number(sitemapStatus?.urlCount || 0),
             submittedUrls,
-            discoveredUrls,
+            sitemapSeenUrls,
             indexedUrls,
           ],
           backgroundColor: ["#0ea5e9", "#8b5cf6", "#14b8a6", "#22c55e"],
@@ -266,7 +266,7 @@ export default function Indexing() {
         },
       ],
     }),
-    [sitemapStatus?.urlCount, submittedUrls, discoveredUrls, indexedUrls]
+    [sitemapStatus?.urlCount, submittedUrls, sitemapSeenUrls, indexedUrls]
   );
 
   const barOptions = {
