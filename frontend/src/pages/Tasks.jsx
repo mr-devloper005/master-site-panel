@@ -5,7 +5,7 @@ import SiteProvisioningModal from "../components/sites/SiteProvisioningModal";
 import SiteTaskModal from "../components/sites/SiteTaskModal";
 import SearchableSelect from "../components/ui/SearchableSelect";
 import { useAppData } from "../context/AppContext";
-import { fetchApiKeys, issueSiteTaskToken } from "../utils/api";
+import { exportTaskTokens, fetchApiKeys, issueSiteTaskToken } from "../utils/api";
 
 const badgeClass =
   "inline-flex items-center rounded-full border border-[var(--border-color)] bg-slate-50 px-2.5 py-1 text-xs dark:bg-slate-900/40";
@@ -45,6 +45,8 @@ export default function Tasks() {
   const [keys, setKeys] = useState([]);
   const [tokenCache, setTokenCache] = useState(() => loadTokenCache());
   const [siteSearch, setSiteSearch] = useState("");
+  const [exporting, setExporting] = useState(false);
+  const [exportPayload, setExportPayload] = useState(null);
 
   useEffect(() => {
     const loadKeys = async () => {
@@ -105,6 +107,38 @@ export default function Tasks() {
     [sites]
   );
 
+  const exportJson = useMemo(
+    () => (exportPayload?.rows?.length ? JSON.stringify(exportPayload.rows, null, 2) : ""),
+    [exportPayload]
+  );
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const result = await exportTaskTokens({ rotateMissing: true });
+      setExportPayload(result);
+      await navigator.clipboard.writeText(JSON.stringify(result.rows || [], null, 2));
+      toast.success(
+        `Export ready. ${result.totalRows || 0} rows copied.${result.rotatedRows?.length ? ` ${result.rotatedRows.length} token(s) refreshed.` : ""}`
+      );
+    } catch (error) {
+      toast.error(error.message || "Failed to export task tokens");
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleDownload = () => {
+    if (!exportJson) return;
+    const blob = new Blob([exportJson], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `task-token-export-${new Date().toISOString().slice(0, 10)}.json`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="flex h-full min-h-0 flex-col gap-4 overflow-hidden">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -137,8 +171,58 @@ export default function Tasks() {
           >
             Add Task API
           </button>
+          <button
+            type="button"
+            className="min-h-11 rounded-lg bg-slate-900 px-4 py-2 text-sm text-white disabled:opacity-50"
+            disabled={exporting}
+            onClick={handleExport}
+          >
+            {exporting ? "Exporting…" : "Export All Task Tokens JSON"}
+          </button>
         </div>
+        <p className="mt-3 text-xs text-[var(--text-secondary)]">
+          Export gives you one JSON sheet for all current site tasks. If an older task token cannot be recovered,
+          we automatically mint a fresh live token for that row so the export stays usable.
+        </p>
       </div>
+
+      {exportPayload ? (
+        <section className="rounded-panel border border-[var(--border-color)] bg-[var(--bg-secondary)] p-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold">JSON Export Sheet</h2>
+              <p className="mt-1 text-xs text-[var(--text-secondary)]">
+                {exportPayload.totalRows || 0} rows • {exportPayload.totalSites || 0} sites
+                {exportPayload.rotatedRows?.length
+                  ? ` • ${exportPayload.rotatedRows.length} refreshed token(s)`
+                  : ""}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                className="rounded-lg border border-[var(--border-color)] px-3 py-1.5 text-xs"
+                onClick={async () => {
+                  await navigator.clipboard.writeText(exportJson);
+                  toast.success("Export JSON copied");
+                }}
+              >
+                Copy JSON
+              </button>
+              <button
+                type="button"
+                className="rounded-lg border border-[var(--border-color)] px-3 py-1.5 text-xs"
+                onClick={handleDownload}
+              >
+                Download
+              </button>
+            </div>
+          </div>
+          <pre className="mt-3 max-h-72 overflow-auto rounded-2xl border border-[var(--border-color)] bg-slate-950 p-3 text-xs text-slate-100">
+            {exportJson}
+          </pre>
+        </section>
+      ) : null}
 
       {!selectedSite ? (
         <div className="rounded-panel border border-dashed border-[var(--border-color)] bg-[var(--bg-secondary)] p-6 text-sm text-[var(--text-secondary)]">

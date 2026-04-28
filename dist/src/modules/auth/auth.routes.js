@@ -8,6 +8,19 @@ const async_handler_1 = require("../../utils/async-handler");
 const site_contract_1 = require("../sites/site-contract");
 const api_key_service_1 = require("./api-key-service");
 const router = (0, express_1.Router)();
+const TASK_LABELS = {
+    listing: "Listing",
+    article: "Article",
+    image: "Image",
+    mediaDistribution: "Media Distribution",
+    profile: "Profile",
+    classified: "Classified",
+    social: "Social",
+    sbm: "SBM",
+    comment: "Comment",
+    pdf: "PDF",
+    org: "Organization",
+};
 const normalizeTaskValue = (value) => {
     const raw = Array.isArray(value) ? value[0] : value;
     if (!raw)
@@ -81,6 +94,121 @@ router.get("/keys", (0, auth_1.requireApiKey)("keys:write"), (0, async_handler_1
                 canRead: permission.canRead,
             })),
         })),
+    });
+}));
+router.get("/keys/export-task-tokens", (0, auth_1.requireApiKey)("keys:write"), (0, async_handler_1.asyncHandler)(async (req, res) => {
+    const rotateMissing = String(req.query.rotateMissing || "false").toLowerCase() === "true";
+    const [sites, keys] = await Promise.all([
+        db_1.prisma.site.findMany({
+            orderBy: [{ name: "asc" }],
+            select: {
+                id: true,
+                code: true,
+                name: true,
+                config: true,
+            },
+        }),
+        db_1.prisma.apiKey.findMany({
+            where: { isActive: true },
+            orderBy: [{ createdAt: "desc" }],
+            include: {
+                permissions: {
+                    include: {
+                        site: {
+                            select: {
+                                id: true,
+                                code: true,
+                                name: true,
+                            },
+                        },
+                    },
+                },
+            },
+        }),
+    ]);
+    const keyMap = new Map();
+    for (const key of keys) {
+        const task = (0, api_key_service_1.inferTask)(key.scopes);
+        if (!(0, site_contract_1.isSiteTask)(task))
+            continue;
+        for (const permission of key.permissions) {
+            const mapKey = `${permission.siteId}:${task}`;
+            if (!keyMap.has(mapKey)) {
+                keyMap.set(mapKey, key);
+            }
+        }
+    }
+    const exportRows = [];
+    const rotatedRows = [];
+    for (const site of sites) {
+        const config = (0, site_contract_1.sanitizeSiteConfig)(site.config);
+        const supportedTasks = Array.isArray(config.supportedTasks)
+            ? config.supportedTasks.filter(site_contract_1.isSiteTask)
+            : [];
+        for (const task of supportedTasks) {
+            const mapKey = `${site.id}:${task}`;
+            let key = keyMap.get(mapKey) || null;
+            let token = key ? (0, api_key_service_1.decryptApiKeyToken)(key.rawTokenCipher) : null;
+            if ((!key || !token) && rotateMissing) {
+                if (key) {
+                    await db_1.prisma.apiKey.update({
+                        where: { id: key.id },
+                        data: { isActive: false },
+                    });
+                }
+                const issued = await (0, api_key_service_1.createApiKeyWithPermissions)({
+                    name: `${site.code}-${task}-publisher`,
+                    task,
+                    siteIds: [site.id],
+                    canPost: true,
+                    canRead: true,
+                });
+                token = issued.rawApiKey;
+                rotatedRows.push({ siteId: site.id, siteCode: site.code, task });
+                const refreshedKey = await db_1.prisma.apiKey.findUnique({
+                    where: { id: issued.id },
+                    include: {
+                        permissions: {
+                            include: {
+                                site: {
+                                    select: {
+                                        id: true,
+                                        code: true,
+                                        name: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                });
+                if (refreshedKey) {
+                    key = refreshedKey;
+                    keyMap.set(mapKey, refreshedKey);
+                }
+            }
+            if (!token)
+                continue;
+            const row = {
+                siteCode: site.code,
+                name: `${site.name} ${TASK_LABELS[task] || task}`,
+                taskType: task,
+                token,
+            };
+            if (typeof config.slot === "number") {
+                row.slot = Number(config.slot);
+            }
+            exportRows.push(row);
+        }
+    }
+    res.json({
+        success: true,
+        data: {
+            generatedAt: new Date().toISOString(),
+            totalSites: sites.length,
+            totalRows: exportRows.length,
+            rotatedRows,
+            rows: exportRows,
+        },
     });
 }));
 router.post("/keys", (0, auth_1.requireApiKey)("keys:write"), (0, async_handler_1.asyncHandler)(async (req, res) => {

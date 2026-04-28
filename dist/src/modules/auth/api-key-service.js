@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createApiKeyWithPermissions = exports.resolveScopesForPreset = exports.inferTask = exports.EXTRA_SCOPE_PRESETS = exports.TASK_SCOPE_PRESETS = exports.SITE_MASTER_SCOPE = exports.getTaskScope = exports.hashApiKey = exports.createRawApiKey = void 0;
+exports.createApiKeyWithPermissions = exports.resolveScopesForPreset = exports.inferTask = exports.EXTRA_SCOPE_PRESETS = exports.TASK_SCOPE_PRESETS = exports.SITE_MASTER_SCOPE = exports.getTaskScope = exports.decryptApiKeyToken = exports.encryptApiKeyToken = exports.hashApiKey = exports.createRawApiKey = void 0;
 const crypto_1 = __importDefault(require("crypto"));
 const db_1 = require("../../config/db");
 const site_contract_1 = require("../sites/site-contract");
@@ -11,6 +11,42 @@ const createRawApiKey = () => crypto_1.default.randomBytes(24).toString("hex");
 exports.createRawApiKey = createRawApiKey;
 const hashApiKey = (value) => crypto_1.default.createHash("sha256").update(value).digest("hex");
 exports.hashApiKey = hashApiKey;
+const TOKEN_CIPHER_ALGORITHM = "aes-256-gcm";
+const getTokenCipherSecret = () => {
+    const secret = process.env.API_KEY_TOKEN_EXPORT_SECRET ||
+        process.env.REVALIDATE_SECRET ||
+        process.env.NEXT_REVALIDATE_SECRET ||
+        "master-site-panel-local-export-secret";
+    return crypto_1.default.createHash("sha256").update(secret).digest();
+};
+const encryptApiKeyToken = (value) => {
+    const iv = crypto_1.default.randomBytes(12);
+    const cipher = crypto_1.default.createCipheriv(TOKEN_CIPHER_ALGORITHM, getTokenCipherSecret(), iv);
+    const encrypted = Buffer.concat([cipher.update(value, "utf8"), cipher.final()]);
+    const tag = cipher.getAuthTag();
+    return [iv.toString("hex"), tag.toString("hex"), encrypted.toString("hex")].join(":");
+};
+exports.encryptApiKeyToken = encryptApiKeyToken;
+const decryptApiKeyToken = (value) => {
+    if (!value)
+        return null;
+    const [ivHex, tagHex, encryptedHex] = value.split(":");
+    if (!ivHex || !tagHex || !encryptedHex)
+        return null;
+    try {
+        const decipher = crypto_1.default.createDecipheriv(TOKEN_CIPHER_ALGORITHM, getTokenCipherSecret(), Buffer.from(ivHex, "hex"));
+        decipher.setAuthTag(Buffer.from(tagHex, "hex"));
+        const decrypted = Buffer.concat([
+            decipher.update(Buffer.from(encryptedHex, "hex")),
+            decipher.final(),
+        ]);
+        return decrypted.toString("utf8");
+    }
+    catch {
+        return null;
+    }
+};
+exports.decryptApiKeyToken = decryptApiKeyToken;
 const getTaskScope = (task) => `task:${task}`;
 exports.getTaskScope = getTaskScope;
 exports.SITE_MASTER_SCOPE = "site:master";
@@ -55,6 +91,7 @@ const createApiKeyWithPermissions = async ({ name, scopes, task, siteIds, canPos
             name,
             scopes: resolvedScopes,
             keyHash,
+            rawTokenCipher: (0, exports.encryptApiKeyToken)(raw),
         },
         select: {
             id: true,
@@ -62,6 +99,7 @@ const createApiKeyWithPermissions = async ({ name, scopes, task, siteIds, canPos
             scopes: true,
             isActive: true,
             createdAt: true,
+            rawTokenCipher: true,
         },
     });
     if (Array.isArray(siteIds) && siteIds.length > 0) {

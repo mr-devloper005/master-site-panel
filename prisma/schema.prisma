@@ -117,6 +117,7 @@ model ApiKey {
   id          String                 @id @default(cuid())
   name        String
   keyHash     String                 @unique
+  rawTokenCipher String?
   scopes      String[]
   isActive    Boolean                @default(true)
   lastUsedAt  DateTime?

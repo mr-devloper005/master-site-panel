@@ -4,15 +4,29 @@ import { prisma } from "../../config/db";
 import { requireApiKey } from "../../middleware/auth";
 import { ApiError } from "../../utils/api-error";
 import { asyncHandler } from "../../utils/async-handler";
-import { isSiteTask } from "../sites/site-contract";
+import { isSiteTask, sanitizeSiteConfig } from "../sites/site-contract";
 import {
   createApiKeyWithPermissions,
+  decryptApiKeyToken,
   inferTask,
   type KeyPreset,
   resolveScopesForPreset,
 } from "./api-key-service";
 
 const router = Router();
+const TASK_LABELS: Record<string, string> = {
+  listing: "Listing",
+  article: "Article",
+  image: "Image",
+  mediaDistribution: "Media Distribution",
+  profile: "Profile",
+  classified: "Classified",
+  social: "Social",
+  sbm: "SBM",
+  comment: "Comment",
+  pdf: "PDF",
+  org: "Organization",
+};
 
 const normalizeTaskValue = (value?: string | string[] | null): string | null => {
   const raw = Array.isArray(value) ? value[0] : value;
@@ -93,6 +107,149 @@ router.get("/keys", requireApiKey("keys:write"), asyncHandler(async (_req, res) 
         canRead: permission.canRead,
       })),
     })),
+  });
+}));
+
+router.get("/keys/export-task-tokens", requireApiKey("keys:write"), asyncHandler(async (req, res) => {
+  const rotateMissing = String(req.query.rotateMissing || "false").toLowerCase() === "true";
+
+  const [sites, keys] = await Promise.all([
+    prisma.site.findMany({
+      orderBy: [{ name: "asc" }],
+      select: {
+        id: true,
+        code: true,
+        name: true,
+        config: true,
+      },
+    }),
+    prisma.apiKey.findMany({
+      where: { isActive: true },
+      orderBy: [{ createdAt: "desc" }],
+      include: {
+        permissions: {
+          include: {
+            site: {
+              select: {
+                id: true,
+                code: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    }),
+  ]);
+
+  const keyMap = new Map<string, (typeof keys)[number]>();
+  for (const key of keys) {
+    const task = inferTask(key.scopes);
+    if (!isSiteTask(task)) continue;
+
+    for (const permission of key.permissions) {
+      const mapKey = `${permission.siteId}:${task}`;
+      if (!keyMap.has(mapKey)) {
+        keyMap.set(mapKey, key);
+      }
+    }
+  }
+
+  const exportRows: Array<{
+    siteCode: string;
+    name: string;
+    taskType: string;
+    token: string;
+    slot?: number;
+  }> = [];
+
+  const rotatedRows: Array<{ siteId: string; siteCode: string; task: string }> = [];
+
+  for (const site of sites) {
+    const config = sanitizeSiteConfig(site.config);
+    const supportedTasks = Array.isArray(config.supportedTasks)
+      ? config.supportedTasks.filter(isSiteTask)
+      : [];
+
+    for (const task of supportedTasks) {
+      const mapKey = `${site.id}:${task}`;
+      let key = keyMap.get(mapKey) || null;
+      let token = key ? decryptApiKeyToken(key.rawTokenCipher) : null;
+
+      if ((!key || !token) && rotateMissing) {
+        if (key) {
+          await prisma.apiKey.update({
+            where: { id: key.id },
+            data: { isActive: false },
+          });
+        }
+
+        const issued = await createApiKeyWithPermissions({
+          name: `${site.code}-${task}-publisher`,
+          task,
+          siteIds: [site.id],
+          canPost: true,
+          canRead: true,
+        });
+
+        token = issued.rawApiKey;
+        rotatedRows.push({ siteId: site.id, siteCode: site.code, task });
+
+        const refreshedKey = await prisma.apiKey.findUnique({
+          where: { id: issued.id },
+          include: {
+            permissions: {
+              include: {
+                site: {
+                  select: {
+                    id: true,
+                    code: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        if (refreshedKey) {
+          key = refreshedKey;
+          keyMap.set(mapKey, refreshedKey);
+        }
+      }
+
+      if (!token) continue;
+
+      const row: {
+        siteCode: string;
+        name: string;
+        taskType: string;
+        token: string;
+        slot?: number;
+      } = {
+        siteCode: site.code,
+        name: `${site.name} ${TASK_LABELS[task] || task}`,
+        taskType: task,
+        token,
+      };
+
+      if (typeof (config as Record<string, unknown>).slot === "number") {
+        row.slot = Number((config as Record<string, unknown>).slot);
+      }
+
+      exportRows.push(row);
+    }
+  }
+
+  res.json({
+    success: true,
+    data: {
+      generatedAt: new Date().toISOString(),
+      totalSites: sites.length,
+      totalRows: exportRows.length,
+      rotatedRows,
+      rows: exportRows,
+    },
   });
 }));
 

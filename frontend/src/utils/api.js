@@ -280,6 +280,13 @@ export const fetchApiKeys = async () => {
   return response.data;
 };
 
+export const exportTaskTokens = async ({ rotateMissing = true } = {}) => {
+  const response = await request(
+    `/api/v1/auth/keys/export-task-tokens?rotateMissing=${rotateMissing ? "true" : "false"}`
+  );
+  return response.data;
+};
+
 export const validateIntegration = async (options = {}) => {
   const response = await request("/api/v1/auth/integration", options);
   return response.data;

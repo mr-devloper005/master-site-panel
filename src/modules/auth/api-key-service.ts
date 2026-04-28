@@ -7,6 +7,49 @@ export const createRawApiKey = (): string => crypto.randomBytes(24).toString("he
 export const hashApiKey = (value: string): string =>
   crypto.createHash("sha256").update(value).digest("hex");
 
+const TOKEN_CIPHER_ALGORITHM = "aes-256-gcm";
+
+const getTokenCipherSecret = (): Buffer => {
+  const secret =
+    process.env.API_KEY_TOKEN_EXPORT_SECRET ||
+    process.env.REVALIDATE_SECRET ||
+    process.env.NEXT_REVALIDATE_SECRET ||
+    "master-site-panel-local-export-secret";
+
+  return crypto.createHash("sha256").update(secret).digest();
+};
+
+export const encryptApiKeyToken = (value: string): string => {
+  const iv = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv(TOKEN_CIPHER_ALGORITHM, getTokenCipherSecret(), iv);
+  const encrypted = Buffer.concat([cipher.update(value, "utf8"), cipher.final()]);
+  const tag = cipher.getAuthTag();
+  return [iv.toString("hex"), tag.toString("hex"), encrypted.toString("hex")].join(":");
+};
+
+export const decryptApiKeyToken = (value?: string | null): string | null => {
+  if (!value) return null;
+
+  const [ivHex, tagHex, encryptedHex] = value.split(":");
+  if (!ivHex || !tagHex || !encryptedHex) return null;
+
+  try {
+    const decipher = crypto.createDecipheriv(
+      TOKEN_CIPHER_ALGORITHM,
+      getTokenCipherSecret(),
+      Buffer.from(ivHex, "hex")
+    );
+    decipher.setAuthTag(Buffer.from(tagHex, "hex"));
+    const decrypted = Buffer.concat([
+      decipher.update(Buffer.from(encryptedHex, "hex")),
+      decipher.final(),
+    ]);
+    return decrypted.toString("utf8");
+  } catch {
+    return null;
+  }
+};
+
 export const getTaskScope = (task: SiteTask): string => `task:${task}`;
 export const SITE_MASTER_SCOPE = "site:master";
 
@@ -71,6 +114,7 @@ export const createApiKeyWithPermissions = async ({
       name,
       scopes: resolvedScopes,
       keyHash,
+      rawTokenCipher: encryptApiKeyToken(raw),
     },
     select: {
       id: true,
@@ -78,6 +122,7 @@ export const createApiKeyWithPermissions = async ({
       scopes: true,
       isActive: true,
       createdAt: true,
+      rawTokenCipher: true,
     },
   });
 
