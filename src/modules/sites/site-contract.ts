@@ -20,6 +20,15 @@ export type SiteConnectorConfig = {
   frontendUrl?: string;
   liveUrl?: string;
   siteUrl?: string;
+  indexNowEnabled?: boolean;
+  indexNowHost?: string;
+  indexNowKey?: string;
+  indexNowKeyLocation?: string;
+  indexNowEndpoint?: string;
+  indexNowLastSubmittedAt?: string;
+  indexNowLastSubmittedCount?: number;
+  indexNowLastStatus?: "SUCCESS" | "ERROR";
+  indexNowLastError?: string;
   searchConsoleSiteUrl?: string;
   googleSearchConsoleSiteUrl?: string;
   googleServiceAccountEmail?: string;
@@ -187,6 +196,19 @@ export const sanitizeSiteConfig = (value: unknown): SiteConnectorConfig => {
     if (value < min || value > max) return undefined;
     return value;
   };
+
+  const indexNowEnabled = typeof source.indexNowEnabled === "boolean" ? source.indexNowEnabled : undefined;
+  const indexNowHost = sanitizeString(source.indexNowHost, 255);
+  const indexNowKey = sanitizeString(source.indexNowKey, 255);
+  const indexNowKeyLocation = sanitizeString(source.indexNowKeyLocation, 500);
+  const indexNowEndpoint = sanitizeString(source.indexNowEndpoint, 500);
+  const indexNowLastSubmittedAt = sanitizeString(source.indexNowLastSubmittedAt, 100);
+  const indexNowLastStatus =
+    source.indexNowLastStatus === "SUCCESS" || source.indexNowLastStatus === "ERROR"
+      ? source.indexNowLastStatus
+      : undefined;
+  const indexNowLastError = sanitizeString(source.indexNowLastError, 1000);
+  const indexNowLastSubmittedCount = sanitizePositiveNumber(source.indexNowLastSubmittedCount, 0, 100000);
 
   const rawSeoDefaults =
     source.seoDefaults && typeof source.seoDefaults === "object" && !Array.isArray(source.seoDefaults)
@@ -434,6 +456,15 @@ export const sanitizeSiteConfig = (value: unknown): SiteConnectorConfig => {
     siteType: typeof source.siteType === "string" ? source.siteType : undefined,
     feedPath: typeof source.feedPath === "string" ? source.feedPath : undefined,
     bootstrapPath: typeof source.bootstrapPath === "string" ? source.bootstrapPath : undefined,
+    indexNowEnabled,
+    indexNowHost,
+    indexNowKey,
+    indexNowKeyLocation,
+    indexNowEndpoint,
+    indexNowLastSubmittedAt,
+    indexNowLastSubmittedCount,
+    indexNowLastStatus,
+    indexNowLastError,
     sitemapManualUrls,
     sitemapExcludedUrls,
     indexingLastSitemapSubmitAt:

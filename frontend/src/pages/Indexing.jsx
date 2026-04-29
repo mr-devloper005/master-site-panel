@@ -25,12 +25,15 @@ import {
 import { useAppData } from "../context/AppContext";
 import {
   fetchSiteIndexingStatus,
+  fetchSiteIndexNowConfig,
   fetchSiteLinkHealth,
   fetchSiteSeoStatus,
   fetchSiteSitemapConfig,
   fetchSiteSitemapStatus,
   runSiteIndexingInspections,
+  submitSiteIndexNow,
   submitSiteSitemapForIndexing,
+  updateSiteIndexNowConfig,
   updateSiteSitemapConfig,
 } from "../utils/api";
 
@@ -67,12 +70,21 @@ export default function Indexing() {
   const [linkHealth, setLinkHealth] = useState(null);
   const [manualUrlsInput, setManualUrlsInput] = useState("");
   const [excludedUrlsInput, setExcludedUrlsInput] = useState("");
+  const [indexNowConfig, setIndexNowConfig] = useState({
+    indexNowEnabled: true,
+    indexNowHost: "",
+    indexNowKey: "",
+    indexNowKeyLocation: "",
+    indexNowEndpoint: "https://api.indexnow.org/indexnow",
+  });
   const [loading, setLoading] = useState({
     fetch: false,
     submitSitemap: false,
     runInspection: false,
     saveConfig: false,
     linkHealth: false,
+    saveIndexNow: false,
+    submitIndexNow: false,
   });
 
   const selectedSite = useMemo(
@@ -90,17 +102,25 @@ export default function Indexing() {
     if (!siteId) return;
     setLoading((prev) => ({ ...prev, fetch: true }));
     try {
-      const [sitemap, seo, indexing, sitemapConfig] = await Promise.all([
+      const [sitemap, seo, indexing, sitemapConfig, fetchedIndexNowConfig] = await Promise.all([
         fetchSiteSitemapStatus(siteId, { all: true }),
         fetchSiteSeoStatus(siteId),
         fetchSiteIndexingStatus(siteId, { runDue: Boolean(options.runDue), limit: 200 }),
         fetchSiteSitemapConfig(siteId),
+        fetchSiteIndexNowConfig(siteId),
       ]);
       setSitemapStatus(sitemap);
       setSeoStatus(seo);
       setIndexingStatus(indexing);
       setManualUrlsInput((sitemapConfig.sitemapManualUrls || []).join("\n"));
       setExcludedUrlsInput((sitemapConfig.sitemapExcludedUrls || []).join("\n"));
+      setIndexNowConfig({
+        indexNowEnabled: fetchedIndexNowConfig.indexNowEnabled !== false,
+        indexNowHost: fetchedIndexNowConfig.indexNowHost || "",
+        indexNowKey: fetchedIndexNowConfig.indexNowKey || "",
+        indexNowKeyLocation: fetchedIndexNowConfig.indexNowKeyLocation || "",
+        indexNowEndpoint: fetchedIndexNowConfig.indexNowEndpoint || "https://api.indexnow.org/indexnow",
+      });
       if (!options.skipLinkHealth) {
         const health = await fetchSiteLinkHealth(siteId, { limit: 120, maxLinks: 200 });
         setLinkHealth(health);
@@ -185,6 +205,34 @@ export default function Indexing() {
     }
   };
 
+  const handleSaveIndexNowConfig = async () => {
+    if (!selectedSiteId) return;
+    setLoading((prev) => ({ ...prev, saveIndexNow: true }));
+    try {
+      await updateSiteIndexNowConfig(selectedSiteId, indexNowConfig);
+      toast.success("IndexNow settings updated");
+      await loadIndexingData(selectedSiteId, { runDue: false });
+    } catch (error) {
+      toast.error(error.message || "Failed to save IndexNow settings");
+    } finally {
+      setLoading((prev) => ({ ...prev, saveIndexNow: false }));
+    }
+  };
+
+  const handleSubmitIndexNow = async () => {
+    if (!selectedSiteId) return;
+    setLoading((prev) => ({ ...prev, submitIndexNow: true }));
+    try {
+      const result = await submitSiteIndexNow(selectedSiteId, { includeTracked: true });
+      toast.success(`IndexNow submitted ${result.submittedCount || 0} URL(s)`);
+      await loadIndexingData(selectedSiteId, { runDue: false });
+    } catch (error) {
+      toast.error(error.message || "Failed to submit to IndexNow");
+    } finally {
+      setLoading((prev) => ({ ...prev, submitIndexNow: false }));
+    }
+  };
+
   const summary = indexingStatus?.summary || {
     total: 0,
     sitemapSubmitted: 0,
@@ -216,6 +264,7 @@ export default function Indexing() {
   const linkHealthResult = linkHealth?.result || null;
   const brokenLinks = Array.isArray(linkHealthResult?.broken) ? linkHealthResult.broken : [];
   const healthyLinks = Array.isArray(linkHealthResult?.healthy) ? linkHealthResult.healthy : [];
+  const indexNowConfigured = Boolean(diagnostics.indexNowConfigured);
 
   const googleState = useMemo(() => {
     if (!selectedSiteId) return "Select site";
@@ -515,6 +564,127 @@ export default function Indexing() {
                 {sitemapStatus.error}
               </p>
             ) : null}
+          </article>
+        </section>
+
+        <section className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+          <article className="glass rounded-panel p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h2 className="text-sm font-semibold">IndexNow Setup</h2>
+                <p className="mt-1 text-xs text-[var(--text-secondary)]">
+                  Free indexing ping for Bing, Yandex, and compatible engines. Save one domain key and reuse it for all tracked URLs.
+                </p>
+              </div>
+              <span className={`rounded-full px-2 py-1 text-xs font-semibold ${indexNowConfigured ? "bg-emerald-500/15 text-emerald-600" : "bg-amber-500/15 text-amber-700"}`}>
+                {indexNowConfigured ? "Configured" : "Not configured"}
+              </span>
+            </div>
+            <div className="mt-3 grid grid-cols-1 gap-3">
+              <label>
+                <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-[var(--text-secondary)]">Enabled</span>
+                <select
+                  className="w-full rounded-lg border border-[var(--border-color)] bg-transparent px-3 py-2 text-sm"
+                  value={indexNowConfig.indexNowEnabled ? "true" : "false"}
+                  onChange={(event) =>
+                    setIndexNowConfig((prev) => ({
+                      ...prev,
+                      indexNowEnabled: event.target.value === "true",
+                    }))
+                  }
+                >
+                  <option value="true">Enabled</option>
+                  <option value="false">Disabled</option>
+                </select>
+              </label>
+              <label>
+                <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-[var(--text-secondary)]">Host</span>
+                <input
+                  className="w-full rounded-lg border border-[var(--border-color)] bg-transparent px-3 py-2 text-sm"
+                  placeholder="example.com"
+                  value={indexNowConfig.indexNowHost}
+                  onChange={(event) => setIndexNowConfig((prev) => ({ ...prev, indexNowHost: event.target.value }))}
+                />
+              </label>
+              <label>
+                <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-[var(--text-secondary)]">IndexNow Key</span>
+                <input
+                  className="w-full rounded-lg border border-[var(--border-color)] bg-transparent px-3 py-2 text-sm"
+                  placeholder="a1b2c3d4..."
+                  value={indexNowConfig.indexNowKey}
+                  onChange={(event) => setIndexNowConfig((prev) => ({ ...prev, indexNowKey: event.target.value }))}
+                />
+              </label>
+              <label>
+                <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-[var(--text-secondary)]">Key File URL</span>
+                <input
+                  className="w-full rounded-lg border border-[var(--border-color)] bg-transparent px-3 py-2 text-sm"
+                  placeholder="https://example.com/your-key.txt"
+                  value={indexNowConfig.indexNowKeyLocation}
+                  onChange={(event) => setIndexNowConfig((prev) => ({ ...prev, indexNowKeyLocation: event.target.value }))}
+                />
+              </label>
+              <label>
+                <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-[var(--text-secondary)]">Endpoint</span>
+                <input
+                  className="w-full rounded-lg border border-[var(--border-color)] bg-transparent px-3 py-2 text-sm"
+                  placeholder="https://api.indexnow.org/indexnow"
+                  value={indexNowConfig.indexNowEndpoint}
+                  onChange={(event) => setIndexNowConfig((prev) => ({ ...prev, indexNowEndpoint: event.target.value }))}
+                />
+              </label>
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <button
+                className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-indigo-600 px-4 text-sm text-white"
+                onClick={handleSaveIndexNowConfig}
+                disabled={!selectedSiteId || loading.saveIndexNow}
+              >
+                {loading.saveIndexNow ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+                Save IndexNow
+              </button>
+              <button
+                className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-slate-900 px-4 text-sm text-white"
+                onClick={handleSubmitIndexNow}
+                disabled={!selectedSiteId || loading.submitIndexNow}
+              >
+                {loading.submitIndexNow ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                Submit Tracked URLs
+              </button>
+            </div>
+          </article>
+
+          <article className="glass rounded-panel p-4">
+            <h2 className="text-sm font-semibold">IndexNow Status</h2>
+            <div className="mt-3 space-y-2 text-sm">
+              <p>Configured: <span className={indexNowConfigured ? "font-semibold text-emerald-600" : "font-semibold text-amber-600"}>{indexNowConfigured ? "Yes" : "No"}</span></p>
+              <p>Host: <span className="font-semibold">{diagnostics.indexNowHost || "-"}</span></p>
+              <p>Endpoint: <span className="font-semibold">{diagnostics.indexNowEndpoint || "-"}</span></p>
+              <p>Last submit: <span className="font-semibold">{formatDateTime(diagnostics.indexNowLastSubmittedAt)}</span></p>
+              <p>Last submitted URLs: <span className="font-semibold">{Number(diagnostics.indexNowLastSubmittedCount || 0)}</span></p>
+              <p>
+                Last submit status:{" "}
+                <span
+                  className={
+                    diagnostics.indexNowLastStatus === "SUCCESS"
+                      ? "font-semibold text-emerald-600"
+                      : diagnostics.indexNowLastStatus === "ERROR"
+                        ? "font-semibold text-rose-600"
+                        : "font-semibold text-slate-500"
+                  }
+                >
+                  {diagnostics.indexNowLastStatus || "Not attempted"}
+                </span>
+              </p>
+              {diagnostics.indexNowLastError ? (
+                <p className="rounded-lg border border-rose-200 bg-rose-50 px-2 py-1 text-xs text-rose-700">
+                  {diagnostics.indexNowLastError}
+                </p>
+              ) : null}
+              <div className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-surface)] p-3 text-xs text-[var(--text-secondary)]">
+                Recommended flow: publish post, keep sitemap fresh, ping IndexNow, then use Google inspection only where needed.
+              </div>
+            </div>
           </article>
         </section>
 

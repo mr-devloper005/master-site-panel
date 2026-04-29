@@ -98,14 +98,29 @@ router.get("/keys", (0, auth_1.requireApiKey)("keys:write"), (0, async_handler_1
 }));
 router.get("/keys/export-task-tokens", (0, auth_1.requireApiKey)("keys:write"), (0, async_handler_1.asyncHandler)(async (req, res) => {
     const rotateMissing = String(req.query.rotateMissing || "false").toLowerCase() === "true";
+    const rawTaskQuery = req.query.task;
+    const requestedTask = typeof rawTaskQuery === "string"
+        ? normalizeTaskValue(rawTaskQuery)
+        : Array.isArray(rawTaskQuery)
+            ? normalizeTaskValue(rawTaskQuery.filter((item) => typeof item === "string"))
+            : null;
+    const taskFilter = requestedTask && (0, site_contract_1.isSiteTask)(requestedTask) ? requestedTask : null;
+    const addedAfterRaw = Array.isArray(req.query.addedAfter) ? req.query.addedAfter[0] : req.query.addedAfter;
+    const addedAfter = typeof addedAfterRaw === "string" && addedAfterRaw.trim()
+        ? new Date(addedAfterRaw)
+        : null;
     const [sites, keys] = await Promise.all([
         db_1.prisma.site.findMany({
+            where: addedAfter && !Number.isNaN(addedAfter.getTime())
+                ? { createdAt: { gte: addedAfter } }
+                : undefined,
             orderBy: [{ name: "asc" }],
             select: {
                 id: true,
                 code: true,
                 name: true,
                 config: true,
+                createdAt: true,
             },
         }),
         db_1.prisma.apiKey.findMany({
@@ -146,6 +161,8 @@ router.get("/keys/export-task-tokens", (0, auth_1.requireApiKey)("keys:write"), 
             ? config.supportedTasks.filter(site_contract_1.isSiteTask)
             : [];
         for (const task of supportedTasks) {
+            if (taskFilter && task !== taskFilter)
+                continue;
             const mapKey = `${site.id}:${task}`;
             let key = keyMap.get(mapKey) || null;
             let token = key ? (0, api_key_service_1.decryptApiKeyToken)(key.rawTokenCipher) : null;
@@ -204,7 +221,13 @@ router.get("/keys/export-task-tokens", (0, auth_1.requireApiKey)("keys:write"), 
         success: true,
         data: {
             generatedAt: new Date().toISOString(),
-            totalSites: sites.length,
+            filters: {
+                task: taskFilter,
+                addedAfter: addedAfter && !Number.isNaN(addedAfter.getTime()) ? addedAfter.toISOString() : null,
+            },
+            totalSites: taskFilter
+                ? new Set(exportRows.map((row) => row.siteCode)).size
+                : sites.length,
             totalRows: exportRows.length,
             rotatedRows,
             rows: exportRows,

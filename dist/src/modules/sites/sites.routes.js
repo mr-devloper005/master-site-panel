@@ -11,6 +11,7 @@ const runtime_store_1 = require("../runtime/runtime-store");
 const base_url_1 = require("../../utils/base-url");
 const task_catalog_1 = require("./task-catalog");
 const google_indexing_1 = require("./google-indexing");
+const indexnow_1 = require("./indexnow");
 const site_contract_1 = require("./site-contract");
 const router = (0, express_1.Router)();
 const backendBaseUrl = () => (0, base_url_1.getBaseUrl)();
@@ -547,6 +548,139 @@ router.patch("/:siteId/sitemap-config", (0, auth_1.requireApiKey)("sites:write")
             updatedAt: updated.updatedAt,
         },
     });
+}));
+router.get("/:siteId/indexnow-config", (0, auth_1.requireApiKey)("sites:read"), (0, async_handler_1.asyncHandler)(async (req, res) => {
+    const siteId = String(req.params.siteId);
+    const site = await db_1.prisma.site.findUnique({
+        where: { id: siteId },
+        select: { id: true, code: true, name: true, config: true, updatedAt: true },
+    });
+    if (!site) {
+        throw new api_error_1.ApiError(404, "Site not found.");
+    }
+    const config = (0, site_contract_1.sanitizeSiteConfig)(site.config);
+    const resolved = (0, indexnow_1.getIndexNowConfig)(site.config);
+    res.json({
+        success: true,
+        data: {
+            siteId: site.id,
+            siteCode: site.code,
+            siteName: site.name,
+            indexNowEnabled: config.indexNowEnabled !== false,
+            indexNowHost: config.indexNowHost || resolved?.host || "",
+            indexNowKey: config.indexNowKey || "",
+            indexNowKeyLocation: config.indexNowKeyLocation || "",
+            indexNowEndpoint: config.indexNowEndpoint || "https://api.indexnow.org/indexnow",
+            indexNowLastSubmittedAt: config.indexNowLastSubmittedAt || null,
+            indexNowLastSubmittedCount: config.indexNowLastSubmittedCount || 0,
+            indexNowLastStatus: config.indexNowLastStatus || null,
+            indexNowLastError: config.indexNowLastError || null,
+            updatedAt: site.updatedAt.toISOString(),
+        },
+    });
+}));
+router.patch("/:siteId/indexnow-config", (0, auth_1.requireApiKey)("sites:write"), (0, async_handler_1.asyncHandler)(async (req, res) => {
+    const siteId = String(req.params.siteId);
+    const site = await db_1.prisma.site.findUnique({
+        where: { id: siteId },
+        select: { id: true, code: true, name: true, config: true, updatedAt: true },
+    });
+    if (!site) {
+        throw new api_error_1.ApiError(404, "Site not found.");
+    }
+    const currentConfig = (0, site_contract_1.sanitizeSiteConfig)(site.config);
+    const nextConfig = {
+        ...currentConfig,
+        indexNowEnabled: typeof req.body?.indexNowEnabled === "boolean"
+            ? req.body.indexNowEnabled
+            : currentConfig.indexNowEnabled !== false,
+        indexNowHost: typeof req.body?.indexNowHost === "string"
+            ? req.body.indexNowHost.trim()
+            : currentConfig.indexNowHost,
+        indexNowKey: typeof req.body?.indexNowKey === "string"
+            ? req.body.indexNowKey.trim()
+            : currentConfig.indexNowKey,
+        indexNowKeyLocation: typeof req.body?.indexNowKeyLocation === "string"
+            ? req.body.indexNowKeyLocation.trim()
+            : currentConfig.indexNowKeyLocation,
+        indexNowEndpoint: typeof req.body?.indexNowEndpoint === "string" && req.body.indexNowEndpoint.trim()
+            ? req.body.indexNowEndpoint.trim()
+            : currentConfig.indexNowEndpoint || "https://api.indexnow.org/indexnow",
+    };
+    const updated = await db_1.prisma.site.update({
+        where: { id: site.id },
+        data: { config: nextConfig },
+        select: { id: true, code: true, name: true, config: true, updatedAt: true },
+    });
+    const sanitized = (0, site_contract_1.sanitizeSiteConfig)(updated.config);
+    res.json({
+        success: true,
+        data: {
+            siteId: updated.id,
+            siteCode: updated.code,
+            siteName: updated.name,
+            indexNowEnabled: sanitized.indexNowEnabled !== false,
+            indexNowHost: sanitized.indexNowHost || "",
+            indexNowKey: sanitized.indexNowKey || "",
+            indexNowKeyLocation: sanitized.indexNowKeyLocation || "",
+            indexNowEndpoint: sanitized.indexNowEndpoint || "https://api.indexnow.org/indexnow",
+            updatedAt: updated.updatedAt.toISOString(),
+        },
+    });
+}));
+router.post("/:siteId/indexnow/submit", (0, auth_1.requireApiKey)("sites:write"), (0, async_handler_1.asyncHandler)(async (req, res) => {
+    const siteId = String(req.params.siteId);
+    const site = await db_1.prisma.site.findUnique({
+        where: { id: siteId },
+        select: { id: true, code: true, name: true, config: true },
+    });
+    if (!site) {
+        throw new api_error_1.ApiError(404, "Site not found.");
+    }
+    let urls = Array.isArray(req.body?.urls) ? req.body.urls : [];
+    if (!urls.length && req.body?.includeTracked !== false) {
+        const tracked = await db_1.prisma.siteIndexingRecord.findMany({
+            where: { siteId: site.id },
+            orderBy: [{ updatedAt: "desc" }],
+            take: 10000,
+            select: { url: true },
+        });
+        urls = tracked.map((item) => item.url);
+    }
+    try {
+        const result = await (0, indexnow_1.submitUrlsToIndexNow)({
+            siteId: site.id,
+            siteConfig: site.config,
+            urls,
+        });
+        if (!result.submitted) {
+            throw new api_error_1.ApiError(400, result.reason || "IndexNow submission failed.");
+        }
+        res.json({
+            success: true,
+            data: {
+                siteId: site.id,
+                siteCode: site.code,
+                siteName: site.name,
+                ...result,
+            },
+        });
+    }
+    catch (error) {
+        const message = error instanceof Error ? error.message : "IndexNow submission failed.";
+        await db_1.prisma.site.update({
+            where: { id: site.id },
+            data: {
+                config: {
+                    ...(0, site_contract_1.sanitizeSiteConfig)(site.config),
+                    indexNowLastSubmittedAt: new Date().toISOString(),
+                    indexNowLastStatus: "ERROR",
+                    indexNowLastError: message,
+                },
+            },
+        });
+        throw new api_error_1.ApiError(400, message);
+    }
 }));
 router.get("/:siteId/seo-config", (0, auth_1.requireApiKey)("sites:read"), (0, async_handler_1.asyncHandler)(async (req, res) => {
     const siteId = String(req.params.siteId);
@@ -1177,6 +1311,13 @@ router.get("/:siteId/indexing-status", (0, auth_1.requireApiKey)("sites:read"), 
                 lastSitemapSubmitAt: siteConfig.indexingLastSitemapSubmitAt || null,
                 lastSitemapSubmitStatus: siteConfig.indexingLastSitemapSubmitStatus || null,
                 lastSitemapSubmitError: siteConfig.indexingLastSitemapSubmitError || null,
+                indexNowConfigured: Boolean((0, indexnow_1.getIndexNowConfig)(site.config)),
+                indexNowHost: siteConfig.indexNowHost || (0, indexnow_1.getIndexNowConfig)(site.config)?.host || null,
+                indexNowEndpoint: siteConfig.indexNowEndpoint || (0, indexnow_1.getIndexNowConfig)(site.config)?.endpoint || null,
+                indexNowLastSubmittedAt: siteConfig.indexNowLastSubmittedAt || null,
+                indexNowLastSubmittedCount: siteConfig.indexNowLastSubmittedCount || 0,
+                indexNowLastStatus: siteConfig.indexNowLastStatus || null,
+                indexNowLastError: siteConfig.indexNowLastError || null,
             },
             items: records.map((item) => ({
                 id: item.id,

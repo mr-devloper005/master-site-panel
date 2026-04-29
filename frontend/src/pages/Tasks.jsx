@@ -47,6 +47,8 @@ export default function Tasks() {
   const [siteSearch, setSiteSearch] = useState("");
   const [exporting, setExporting] = useState(false);
   const [exportPayload, setExportPayload] = useState(null);
+  const [exportTaskFilter, setExportTaskFilter] = useState("");
+  const [exportAddedAfter, setExportAddedAfter] = useState("");
 
   useEffect(() => {
     const loadKeys = async () => {
@@ -112,10 +114,22 @@ export default function Tasks() {
     [exportPayload]
   );
 
+  const exportTaskOptions = useMemo(
+    () => [
+      { value: "", label: "All Tasks" },
+      ...Object.entries(TASK_LABELS).map(([value, label]) => ({ value, label })),
+    ],
+    []
+  );
+
   const handleExport = async () => {
     setExporting(true);
     try {
-      const result = await exportTaskTokens({ rotateMissing: true });
+      const result = await exportTaskTokens({
+        rotateMissing: true,
+        task: exportTaskFilter,
+        addedAfter: exportAddedAfter,
+      });
       setExportPayload(result);
       await navigator.clipboard.writeText(JSON.stringify(result.rows || [], null, 2));
       toast.success(
@@ -177,8 +191,39 @@ export default function Tasks() {
             disabled={exporting}
             onClick={handleExport}
           >
-            {exporting ? "Exporting…" : "Export All Task Tokens JSON"}
+            {exporting ? "Exporting…" : "Export Task Tokens JSON"}
           </button>
+        </div>
+        <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-[220px_220px_1fr]">
+          <label className="text-xs text-[var(--text-secondary)]">
+            <span className="mb-1 block font-medium uppercase tracking-wide">Filter By Task</span>
+            <select
+              className="min-h-10 w-full rounded-lg border border-[var(--border-color)] bg-transparent px-3 text-sm text-[var(--text-primary)]"
+              value={exportTaskFilter}
+              onChange={(event) => setExportTaskFilter(event.target.value)}
+            >
+              {exportTaskOptions.map((option) => (
+                <option key={option.value || "all"} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="text-xs text-[var(--text-secondary)]">
+            <span className="mb-1 block font-medium uppercase tracking-wide">Added After</span>
+            <input
+              type="date"
+              className="min-h-10 w-full rounded-lg border border-[var(--border-color)] bg-transparent px-3 text-sm text-[var(--text-primary)]"
+              value={exportAddedAfter}
+              onChange={(event) => setExportAddedAfter(event.target.value)}
+            />
+          </label>
+          <div className="flex items-end">
+            <p className="text-xs text-[var(--text-secondary)]">
+              Export by one task type, by recently added sites, or leave both blank for full export. Missing live
+              tokens in the filtered set are refreshed automatically.
+            </p>
+          </div>
         </div>
         <p className="mt-3 text-xs text-[var(--text-secondary)]">
           Export gives you one JSON sheet for all current site tasks. If an older task token cannot be recovered,
@@ -196,6 +241,8 @@ export default function Tasks() {
                 {exportPayload.rotatedRows?.length
                   ? ` • ${exportPayload.rotatedRows.length} refreshed token(s)`
                   : ""}
+                {exportPayload.filters?.task ? ` • task: ${TASK_LABELS[exportPayload.filters.task] || exportPayload.filters.task}` : ""}
+                {exportPayload.filters?.addedAfter ? ` • added after: ${new Date(exportPayload.filters.addedAfter).toLocaleDateString()}` : ""}
               </p>
             </div>
             <div className="flex flex-wrap gap-2">

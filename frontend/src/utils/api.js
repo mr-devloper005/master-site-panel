@@ -280,10 +280,12 @@ export const fetchApiKeys = async () => {
   return response.data;
 };
 
-export const exportTaskTokens = async ({ rotateMissing = true } = {}) => {
-  const response = await request(
-    `/api/v1/auth/keys/export-task-tokens?rotateMissing=${rotateMissing ? "true" : "false"}`
-  );
+export const exportTaskTokens = async ({ rotateMissing = true, task = "", addedAfter = "" } = {}) => {
+  const query = new URLSearchParams();
+  query.set("rotateMissing", rotateMissing ? "true" : "false");
+  if (task) query.set("task", task);
+  if (addedAfter) query.set("addedAfter", addedAfter);
+  const response = await request(`/api/v1/auth/keys/export-task-tokens?${query.toString()}`);
   return response.data;
 };
 
@@ -397,6 +399,27 @@ export const fetchSiteIndexingStatus = async (siteId, options = {}) => {
   query.set("limit", String(options.limit || 100));
   if (options.runDue) query.set("runDue", "true");
   const response = await request(`/api/v1/sites/${siteId}/indexing-status?${query.toString()}`);
+  return response.data;
+};
+
+export const fetchSiteIndexNowConfig = async (siteId) => {
+  const response = await request(`/api/v1/sites/${siteId}/indexnow-config`);
+  return response.data;
+};
+
+export const updateSiteIndexNowConfig = async (siteId, payload) => {
+  const response = await request(`/api/v1/sites/${siteId}/indexnow-config`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+  return response.data;
+};
+
+export const submitSiteIndexNow = async (siteId, payload = {}) => {
+  const response = await request(`/api/v1/sites/${siteId}/indexnow/submit`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
   return response.data;
 };
 
