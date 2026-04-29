@@ -49,6 +49,7 @@ export default function Tasks() {
   const [exportPayload, setExportPayload] = useState(null);
   const [exportTaskFilter, setExportTaskFilter] = useState("");
   const [exportAddedAfter, setExportAddedAfter] = useState("");
+  const [exportReissueAll, setExportReissueAll] = useState(false);
 
   useEffect(() => {
     const loadKeys = async () => {
@@ -129,11 +130,12 @@ export default function Tasks() {
         rotateMissing: true,
         task: exportTaskFilter,
         addedAfter: exportAddedAfter,
+        reissueAll: exportReissueAll,
       });
       setExportPayload(result);
       await navigator.clipboard.writeText(JSON.stringify(result.rows || [], null, 2));
       toast.success(
-        `Export ready. ${result.totalRows || 0} rows copied.${result.rotatedRows?.length ? ` ${result.rotatedRows.length} token(s) refreshed.` : ""}`
+        `Export ready. ${result.totalRows || 0} rows copied.${result.rotatedRows?.length ? ` ${result.rotatedRows.length} token(s) refreshed.` : ""}${result.reissueAll ? " Reissue mode was applied." : ""}`
       );
     } catch (error) {
       toast.error(error.message || "Failed to export task tokens");
@@ -194,7 +196,7 @@ export default function Tasks() {
             {exporting ? "Exporting…" : "Export Task Tokens JSON"}
           </button>
         </div>
-        <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-[220px_220px_1fr]">
+        <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-[220px_220px_minmax(220px,260px)_1fr]">
           <label className="text-xs text-[var(--text-secondary)]">
             <span className="mb-1 block font-medium uppercase tracking-wide">Filter By Task</span>
             <select
@@ -218,10 +220,23 @@ export default function Tasks() {
               onChange={(event) => setExportAddedAfter(event.target.value)}
             />
           </label>
+          <label className="flex min-h-10 items-end gap-2 rounded-lg border border-[var(--border-color)] px-3 py-2 text-xs text-[var(--text-secondary)]">
+            <input
+              type="checkbox"
+              className="mt-0.5 h-4 w-4 rounded border-[var(--border-color)]"
+              checked={exportReissueAll}
+              onChange={(event) => setExportReissueAll(event.target.checked)}
+            />
+            <span>
+              <span className="block font-medium uppercase tracking-wide text-[var(--text-primary)]">Reissue Matching Tokens</span>
+              <span>Deactivate older matching keys and mint fresh live tokens for this export.</span>
+            </span>
+          </label>
           <div className="flex items-end">
             <p className="text-xs text-[var(--text-secondary)]">
               Export by one task type, by recently added sites, or leave both blank for full export. Missing live
-              tokens in the filtered set are refreshed automatically.
+              tokens in the filtered set are refreshed automatically, and reissue mode can replace all matching tokens
+              when a task family needs a clean reset.
             </p>
           </div>
         </div>
@@ -241,6 +256,7 @@ export default function Tasks() {
                 {exportPayload.rotatedRows?.length
                   ? ` • ${exportPayload.rotatedRows.length} refreshed token(s)`
                   : ""}
+                {exportPayload.reissueAll ? " • reissue mode" : ""}
                 {exportPayload.filters?.task ? ` • task: ${TASK_LABELS[exportPayload.filters.task] || exportPayload.filters.task}` : ""}
                 {exportPayload.filters?.addedAfter ? ` • added after: ${new Date(exportPayload.filters.addedAfter).toLocaleDateString()}` : ""}
               </p>

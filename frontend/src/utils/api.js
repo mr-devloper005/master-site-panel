@@ -280,9 +280,10 @@ export const fetchApiKeys = async () => {
   return response.data;
 };
 
-export const exportTaskTokens = async ({ rotateMissing = true, task = "", addedAfter = "" } = {}) => {
+export const exportTaskTokens = async ({ rotateMissing = true, reissueAll = false, task = "", addedAfter = "" } = {}) => {
   const query = new URLSearchParams();
   query.set("rotateMissing", rotateMissing ? "true" : "false");
+  query.set("reissueAll", reissueAll ? "true" : "false");
   if (task) query.set("task", task);
   if (addedAfter) query.set("addedAfter", addedAfter);
   const response = await request(`/api/v1/auth/keys/export-task-tokens?${query.toString()}`);

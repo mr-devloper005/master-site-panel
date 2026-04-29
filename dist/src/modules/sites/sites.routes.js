@@ -52,6 +52,7 @@ const firstQueryValue = (value) => {
     return "";
 };
 const provisionTaskToken = async (site, task) => {
+    await (0, api_key_service_1.deactivateSiteTaskKeys)(site.id, task);
     const taskKey = await (0, api_key_service_1.createApiKeyWithPermissions)({
         name: `${site.code}-${task}-publisher`,
         task,

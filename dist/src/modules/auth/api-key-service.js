@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createApiKeyWithPermissions = exports.resolveScopesForPreset = exports.inferTask = exports.EXTRA_SCOPE_PRESETS = exports.TASK_SCOPE_PRESETS = exports.SITE_MASTER_SCOPE = exports.getTaskScope = exports.decryptApiKeyToken = exports.encryptApiKeyToken = exports.hashApiKey = exports.createRawApiKey = void 0;
+exports.createApiKeyWithPermissions = exports.deactivateSiteTaskKeys = exports.resolveScopesForPreset = exports.inferTask = exports.EXTRA_SCOPE_PRESETS = exports.TASK_SCOPE_PRESETS = exports.SITE_MASTER_SCOPE = exports.getTaskScope = exports.decryptApiKeyToken = exports.encryptApiKeyToken = exports.hashApiKey = exports.createRawApiKey = void 0;
 const crypto_1 = __importDefault(require("crypto"));
 const db_1 = require("../../config/db");
 const site_contract_1 = require("../sites/site-contract");
@@ -82,6 +82,31 @@ const resolveScopesForPreset = (task, scopes) => {
     return [];
 };
 exports.resolveScopesForPreset = resolveScopesForPreset;
+const deactivateSiteTaskKeys = async (siteId, task) => {
+    const taskScope = (0, exports.getTaskScope)(task);
+    const existingKeys = await db_1.prisma.apiKey.findMany({
+        where: {
+            isActive: true,
+            scopes: { has: taskScope },
+            permissions: {
+                some: {
+                    siteId,
+                },
+            },
+        },
+        select: { id: true },
+    });
+    if (existingKeys.length === 0)
+        return 0;
+    await db_1.prisma.apiKey.updateMany({
+        where: {
+            id: { in: existingKeys.map((key) => key.id) },
+        },
+        data: { isActive: false },
+    });
+    return existingKeys.length;
+};
+exports.deactivateSiteTaskKeys = deactivateSiteTaskKeys;
 const createApiKeyWithPermissions = async ({ name, scopes, task, siteIds, canPost = true, canRead = true, }) => {
     const resolvedScopes = (0, exports.resolveScopesForPreset)(task, scopes);
     const raw = (0, exports.createRawApiKey)();

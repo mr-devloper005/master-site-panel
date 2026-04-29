@@ -98,6 +98,7 @@ router.get("/keys", (0, auth_1.requireApiKey)("keys:write"), (0, async_handler_1
 }));
 router.get("/keys/export-task-tokens", (0, auth_1.requireApiKey)("keys:write"), (0, async_handler_1.asyncHandler)(async (req, res) => {
     const rotateMissing = String(req.query.rotateMissing || "false").toLowerCase() === "true";
+    const reissueAll = String(req.query.reissueAll || "false").toLowerCase() === "true";
     const rawTaskQuery = req.query.task;
     const requestedTask = typeof rawTaskQuery === "string"
         ? normalizeTaskValue(rawTaskQuery)
@@ -166,13 +167,8 @@ router.get("/keys/export-task-tokens", (0, auth_1.requireApiKey)("keys:write"), 
             const mapKey = `${site.id}:${task}`;
             let key = keyMap.get(mapKey) || null;
             let token = key ? (0, api_key_service_1.decryptApiKeyToken)(key.rawTokenCipher) : null;
-            if ((!key || !token) && rotateMissing) {
-                if (key) {
-                    await db_1.prisma.apiKey.update({
-                        where: { id: key.id },
-                        data: { isActive: false },
-                    });
-                }
+            if (reissueAll || ((!key || !token) && rotateMissing)) {
+                await (0, api_key_service_1.deactivateSiteTaskKeys)(site.id, task);
                 const issued = await (0, api_key_service_1.createApiKeyWithPermissions)({
                     name: `${site.code}-${task}-publisher`,
                     task,
@@ -229,6 +225,7 @@ router.get("/keys/export-task-tokens", (0, auth_1.requireApiKey)("keys:write"), 
                 ? new Set(exportRows.map((row) => row.siteCode)).size
                 : sites.length,
             totalRows: exportRows.length,
+            reissueAll,
             rotatedRows,
             rows: exportRows,
         },

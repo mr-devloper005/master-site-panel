@@ -6,7 +6,7 @@ import { prisma } from "../../config/db";
 import { requireApiKey } from "../../middleware/auth";
 import { ApiError } from "../../utils/api-error";
 import { asyncHandler } from "../../utils/async-handler";
-import { createApiKeyWithPermissions } from "../auth/api-key-service";
+import { createApiKeyWithPermissions, deactivateSiteTaskKeys } from "../auth/api-key-service";
 import { getLatestRuntimeStatusMap, getRuntimeStatusesForSite } from "../runtime/runtime-store";
 import { getBaseUrl } from "../../utils/base-url";
 import { buildTaskProvisioningGuide } from "./task-catalog";
@@ -58,6 +58,8 @@ const firstQueryValue = (value?: unknown): string => {
 };
 
 const provisionTaskToken = async (site: { id: string; code: string }, task: SiteTask) => {
+  await deactivateSiteTaskKeys(site.id, task);
+
   const taskKey = await createApiKeyWithPermissions({
     name: `${site.code}-${task}-publisher`,
     task,

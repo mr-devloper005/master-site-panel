@@ -97,6 +97,34 @@ export const resolveScopesForPreset = (task?: KeyPreset | null, scopes?: string[
   return [];
 };
 
+export const deactivateSiteTaskKeys = async (siteId: string, task: SiteTask) => {
+  const taskScope = getTaskScope(task);
+
+  const existingKeys = await prisma.apiKey.findMany({
+    where: {
+      isActive: true,
+      scopes: { has: taskScope },
+      permissions: {
+        some: {
+          siteId,
+        },
+      },
+    },
+    select: { id: true },
+  });
+
+  if (existingKeys.length === 0) return 0;
+
+  await prisma.apiKey.updateMany({
+    where: {
+      id: { in: existingKeys.map((key) => key.id) },
+    },
+    data: { isActive: false },
+  });
+
+  return existingKeys.length;
+};
+
 export const createApiKeyWithPermissions = async ({
   name,
   scopes,
