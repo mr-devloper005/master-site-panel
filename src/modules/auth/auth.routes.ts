@@ -16,7 +16,7 @@ import {
 
 const router = Router();
 const TASK_LABELS: Record<string, string> = {
-  listing: "Listing",
+  listing: "Business Listing",
   article: "Article",
   image: "Image",
   mediaDistribution: "Media Distribution",

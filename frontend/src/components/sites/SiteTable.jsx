@@ -1,9 +1,9 @@
 import { Pencil, Trash2, Eye, KeyRound } from "lucide-react";
 
 const TASK_LABELS = {
-  listing: "Listing",
+  listing: "Business Listing",
   article: "Article",
-  image: "Images",
+  image: "Image",
   mediaDistribution: "Media Distribution",
   profile: "Profile",
   classified: "Classified",

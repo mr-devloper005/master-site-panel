@@ -12,12 +12,13 @@ import {
 
 const PAGE_PRESETS = [
   "/",
-  "/listings",
-  "/articles",
+  "/listing",
+  "/article",
   "/updates",
-  "/classifieds",
-  "/images",
+  "/classified",
+  "/image",
   "/profile",
+  "/user",
   "/sbm",
   "/pdf",
   "/blog",
@@ -315,7 +316,7 @@ export default function Seo() {
   const upsertTemplateRule = () => {
     const path = String(templatePathInput || "").trim();
     if (!path) {
-      toast.error("Template path required (e.g. /articles)");
+      toast.error("Template path required (e.g. /article)");
       return;
     }
     const normalizedPath = path.startsWith("/") ? path : `/${path}`;
@@ -882,7 +883,7 @@ export default function Seo() {
             <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-[220px_1fr_auto]">
               <input
                 className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
-                placeholder="/articles"
+                placeholder="/article"
                 value={templatePathInput}
                 onChange={(event) => setTemplatePathInput(event.target.value)}
               />

@@ -17,9 +17,9 @@ const ALL_TASKS = [
 ];
 
 const TASK_LABELS = {
-  listing: "Listing",
+  listing: "Business Listing",
   article: "Article",
-  image: "Images",
+  image: "Image",
   mediaDistribution: "Media Distribution",
   profile: "Profile",
   classified: "Classified",
@@ -108,5 +108,4 @@ export default function SiteTaskModal({ open, onClose, site, onSubmit }) {
     </Modal>
   );
 }
-
 

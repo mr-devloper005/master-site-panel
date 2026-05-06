@@ -7,9 +7,9 @@ import { useAppData } from "../context/AppContext";
 
 const PAGE_SIZE = 15;
 const TASK_LABELS = {
-  listing: "Listing",
+  listing: "Business Listing",
   article: "Article",
-  image: "Images",
+  image: "Image",
   mediaDistribution: "Media Distribution",
   profile: "Profile",
   classified: "Classified",

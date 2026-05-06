@@ -9,7 +9,7 @@ const site_contract_1 = require("../sites/site-contract");
 const api_key_service_1 = require("./api-key-service");
 const router = (0, express_1.Router)();
 const TASK_LABELS = {
-    listing: "Listing",
+    listing: "Business Listing",
     article: "Article",
     image: "Image",
     mediaDistribution: "Media Distribution",

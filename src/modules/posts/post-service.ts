@@ -49,10 +49,10 @@ const getTaskViewPath = (siteConfig: unknown, task: SiteTask | null) => {
     return view.startsWith("/") ? view : `/${view}`;
   }
   const defaultViews: Record<SiteTask, string> = {
-    listing: "/listings",
-    classified: "/classifieds",
-    article: "/articles",
-    image: "/images",
+    listing: "/listing",
+    classified: "/classified",
+    article: "/article",
+    image: "/image",
     mediaDistribution: "/updates",
     profile: "/profile",
     social: "/community",
@@ -70,11 +70,11 @@ const buildRevalidatePaths = (siteConfig: unknown, slug?: string | null, task?: 
   const taskPath = getTaskViewPath(siteConfig, task || null);
   paths.add(`${taskPath.replace(/\/$/, "")}/${slug}`);
   paths.add(`/posts/${slug}`);
-  paths.add("/listings");
-  paths.add("/articles");
+  paths.add("/listing");
+  paths.add("/article");
   paths.add("/updates");
-  paths.add("/classifieds");
-  paths.add("/images");
+  paths.add("/classified");
+  paths.add("/image");
   paths.add("/profile");
   paths.add("/sbm");
   paths.add("/pdf");

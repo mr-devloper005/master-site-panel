@@ -912,10 +912,10 @@ router.get("/:siteId/seo-status", (0, auth_1.requireApiKey)("sites:read"), (0, a
     }
     const staticFallbackPages = [
         `${frontendUrl}/`,
-        `${frontendUrl}/listings`,
-        `${frontendUrl}/articles`,
-        `${frontendUrl}/classifieds`,
-        `${frontendUrl}/images`,
+        `${frontendUrl}/listing`,
+        `${frontendUrl}/article`,
+        `${frontendUrl}/classified`,
+        `${frontendUrl}/image`,
         `${frontendUrl}/social`,
         `${frontendUrl}/social-bookmarking`,
         `${frontendUrl}/profile`,
@@ -925,7 +925,7 @@ router.get("/:siteId/seo-status", (0, auth_1.requireApiKey)("sites:read"), (0, a
     const urlsToInspect = (includeAll ? effectiveUrls : effectiveUrls).slice(0, limit);
     const pagesToInspect = urlsToInspect.map((url) => {
         const path = pathFromUrl(url);
-        const isArticleDetail = /^\/articles\/[^/]+$/i.test(path);
+        const isArticleDetail = /^\/article\/[^/]+$/i.test(path);
         return {
             key: path === "/" ? "home" : path,
             path,

@@ -10,8 +10,8 @@ const siteTypes = ["listing", "article", "image", "media-distribution", "profile
 const categoryLabels = {
   ARTICLE: "Article",
   SBM: "SBM",
-  IMAGE_SHARING: "Images",
-  LOCAL_LISTING: "Local Listing",
+  IMAGE_SHARING: "Image",
+  LOCAL_LISTING: "Business Listing",
   MEDIA_DISTRIBUTION: "Media Distribution",
   MULTI_TASK: "Multi Task",
   PROFILE: "Profile",
@@ -19,9 +19,9 @@ const categoryLabels = {
 };
 
 const taskLabels = {
-  listing: "Listing",
+  listing: "Business Listing",
   article: "Article",
-  image: "Images",
+  image: "Image",
   mediaDistribution: "Media Distribution",
   profile: "Profile",
   classified: "Classified",
@@ -29,10 +29,10 @@ const taskLabels = {
 };
 
 const categoryDefaults = {
-  ARTICLE: { siteType: "article", feedPath: "/articles" },
+  ARTICLE: { siteType: "article", feedPath: "/article" },
   SBM: { siteType: "social", feedPath: "/sbm" },
-  IMAGE_SHARING: { siteType: "image", feedPath: "/images" },
-  LOCAL_LISTING: { siteType: "listing", feedPath: "/listings" },
+  IMAGE_SHARING: { siteType: "image", feedPath: "/image" },
+  LOCAL_LISTING: { siteType: "listing", feedPath: "/listing" },
   MEDIA_DISTRIBUTION: { siteType: "media-distribution", feedPath: "/updates" },
   MULTI_TASK: { siteType: "multi-task", feedPath: "/" },
   PROFILE: { siteType: "profile", feedPath: "/profile" },
@@ -48,7 +48,7 @@ const initial = {
   frontendUrl: "",
   description: "",
   siteType: "listing",
-  feedPath: "/listings",
+  feedPath: "/listing",
   supportedTasks: [],
   metrics: "posts,published,impressions",
 };
@@ -70,7 +70,7 @@ export default function SiteFormModal({ open, onClose, onSubmit, editing }) {
         frontendUrl: editing.url || "",
         description: editing.description || "",
         siteType: editing.siteType || "listing",
-        feedPath: editing.feedPath || "/listings",
+        feedPath: editing.feedPath || "/listing",
         supportedTasks: editing.supportedTasks?.length ? editing.supportedTasks : [],
         metrics: editing.metrics?.join(",") || "posts,published,impressions",
       });
@@ -215,7 +215,7 @@ export default function SiteFormModal({ open, onClose, onSubmit, editing }) {
               value={form.feedPath}
               onChange={(e) => setForm((p) => ({ ...p, feedPath: e.target.value }))}
               disabled={siteTypeLocked}
-              placeholder={siteTypeLocked ? "Optional for multi-task sites" : "/listings"}
+              placeholder={siteTypeLocked ? "Optional for multi-task sites" : "/listing"}
             />
             <p className="mt-1 text-xs text-[var(--text-secondary)]">
               {siteTypeLocked

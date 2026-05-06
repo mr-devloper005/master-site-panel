@@ -11,9 +11,9 @@ const badgeClass =
   "inline-flex items-center rounded-full border border-[var(--border-color)] bg-slate-50 px-2.5 py-1 text-xs dark:bg-slate-900/40";
 const TOKEN_CACHE_KEY = "site-master-task-tokens";
 const TASK_LABELS = {
-  listing: "Listing",
+  listing: "Business Listing",
   article: "Article",
-  image: "Images",
+  image: "Image",
   mediaDistribution: "Media Distribution",
   profile: "Profile",
   classified: "Classified",
