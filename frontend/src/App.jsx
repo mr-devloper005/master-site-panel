@@ -12,6 +12,7 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Sites = lazy(() => import("./pages/Sites"));
 const Tasks = lazy(() => import("./pages/Tasks"));
 const Posts = lazy(() => import("./pages/Posts"));
+const ContactRequests = lazy(() => import("./pages/ContactRequests"));
 const RecentActivity = lazy(() => import("./pages/RecentActivity"));
 const Analytics = lazy(() => import("./pages/Analytics"));
 const Seo = lazy(() => import("./pages/Seo"));
@@ -49,6 +50,7 @@ export default function App() {
             <Route path="/sites" element={<Sites />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/posts" element={<Posts />} />
+            <Route path="/contacts" element={<ContactRequests />} />
             <Route path="/activity" element={<RecentActivity />} />
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/seo" element={<Seo />} />

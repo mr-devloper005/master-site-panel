@@ -37,6 +37,14 @@ enum SiteConnectionStatus {
   OFFLINE
 }
 
+enum ContactSubmissionStatus {
+  NEW
+  READ
+  REPLIED
+  ARCHIVED
+  SPAM
+}
+
 enum IndexingInspectionStatus {
   PENDING
   SUBMITTED
@@ -61,6 +69,7 @@ model Site {
   indexingRecords SiteIndexingRecord[]
   permissions ApiKeySitePermission[]
   runtimeStatuses SiteRuntimeStatus[]
+  contactSubmissions ContactSubmission[]
 }
 
 model Post {
@@ -160,4 +169,25 @@ model SiteRuntimeStatus {
 
   @@unique([siteId, environment])
   @@index([status, lastHeartbeatAt])
+}
+
+model ContactSubmission {
+  id          String                  @id @default(cuid())
+  siteId      String
+  site        Site                    @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  name        String
+  email       String
+  phone       String?
+  subject     String?
+  message     String
+  sourceUrl   String?
+  status      ContactSubmissionStatus @default(NEW)
+  meta        Json?
+  emailSentAt DateTime?
+  emailError  String?
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+
+  @@index([siteId, status, createdAt])
+  @@index([status, createdAt])
 }

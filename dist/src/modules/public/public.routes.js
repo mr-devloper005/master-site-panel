@@ -4,6 +4,7 @@ const express_1 = require("express");
 const client_1 = require("@prisma/client");
 const db_1 = require("../../config/db");
 const async_handler_1 = require("../../utils/async-handler");
+const contact_service_1 = require("../contact/contact-service");
 const site_contract_1 = require("../sites/site-contract");
 const router = (0, express_1.Router)();
 router.get("/:siteCode/bootstrap", (0, async_handler_1.asyncHandler)(async (req, res) => {
@@ -117,6 +118,22 @@ router.get("/:siteCode/feed", (0, async_handler_1.asyncHandler)(async (req, res)
             },
             blueprint: (0, site_contract_1.buildSiteBlueprint)(site.code, site.config),
             posts,
+        },
+    });
+}));
+router.post("/:siteCode/contact", (0, async_handler_1.asyncHandler)(async (req, res) => {
+    const siteCode = String(req.params.siteCode);
+    const result = await (0, contact_service_1.createContactSubmission)(siteCode, req.body, {
+        ip: req.ip || null,
+        userAgent: req.header("user-agent") || null,
+        referrer: req.header("referer") || req.header("referrer") || null,
+    });
+    res.status(201).json({
+        success: true,
+        data: {
+            id: result.submission.id,
+            status: result.submission.status,
+            mail: result.mail,
         },
     });
 }));

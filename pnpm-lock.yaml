@@ -26,6 +26,9 @@ importers:
       morgan:
         specifier: ^1.10.0
         version: 1.10.1
+      nodemailer:
+        specifier: ^6.10.0
+        version: 6.10.1
     devDependencies:
       '@types/cors':
         specifier: ^2.8.17
@@ -544,6 +547,10 @@ packages:
 
   node-fetch-native@1.6.7:
     resolution: {integrity: sha512-g9yhqoedzIUm0nTnTqAQvueMPVOuIY16bqgAJJC8XOOubYFNwz6IER9qs0Gq2Xd0+CecCKFjtdDTMA4u4xG06Q==}
+
+  nodemailer@6.10.1:
+    resolution: {integrity: sha512-Z+iLaBGVaSjbIzQ4pX6XV41HrooLsQ10ZWPUehGmuantvzWoDVBnmsdUcOIDM1t+yPor5pDhVlDESgOMEGxhHA==}
+    engines: {node: '>=6.0.0'}
 
   nypm@0.6.5:
     resolution: {integrity: sha512-K6AJy1GMVyfyMXRVB88700BJqNUkByijGJM8kEHpLdcAt+vSQAVfkWWHYzuRXHSY6xA2sNc5RjTj0p9rE2izVQ==}
@@ -1184,6 +1191,8 @@ snapshots:
   negotiator@0.6.3: {}
 
   node-fetch-native@1.6.7: {}
+
+  nodemailer@6.10.1: {}
 
   nypm@0.6.5:
     dependencies:

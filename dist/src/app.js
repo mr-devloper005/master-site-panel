@@ -42,6 +42,7 @@ const express_1 = __importDefault(require("express"));
 const helmet_1 = __importDefault(require("helmet"));
 const morgan_1 = __importDefault(require("morgan"));
 const auth_routes_1 = __importDefault(require("./modules/auth/auth.routes"));
+const contact_routes_1 = __importDefault(require("./modules/contact/contact.routes"));
 const posts_routes_1 = __importDefault(require("./modules/posts/posts.routes"));
 const public_routes_1 = __importDefault(require("./modules/public/public.routes"));
 const runtime_routes_1 = __importDefault(require("./modules/runtime/runtime.routes"));
@@ -63,6 +64,7 @@ exports.app.get("/health", (_req, res) => {
 });
 exports.app.use("/api/v1/auth", auth_routes_1.default);
 exports.app.use("/api/v1/sites", sites_routes_1.default);
+exports.app.use("/api/v1/contact-submissions", contact_routes_1.default);
 exports.app.use("/api/v1/posts", posts_routes_1.default);
 exports.app.use("/api/v1/tasks", tasks_routes_1.default);
 exports.app.use("/", tasks_routes_1.siteTaskRouter);

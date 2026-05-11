@@ -1,0 +1,670 @@
+[
+  {
+    "repo": "WellDanet.com",
+    "slug": "mr-devloper005/welldanet.com",
+    "number": 8,
+    "title": "add: .env.example in ignore",
+    "head": "feature/update_taskpage",
+    "base": "dev",
+    "author": "adityajat2606",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 11,
+    "criticalFiles": [],
+    "safeCandidate": true,
+    "url": "https://github.com/mr-devloper005/welldanet.com/pull/8"
+  },
+  {
+    "repo": "alefcoach.com",
+    "slug": "mr-devloper005/alefcoach.com",
+    "number": 3,
+    "title": "Update:task page ,task-detail page,footer,navbar",
+    "head": "feature/taskdetailpage_change",
+    "base": "dev",
+    "author": "arti7652",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 15,
+    "criticalFiles": [
+      "src/app/articles/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/alefcoach.com/pull/3"
+  },
+  {
+    "repo": "josoore.com",
+    "slug": "mr-devloper005/josoore.com",
+    "number": 3,
+    "title": "Update: task page,taskdetail page,navbar,footer",
+    "head": "feature/taskdetailpage_change",
+    "base": "dev",
+    "author": "arti7652",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 8,
+    "criticalFiles": [
+      "src/app/articles/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/josoore.com/pull/3"
+  },
+  {
+    "repo": "techdemais.com",
+    "slug": "mr-devloper005/techdemais.com",
+    "number": 5,
+    "title": "Update: Taskpage, .env, Content",
+    "head": "feature/update_taskpage",
+    "base": "dev",
+    "author": "adityajat2606",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 8,
+    "criticalFiles": [
+      "src/app/articles/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/techdemais.com/pull/5"
+  },
+  {
+    "repo": "dotsdeveloper.com",
+    "slug": "mr-devloper005/dotsdeveloper.com",
+    "number": 4,
+    "title": "Update: taskpage, .env, content",
+    "head": "feature/update_taskpage",
+    "base": "dev",
+    "author": "adityajat2606",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 8,
+    "criticalFiles": [
+      "src/app/articles/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/dotsdeveloper.com/pull/4"
+  },
+  {
+    "repo": "fermenterspirit.com",
+    "slug": "mr-devloper005/fermenterspirit.com",
+    "number": 3,
+    "title": "Update: taskpage, .env, content",
+    "head": "feature/update_taskpage",
+    "base": "dev",
+    "author": "adityajat2606",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 7,
+    "criticalFiles": [
+      "src/app/articles/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/fermenterspirit.com/pull/3"
+  },
+  {
+    "repo": "josephlaoutaris.com",
+    "slug": "mr-devloper005/josephlaoutaris.com",
+    "number": 3,
+    "title": "Update: Taskpage, Content",
+    "head": "feature/update_taskpage",
+    "base": "dev",
+    "author": "adityajat2606",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 21,
+    "criticalFiles": [
+      "src/app/articles/page.tsx",
+      "src/app/classifieds/page.tsx",
+      "src/app/images/page.tsx",
+      "src/app/listings/page.tsx",
+      "src/app/profile/[username]/page.tsx",
+      "src/app/profile/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/josephlaoutaris.com/pull/3"
+  },
+  {
+    "repo": "aidteck.com",
+    "slug": "mr-devloper005/aidteck.com",
+    "number": 2,
+    "title": "Update:task page,taskdetail page,navbar,footer,font",
+    "head": "feature/taskdetailpage_change",
+    "base": "dev",
+    "author": "arti7652",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 22,
+    "criticalFiles": [
+      "src/app/articles/page.tsx",
+      "src/app/classifieds/page.tsx",
+      "src/app/images/page.tsx",
+      "src/app/listings/page.tsx",
+      "src/app/profile/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/aidteck.com/pull/2"
+  },
+  {
+    "repo": "mindful-lotus.com",
+    "slug": "mr-devloper005/mindful-lotus.com",
+    "number": 3,
+    "title": "Update:task page,task-detail page,navbar,footer,",
+    "head": "feature/taskdetailpage_change",
+    "base": "dev",
+    "author": "arti7652",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 16,
+    "criticalFiles": [
+      "src/app/articles/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/mindful-lotus.com/pull/3"
+  },
+  {
+    "repo": "webmansax.com",
+    "slug": "mr-devloper005/webmansax.com",
+    "number": 2,
+    "title": "Update:task page,task-detail page,navbar,footer",
+    "head": "fetaure/taskdetailpage_change",
+    "base": "dev",
+    "author": "arti7652",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 18,
+    "criticalFiles": [
+      "src/app/articles/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/webmansax.com/pull/2"
+  },
+  {
+    "repo": "viscountwhite.com",
+    "slug": "mr-devloper005/viscountwhite.com",
+    "number": 3,
+    "title": "Feature/taskdetailpage change",
+    "head": "feature/taskdetailpage_change",
+    "base": "dev",
+    "author": "arti7652",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 20,
+    "criticalFiles": [
+      "src/app/articles/page.tsx",
+      "src/app/classifieds/page.tsx",
+      "src/app/images/page.tsx",
+      "src/app/listings/page.tsx",
+      "src/app/profile/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/viscountwhite.com/pull/3"
+  },
+  {
+    "repo": "fflowlink.com",
+    "slug": "mr-devloper005/fflowlink.com",
+    "number": 3,
+    "title": "Update: task page,task-detail page,navbar,footer",
+    "head": "feature/taskdetailpage_change",
+    "base": "dev",
+    "author": "arti7652",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 8,
+    "criticalFiles": [
+      "src/app/articles/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/fflowlink.com/pull/3"
+  },
+  {
+    "repo": "empoweryouroad.com",
+    "slug": "mr-devloper005/empoweryouroad.com",
+    "number": 1,
+    "title": "Update:task page,task-detail page,navbar footer",
+    "head": "feature/taskdetailpage_change",
+    "base": "dev",
+    "author": "arti7652",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 20,
+    "criticalFiles": [
+      "src/app/articles/page.tsx",
+      "src/app/classifieds/page.tsx",
+      "src/app/images/[slug]/page.tsx",
+      "src/app/images/page.tsx",
+      "src/app/listings/page.tsx",
+      "src/app/profile/page.tsx",
+      "src/lib/task-data.ts"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/empoweryouroad.com/pull/1"
+  },
+  {
+    "repo": "floatyourbrand.com",
+    "slug": "mr-devloper005/floatyourbrand.com",
+    "number": 3,
+    "title": "Update: task page, task-detail page,navbar,footer",
+    "head": "dev",
+    "base": "dev",
+    "author": "arti7652",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 9,
+    "criticalFiles": [
+      "src/app/articles/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/floatyourbrand.com/pull/3"
+  },
+  {
+    "repo": "blacktiefuture.com",
+    "slug": "mr-devloper005/blacktiefuture.com",
+    "number": 3,
+    "title": "Feature/complete layout change",
+    "head": "feature/complete_layout_change",
+    "base": "dev",
+    "author": "arti7652",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 17,
+    "criticalFiles": [
+      "src/app/articles/page.tsx",
+      "src/app/classifieds/page.tsx",
+      "src/app/images/page.tsx",
+      "src/app/listings/page.tsx",
+      "src/app/profile/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/blacktiefuture.com/pull/3"
+  },
+  {
+    "repo": "noroadsideas.com",
+    "slug": "mr-devloper005/noroadsideas.com",
+    "number": 3,
+    "title": "Update:task page,task detail page,navbar,footer",
+    "head": "feature/taskdeatailpage_change",
+    "base": "dev",
+    "author": "arti7652",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 58,
+    "criticalFiles": [
+      "src/app/profile/[username]/page.tsx",
+      "src/app/profile/page.tsx",
+      "src/config/site.tasks.ts",
+      "src/lib/task-data.ts"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/noroadsideas.com/pull/3"
+  },
+  {
+    "repo": "gutsbranding.com",
+    "slug": "mr-devloper005/gutsbranding.com",
+    "number": 3,
+    "title": "Update: task page.tak-detail page,and footer,navbar",
+    "head": "feature/taskdetailpage_change",
+    "base": "dev",
+    "author": "arti7652",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 8,
+    "criticalFiles": [],
+    "safeCandidate": true,
+    "url": "https://github.com/mr-devloper005/gutsbranding.com/pull/3"
+  },
+  {
+    "repo": "sandlore.com",
+    "slug": "mr-devloper005/sandlore.com",
+    "number": 3,
+    "title": "Update: task page,task-detail page,navbar,footer,contact",
+    "head": "feature/taskdetailpage_change",
+    "base": "dev",
+    "author": "arti7652",
+    "isDraft": false,
+    "mergeable": "MERGEABLE",
+    "fileCount": 21,
+    "criticalFiles": [
+      "src/app/articles/page.tsx",
+      "src/lib/task-data.ts"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/sandlore.com/pull/3"
+  },
+  {
+    "repo": "arcanumwebs.com",
+    "slug": "mr-devloper005/arcanumwebs.com",
+    "number": 3,
+    "title": "Update: task page,task-detail page,navbar,footer.",
+    "head": "feature/taskdetailpage_change",
+    "base": "dev",
+    "author": "arti7652",
+    "isDraft": false,
+    "mergeable": "MERGEABLE",
+    "fileCount": 9,
+    "criticalFiles": [
+      "src/app/articles/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/arcanumwebs.com/pull/3"
+  },
+  {
+    "repo": "infoplatforms.com",
+    "slug": "mr-devloper005/infoplatforms.com",
+    "number": 6,
+    "title": "Feature/taskpage",
+    "head": "feature/taskpage",
+    "base": "dev",
+    "author": "RohitMunjal25",
+    "isDraft": false,
+    "mergeable": "MERGEABLE",
+    "fileCount": 9,
+    "criticalFiles": [
+      "src/app/articles/[slug]/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/infoplatforms.com/pull/6"
+  },
+  {
+    "repo": "devcybernexus.com",
+    "slug": "mr-devloper005/devcybernexus.com",
+    "number": 3,
+    "title": "update: taskpage article, .env, data",
+    "head": "feature/update_taskpage",
+    "base": "dev",
+    "author": "adityajat2606",
+    "isDraft": false,
+    "mergeable": "MERGEABLE",
+    "fileCount": 11,
+    "criticalFiles": [
+      "src/app/articles/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/devcybernexus.com/pull/3"
+  },
+  {
+    "repo": "motivkit.com",
+    "slug": "mr-devloper005/motivkit.com",
+    "number": 7,
+    "title": "remove: date label, errors",
+    "head": "feature/update_taskpage",
+    "base": "dev",
+    "author": "adityajat2606",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 4,
+    "criticalFiles": [
+      "src/app/articles/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/motivkit.com/pull/7"
+  },
+  {
+    "repo": "mysterycoder.com",
+    "slug": "mr-devloper005/mysterycoder.com",
+    "number": 5,
+    "title": "Update: Taskpage article/profile, .env,",
+    "head": "feature/update_taskpage",
+    "base": "dev",
+    "author": "adityajat2606",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 14,
+    "criticalFiles": [
+      "src/app/profile/[username]/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/mysterycoder.com/pull/5"
+  },
+  {
+    "repo": "ruihanchemical.com",
+    "slug": "mr-devloper005/ruihanchemical.com",
+    "number": 3,
+    "title": "update: taskpage article/profile, .env, data",
+    "head": "feature/update_taskpage",
+    "base": "dev",
+    "author": "adityajat2606",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 18,
+    "criticalFiles": [
+      "src/app/articles/page.tsx",
+      "src/app/profile/[username]/page.tsx",
+      "src/app/profile/page.tsx",
+      "src/config/site.tasks.ts"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/ruihanchemical.com/pull/3"
+  },
+  {
+    "repo": "techmixbr.com",
+    "slug": "mr-devloper005/techmixbr.com",
+    "number": 3,
+    "title": "update: taskpage article, .env, data",
+    "head": "feature/update_taskpage",
+    "base": "dev",
+    "author": "adityajat2606",
+    "isDraft": false,
+    "mergeable": "MERGEABLE",
+    "fileCount": 15,
+    "criticalFiles": [
+      "src/app/articles/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/techmixbr.com/pull/3"
+  },
+  {
+    "repo": "switchhigh.com",
+    "slug": "mr-devloper005/switchhigh.com",
+    "number": 3,
+    "title": "taskpage edit",
+    "head": "feature/taskpage",
+    "base": "dev",
+    "author": "RohitMunjal25",
+    "isDraft": false,
+    "mergeable": "MERGEABLE",
+    "fileCount": 13,
+    "criticalFiles": [
+      "src/app/profile/[username]/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/switchhigh.com/pull/3"
+  },
+  {
+    "repo": "sinclair-theme.com",
+    "slug": "mr-devloper005/sinclair-theme.com",
+    "number": 3,
+    "title": "taskpage updated",
+    "head": "feature/taskpage",
+    "base": "dev",
+    "author": "RohitMunjal25",
+    "isDraft": false,
+    "mergeable": "MERGEABLE",
+    "fileCount": 8,
+    "criticalFiles": [
+      "src/app/articles/[slug]/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/sinclair-theme.com/pull/3"
+  },
+  {
+    "repo": "septemberzodiac.com",
+    "slug": "mr-devloper005/septemberzodiac.com",
+    "number": 3,
+    "title": "taskpage updated",
+    "head": "feature/taskpage",
+    "base": "dev",
+    "author": "RohitMunjal25",
+    "isDraft": false,
+    "mergeable": "MERGEABLE",
+    "fileCount": 12,
+    "criticalFiles": [],
+    "safeCandidate": true,
+    "url": "https://github.com/mr-devloper005/septemberzodiac.com/pull/3"
+  },
+  {
+    "repo": "kayosportconnect.com",
+    "slug": "mr-devloper005/kayosportconnect.com",
+    "number": 3,
+    "title": "Feature/taskpage",
+    "head": "feature/taskpage",
+    "base": "dev",
+    "author": "RohitMunjal25",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 31,
+    "criticalFiles": [
+      "src/config/site.tasks.ts"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/kayosportconnect.com/pull/3"
+  },
+  {
+    "repo": "KhaosAddon.com",
+    "slug": "mr-devloper005/khaosaddon.com",
+    "number": 5,
+    "title": "taskpage edited",
+    "head": "feature/taskpage",
+    "base": "dev",
+    "author": "RohitMunjal25",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 5,
+    "criticalFiles": [],
+    "safeCandidate": true,
+    "url": "https://github.com/mr-devloper005/khaosaddon.com/pull/5"
+  },
+  {
+    "repo": "WorldWorthWandering.com",
+    "slug": "mr-devloper005/worldworthwandering.com",
+    "number": 3,
+    "title": "taskpage updated",
+    "head": "feature/taskpage",
+    "base": "dev",
+    "author": "RohitMunjal25",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 9,
+    "criticalFiles": [
+      "src/config/site.tasks.ts"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/worldworthwandering.com/pull/3"
+  },
+  {
+    "repo": "MikeBrewerEconomics.com",
+    "slug": "mr-devloper005/mikebrewereconomics.com",
+    "number": 5,
+    "title": "taskpage updated",
+    "head": "feature/taskpage",
+    "base": "dev",
+    "author": "RohitMunjal25",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 8,
+    "criticalFiles": [],
+    "safeCandidate": true,
+    "url": "https://github.com/mr-devloper005/mikebrewereconomics.com/pull/5"
+  },
+  {
+    "repo": "earthskydesign.com",
+    "slug": "mr-devloper005/earthskydesign.com",
+    "number": 3,
+    "title": "Feature/taskdetailpage change",
+    "head": "feature/taskdetailpage_change",
+    "base": "dev",
+    "author": "arti7652",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 21,
+    "criticalFiles": [
+      "src/app/images/page.tsx",
+      "src/app/profile/[username]/page.tsx",
+      "src/config/site.tasks.ts",
+      "src/lib/task-data.ts"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/earthskydesign.com/pull/3"
+  },
+  {
+    "repo": "youngerlifestyle.net",
+    "slug": "mr-devloper005/youngerlifestyle.net",
+    "number": 5,
+    "title": "Feature/taskpage",
+    "head": "feature/taskpage",
+    "base": "dev",
+    "author": "RohitMunjal25",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 4,
+    "criticalFiles": [
+      "src/app/profile/[username]/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/youngerlifestyle.net/pull/5"
+  },
+  {
+    "repo": "quickoye.com",
+    "slug": "mr-devloper005/quickoye.com",
+    "number": 7,
+    "title": "Update: task page, home layout, .env",
+    "head": "feature/SBM_issue",
+    "base": "dev",
+    "author": "adityajat2606",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 15,
+    "criticalFiles": [
+      "src/app/profile/[username]/page.tsx"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/quickoye.com/pull/7"
+  },
+  {
+    "repo": "pkkwb.com",
+    "slug": "mr-devloper005/pkkwb.com",
+    "number": 7,
+    "title": "update: SBM taskpage, Home page, .env",
+    "head": "feature/SBM_issue",
+    "base": "dev",
+    "author": "adityajat2606",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 12,
+    "criticalFiles": [],
+    "safeCandidate": true,
+    "url": "https://github.com/mr-devloper005/pkkwb.com/pull/7"
+  },
+  {
+    "repo": "cooltapas.com",
+    "slug": "mr-devloper005/cooltapas.com",
+    "number": 3,
+    "title": "takspage edited",
+    "head": "feature/taskpage",
+    "base": "dev",
+    "author": "RohitMunjal25",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 23,
+    "criticalFiles": [
+      "src/config/site.tasks.ts",
+      "src/lib/task-data.ts"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/cooltapas.com/pull/3"
+  },
+  {
+    "repo": "threebykeep.com",
+    "slug": "mr-devloper005/threebykeep.com",
+    "number": 3,
+    "title": "taskpage edited",
+    "head": "feature/taskpage",
+    "base": "dev",
+    "author": "RohitMunjal25",
+    "isDraft": false,
+    "mergeable": "UNKNOWN",
+    "fileCount": 8,
+    "criticalFiles": [
+      "src/config/site.tasks.ts"
+    ],
+    "safeCandidate": false,
+    "url": "https://github.com/mr-devloper005/threebykeep.com/pull/3"
+  }
+]

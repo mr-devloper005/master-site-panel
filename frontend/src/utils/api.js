@@ -432,6 +432,25 @@ export const submitSiteSitemapForIndexing = async (siteId) => {
   return response.data;
 };
 
+export const fetchContactSubmissions = async (options = {}) => {
+  const query = new URLSearchParams();
+  query.set("limit", String(options.limit || 50));
+  query.set("page", String(options.page || 1));
+  if (options.status) query.set("status", options.status);
+  if (options.siteCode) query.set("siteCode", options.siteCode);
+  if (options.search) query.set("search", options.search);
+  const response = await request(`/api/v1/contact-submissions?${query.toString()}`);
+  return response.data;
+};
+
+export const updateContactSubmission = async (submissionId, payload) => {
+  const response = await request(`/api/v1/contact-submissions/${submissionId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+  return response.data;
+};
+
 export const runSiteIndexingInspections = async (siteId, limit = 20) => {
   const response = await request(`/api/v1/sites/${siteId}/indexing/run-inspections`, {
     method: "POST",

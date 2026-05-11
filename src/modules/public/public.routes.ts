@@ -3,6 +3,7 @@ import { PostStatus } from "@prisma/client";
 
 import { prisma } from "../../config/db";
 import { asyncHandler } from "../../utils/async-handler";
+import { createContactSubmission } from "../contact/contact-service";
 import { buildSiteBlueprint, sanitizeSiteConfig } from "../sites/site-contract";
 
 const router = Router();
@@ -127,6 +128,24 @@ router.get("/:siteCode/feed", asyncHandler(async (req, res) => {
       },
       blueprint: buildSiteBlueprint(site.code, site.config),
       posts,
+    },
+  });
+}));
+
+router.post("/:siteCode/contact", asyncHandler(async (req, res) => {
+  const siteCode = String(req.params.siteCode);
+  const result = await createContactSubmission(siteCode, req.body, {
+    ip: req.ip || null,
+    userAgent: req.header("user-agent") || null,
+    referrer: req.header("referer") || req.header("referrer") || null,
+  });
+
+  res.status(201).json({
+    success: true,
+    data: {
+      id: result.submission.id,
+      status: result.submission.status,
+      mail: result.mail,
     },
   });
 }));

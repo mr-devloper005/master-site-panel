@@ -40,6 +40,34 @@ const sanitizeSiteConfig = (value) => {
     const metrics = Array.isArray(source.metrics)
         ? source.metrics.filter((item) => typeof item === "string" && item.trim().length > 0)
         : [];
+    const rawContact = source.contact && typeof source.contact === "object" && !Array.isArray(source.contact)
+        ? source.contact
+        : {};
+    const contactCcEmails = Array.isArray(rawContact.ccEmails)
+        ? rawContact.ccEmails
+            .filter((item) => typeof item === "string")
+            .map((item) => item.trim().toLowerCase())
+            .filter((item) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(item))
+            .slice(0, 10)
+        : [];
+    const contactNotifyEmail = typeof rawContact.notifyEmail === "string" &&
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawContact.notifyEmail.trim())
+        ? rawContact.notifyEmail.trim().toLowerCase()
+        : undefined;
+    const contactFromName = typeof rawContact.fromName === "string" && rawContact.fromName.trim()
+        ? rawContact.fromName.trim().slice(0, 100)
+        : undefined;
+    const contact = typeof rawContact.enabled === "boolean" ||
+        contactNotifyEmail ||
+        contactCcEmails.length > 0 ||
+        contactFromName
+        ? {
+            enabled: typeof rawContact.enabled === "boolean" ? rawContact.enabled : true,
+            notifyEmail: contactNotifyEmail,
+            ccEmails: contactCcEmails,
+            fromName: contactFromName,
+        }
+        : undefined;
     const sitemapManualUrls = Array.isArray(source.sitemapManualUrls)
         ? source.sitemapManualUrls
             .filter((item) => typeof item === "string")
@@ -318,6 +346,7 @@ const sanitizeSiteConfig = (value) => {
         taskViews,
         metrics,
         description: typeof source.description === "string" ? source.description : undefined,
+        contact,
         seoDefaults: hasSeoDefaults ? seoDefaults : undefined,
         seoPages: hasSeoPages ? seoPages : undefined,
         seoBlueprint: hasBlueprint ? seoBlueprint : undefined,

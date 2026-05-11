@@ -4,6 +4,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 
 import authRoutes from "./modules/auth/auth.routes";
+import contactRoutes from "./modules/contact/contact.routes";
 import postsRoutes from "./modules/posts/posts.routes";
 import publicRoutes from "./modules/public/public.routes";
 import runtimeRoutes from "./modules/runtime/runtime.routes";
@@ -29,6 +30,7 @@ app.get("/health", (_req, res) => {
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/sites", sitesRoutes);
+app.use("/api/v1/contact-submissions", contactRoutes);
 app.use("/api/v1/posts", postsRoutes);
 app.use("/api/v1/tasks", tasksRoutes);
 app.use("/", siteTaskRouter);
