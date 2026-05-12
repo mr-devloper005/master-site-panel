@@ -7,6 +7,7 @@ const db_1 = require("../../config/db");
 const api_error_1 = require("../../utils/api-error");
 const site_contract_1 = require("../sites/site-contract");
 const contact_email_1 = require("./contact-email");
+const contact_email_queue_1 = require("./contact-email-queue");
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const cleanString = (value, maxLength) => typeof value === "string" ? value.trim().slice(0, maxLength) : "";
 const cleanOptionalString = (value, maxLength) => {
@@ -78,48 +79,65 @@ const createContactSubmission = async (siteCode, payload, requestMeta = {}) => {
         },
     });
     const recipient = (0, exports.getSiteContactRecipient)(site);
-    if (!recipient.enabled) {
-        return { submission, mail: { sent: false, skipped: "Contact email is disabled for this site." } };
+    const queued = [];
+    queued.push(await (0, contact_email_queue_1.enqueueContactEmail)({
+        contactSubmissionId: submission.id,
+        type: client_1.ContactEmailQueueType.VISITOR_ACK,
+        email: (0, contact_email_1.buildVisitorAckEmail)({
+            to: email,
+            siteName: site.name,
+            name,
+            subject,
+        }),
+    }));
+    if (recipient.enabled && recipient.to) {
+        queued.push(await (0, contact_email_queue_1.enqueueContactEmail)({
+            contactSubmissionId: submission.id,
+            type: client_1.ContactEmailQueueType.TEAM_NOTIFICATION,
+            email: (0, contact_email_1.buildTeamNotificationEmail)({
+                to: recipient.to,
+                cc: recipient.cc,
+                siteName: site.name,
+                siteCode: site.code,
+                name,
+                email,
+                phone,
+                subject,
+                message,
+                sourceUrl,
+            }),
+        }));
     }
-    if (!recipient.to) {
+    else if (!recipient.to) {
         await db_1.prisma.contactSubmission.update({
             where: { id: submission.id },
             data: { emailError: "No contact notify email configured." },
         });
-        return { submission, mail: { sent: false, skipped: "No contact notify email configured." } };
     }
-    try {
-        await (0, contact_email_1.sendContactEmail)({
-            to: recipient.to,
-            cc: recipient.cc,
-            siteName: site.name,
-            siteCode: site.code,
-            name,
-            email,
-            phone,
-            subject,
-            message,
-            sourceUrl,
-        });
-        const updated = await db_1.prisma.contactSubmission.update({
-            where: { id: submission.id },
-            data: { emailSentAt: new Date(), emailError: null },
-            include: {
-                site: {
-                    select: { id: true, code: true, name: true },
-                },
+    const queuedSubmission = await db_1.prisma.contactSubmission.findUniqueOrThrow({
+        where: { id: submission.id },
+        include: {
+            site: {
+                select: { id: true, code: true, name: true },
             },
-        });
-        return { submission: updated, mail: { sent: true } };
-    }
-    catch (error) {
-        const messageText = error instanceof Error ? error.message : "Email send failed.";
-        await db_1.prisma.contactSubmission.update({
-            where: { id: submission.id },
-            data: { emailError: messageText.slice(0, 500) },
-        });
-        return { submission, mail: { sent: false, error: messageText } };
-    }
+            queuedEmails: {
+                orderBy: { createdAt: "asc" },
+            },
+        },
+    });
+    return {
+        submission: queuedSubmission,
+        mail: {
+            queued: queued.length,
+            visitorAckQueued: queued.some((item) => item.type === client_1.ContactEmailQueueType.VISITOR_ACK),
+            teamNotificationQueued: queued.some((item) => item.type === client_1.ContactEmailQueueType.TEAM_NOTIFICATION),
+            skipped: !recipient.enabled
+                ? "Contact team notification is disabled for this site."
+                : !recipient.to
+                    ? "No contact notify email configured."
+                    : undefined,
+        },
+    };
 };
 exports.createContactSubmission = createContactSubmission;
 const normalizeContactStatus = (value) => {

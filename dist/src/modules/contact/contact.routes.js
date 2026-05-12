@@ -41,6 +41,9 @@ router.get("/", (0, auth_1.requireApiKey)("sites:read"), (0, async_handler_1.asy
             take: limit,
             include: {
                 site: { select: { id: true, code: true, name: true } },
+                queuedEmails: {
+                    orderBy: { createdAt: "asc" },
+                },
             },
         }),
         db_1.prisma.contactSubmission.count({ where }),
@@ -63,6 +66,9 @@ router.get("/:submissionId", (0, auth_1.requireApiKey)("sites:read"), (0, async_
         where: { id: String(req.params.submissionId) },
         include: {
             site: { select: { id: true, code: true, name: true } },
+            queuedEmails: {
+                orderBy: { createdAt: "asc" },
+            },
         },
     });
     if (!submission)
@@ -78,6 +84,9 @@ router.patch("/:submissionId", (0, auth_1.requireApiKey)("sites:write"), (0, asy
         data: { status },
         include: {
             site: { select: { id: true, code: true, name: true } },
+            queuedEmails: {
+                orderBy: { createdAt: "asc" },
+            },
         },
     });
     res.json({ success: true, data: submission });

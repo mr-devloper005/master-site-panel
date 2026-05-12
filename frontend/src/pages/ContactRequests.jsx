@@ -7,6 +7,18 @@ import { fetchContactSubmissions, updateContactSubmission, updateSite } from "..
 
 const statuses = ["NEW", "READ", "REPLIED", "ARCHIVED", "SPAM"];
 
+const emailTypeLabels = {
+  VISITOR_ACK: "Visitor acknowledgment",
+  TEAM_NOTIFICATION: "Team notification",
+};
+
+const emailStatusClass = {
+  PENDING: "bg-amber-500/10 text-amber-700",
+  SENDING: "bg-blue-500/10 text-blue-700",
+  SENT: "bg-emerald-500/10 text-emerald-700",
+  FAILED: "bg-rose-500/10 text-rose-700",
+};
+
 const formatDate = (value) => {
   if (!value) return "-";
   return new Intl.DateTimeFormat(undefined, {
@@ -265,12 +277,37 @@ export default function ContactRequests() {
                   </p>
                 ) : null}
                 <p className="text-xs text-[var(--text-secondary)]">Received {formatDate(selected.createdAt)}</p>
-                {selected.emailSentAt ? (
+                {selected.emailSentAt && !selected.queuedEmails?.length ? (
                   <p className="text-xs text-emerald-600">Email sent {formatDate(selected.emailSentAt)}</p>
-                ) : selected.emailError ? (
+                ) : selected.emailError && !selected.queuedEmails?.length ? (
                   <p className="text-xs text-amber-700">Email issue: {selected.emailError}</p>
                 ) : null}
               </div>
+
+              {selected.queuedEmails?.length ? (
+                <div className="mt-5 rounded-lg border border-[var(--border-color)] p-4">
+                  <h3 className="text-sm font-semibold">Email Queue</h3>
+                  <div className="mt-3 space-y-3">
+                    {selected.queuedEmails.map((email) => (
+                      <div key={email.id} className="rounded-lg border border-[var(--border-color)] p-3 text-xs">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <span className="font-medium">{emailTypeLabels[email.type] || email.type}</span>
+                          <span className={`rounded-full px-2 py-1 font-semibold ${emailStatusClass[email.status] || "bg-slate-100 text-slate-700"}`}>
+                            {email.status}
+                          </span>
+                        </div>
+                        <p className="mt-2 break-all text-[var(--text-secondary)]">To: {email.toEmail}</p>
+                        <p className="mt-1 break-all text-[var(--text-secondary)]">Subject: {email.subject}</p>
+                        <p className="mt-1 text-[var(--text-secondary)]">
+                          Attempts: {email.attempts}/{email.maxAttempts}
+                        </p>
+                        {email.sentAt ? <p className="mt-1 text-emerald-600">Sent {formatDate(email.sentAt)}</p> : null}
+                        {email.lastError ? <p className="mt-1 text-rose-600">Error: {email.lastError}</p> : null}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
 
               <div className="mt-5 rounded-lg border border-[var(--border-color)] bg-white/50 p-4 text-sm leading-7 dark:bg-slate-950/20">
                 <p className="whitespace-pre-wrap">{selected.message}</p>

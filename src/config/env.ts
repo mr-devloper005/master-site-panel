@@ -17,6 +17,9 @@ export const env = {
   smtpPass: process.env.SMTP_PASS ?? "",
   smtpFrom: process.env.SMTP_FROM ?? "",
   contactDefaultNotifyEmail: process.env.CONTACT_DEFAULT_NOTIFY_EMAIL ?? "",
+  contactEmailQueueEnabled: process.env.CONTACT_EMAIL_QUEUE_ENABLED !== "false",
+  contactEmailQueueIntervalMs: toNumber(process.env.CONTACT_EMAIL_QUEUE_INTERVAL_MS, 15000),
+  contactEmailQueueBatchSize: toNumber(process.env.CONTACT_EMAIL_QUEUE_BATCH_SIZE, 10),
 };
 
 if (!env.databaseUrl) {

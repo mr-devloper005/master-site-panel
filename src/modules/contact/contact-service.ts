@@ -1,10 +1,11 @@
-import { ContactSubmissionStatus, Prisma } from "@prisma/client";
+import { ContactEmailQueueType, ContactSubmissionStatus, Prisma } from "@prisma/client";
 
 import { env } from "../../config/env";
 import { prisma } from "../../config/db";
 import { ApiError } from "../../utils/api-error";
 import { sanitizeSiteConfig } from "../sites/site-contract";
-import { sendContactEmail } from "./contact-email";
+import { buildTeamNotificationEmail, buildVisitorAckEmail } from "./contact-email";
+import { enqueueContactEmail } from "./contact-email-queue";
 
 export type ContactSubmissionInput = {
   name?: unknown;
@@ -101,49 +102,72 @@ export const createContactSubmission = async (
   });
 
   const recipient = getSiteContactRecipient(site);
-  if (!recipient.enabled) {
-    return { submission, mail: { sent: false, skipped: "Contact email is disabled for this site." } };
-  }
 
-  if (!recipient.to) {
+  const queued = [];
+  queued.push(
+    await enqueueContactEmail({
+      contactSubmissionId: submission.id,
+      type: ContactEmailQueueType.VISITOR_ACK,
+      email: buildVisitorAckEmail({
+        to: email,
+        siteName: site.name,
+        name,
+        subject,
+      }),
+    })
+  );
+
+  if (recipient.enabled && recipient.to) {
+    queued.push(
+      await enqueueContactEmail({
+        contactSubmissionId: submission.id,
+        type: ContactEmailQueueType.TEAM_NOTIFICATION,
+        email: buildTeamNotificationEmail({
+          to: recipient.to,
+          cc: recipient.cc,
+          siteName: site.name,
+          siteCode: site.code,
+          name,
+          email,
+          phone,
+          subject,
+          message,
+          sourceUrl,
+        }),
+      })
+    );
+  } else if (!recipient.to) {
     await prisma.contactSubmission.update({
       where: { id: submission.id },
       data: { emailError: "No contact notify email configured." },
     });
-    return { submission, mail: { sent: false, skipped: "No contact notify email configured." } };
   }
 
-  try {
-    await sendContactEmail({
-      to: recipient.to,
-      cc: recipient.cc,
-      siteName: site.name,
-      siteCode: site.code,
-      name,
-      email,
-      phone,
-      subject,
-      message,
-      sourceUrl,
-    });
-    const updated = await prisma.contactSubmission.update({
-      where: { id: submission.id },
-      data: { emailSentAt: new Date(), emailError: null },
-      include: {
-        site: {
-          select: { id: true, code: true, name: true },
-        },
+  const queuedSubmission = await prisma.contactSubmission.findUniqueOrThrow({
+    where: { id: submission.id },
+    include: {
+      site: {
+        select: { id: true, code: true, name: true },
       },
-    });
-    return { submission: updated, mail: { sent: true } };
-  } catch (error) {
-    const messageText = error instanceof Error ? error.message : "Email send failed.";
-    await prisma.contactSubmission.update({
-      where: { id: submission.id },
-      data: { emailError: messageText.slice(0, 500) },
-    });
-    return { submission, mail: { sent: false, error: messageText } };
-  }
+      queuedEmails: {
+        orderBy: { createdAt: "asc" },
+      },
+    },
+  });
+
+  return {
+    submission: queuedSubmission,
+    mail: {
+      queued: queued.length,
+      visitorAckQueued: queued.some((item) => item.type === ContactEmailQueueType.VISITOR_ACK),
+      teamNotificationQueued: queued.some((item) => item.type === ContactEmailQueueType.TEAM_NOTIFICATION),
+      skipped: !recipient.enabled
+        ? "Contact team notification is disabled for this site."
+        : !recipient.to
+          ? "No contact notify email configured."
+          : undefined,
+    },
+  };
 };
 
 export const normalizeContactStatus = (value: unknown): ContactSubmissionStatus | undefined => {

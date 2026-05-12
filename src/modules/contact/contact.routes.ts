@@ -48,6 +48,9 @@ router.get(
         take: limit,
         include: {
           site: { select: { id: true, code: true, name: true } },
+          queuedEmails: {
+            orderBy: { createdAt: "asc" },
+          },
         },
       }),
       prisma.contactSubmission.count({ where }),
@@ -76,6 +79,9 @@ router.get(
       where: { id: String(req.params.submissionId) },
       include: {
         site: { select: { id: true, code: true, name: true } },
+        queuedEmails: {
+          orderBy: { createdAt: "asc" },
+        },
       },
     });
 
@@ -96,6 +102,9 @@ router.patch(
       data: { status },
       include: {
         site: { select: { id: true, code: true, name: true } },
+        queuedEmails: {
+          orderBy: { createdAt: "asc" },
+        },
       },
     });
 

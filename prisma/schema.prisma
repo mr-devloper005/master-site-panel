@@ -45,6 +45,18 @@ enum ContactSubmissionStatus {
   SPAM
 }
 
+enum ContactEmailQueueStatus {
+  PENDING
+  SENDING
+  SENT
+  FAILED
+}
+
+enum ContactEmailQueueType {
+  VISITOR_ACK
+  TEAM_NOTIFICATION
+}
+
 enum IndexingInspectionStatus {
   PENDING
   SUBMITTED
@@ -187,7 +199,33 @@ model ContactSubmission {
   emailError  String?
   createdAt   DateTime                @default(now())
   updatedAt   DateTime                @updatedAt
+  queuedEmails ContactEmailQueue[]
 
   @@index([siteId, status, createdAt])
   @@index([status, createdAt])
+}
+
+model ContactEmailQueue {
+  id                  String                  @id @default(cuid())
+  contactSubmissionId String
+  contactSubmission   ContactSubmission       @relation(fields: [contactSubmissionId], references: [id], onDelete: Cascade)
+  type                ContactEmailQueueType
+  status              ContactEmailQueueStatus @default(PENDING)
+  toEmail             String
+  ccEmails            String[]
+  fromEmail           String
+  replyTo             String?
+  subject             String
+  textBody            String
+  htmlBody            String
+  attempts            Int                     @default(0)
+  maxAttempts         Int                     @default(3)
+  nextAttemptAt       DateTime                @default(now())
+  sentAt              DateTime?
+  lastError           String?
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+
+  @@index([status, nextAttemptAt])
+  @@index([contactSubmissionId, type])
 }

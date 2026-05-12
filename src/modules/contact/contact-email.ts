@@ -1,6 +1,16 @@
 import { env } from "../../config/env";
 
-type ContactEmailPayload = {
+export type ContactEmailPayload = {
+  to: string;
+  cc?: string[];
+  from?: string;
+  replyTo?: string;
+  subject: string;
+  text: string;
+  html: string;
+};
+
+export type ContactLeadPayload = {
   to: string;
   cc?: string[];
   siteName: string;
@@ -13,7 +23,7 @@ type ContactEmailPayload = {
   sourceUrl?: string | null;
 };
 
-const escapeHtml = (value: string): string =>
+export const escapeHtml = (value: string): string =>
   value
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -44,6 +54,18 @@ export const sendContactEmail = async (payload: ContactEmailPayload): Promise<vo
     },
   });
 
+  await transporter.sendMail({
+    from: payload.from || env.smtpFrom,
+    to: payload.to,
+    cc: payload.cc?.length ? payload.cc : undefined,
+    replyTo: payload.replyTo,
+    subject: payload.subject,
+    text: payload.text,
+    html: payload.html,
+  });
+};
+
+export const buildTeamNotificationEmail = (payload: ContactLeadPayload): ContactEmailPayload => {
   const subject = payload.subject?.trim() || `New contact request from ${payload.siteName}`;
   const replyTo = `${payload.name} <${payload.email}>`;
   const lines = [
@@ -64,10 +86,10 @@ export const sendContactEmail = async (payload: ContactEmailPayload): Promise<vo
     )
     .join("");
 
-  await transporter.sendMail({
-    from: env.smtpFrom,
+  return {
     to: payload.to,
-    cc: payload.cc?.length ? payload.cc : undefined,
+    cc: payload.cc,
+    from: env.smtpFrom,
     replyTo,
     subject: `[${payload.siteName}] ${subject}`,
     text: [
@@ -88,5 +110,45 @@ export const sendContactEmail = async (payload: ContactEmailPayload): Promise<vo
         )}</div>
       </div>
     `,
-  });
+  };
+};
+
+export const buildVisitorAckEmail = (payload: {
+  to: string;
+  siteName: string;
+  name: string;
+  subject?: string | null;
+}): ContactEmailPayload => {
+  const subject = `We received your message - ${payload.siteName}`;
+  const safeName = payload.name || "there";
+  return {
+    to: payload.to,
+    from: env.smtpFrom,
+    subject,
+    text: [
+      `Hi ${safeName},`,
+      "",
+      `Thanks for contacting ${payload.siteName}. We have received your message and our team will contact you soon if a response is needed.`,
+      "",
+      payload.subject ? `Your subject: ${payload.subject}` : "",
+      "",
+      "Regards,",
+      `${payload.siteName} Team`,
+    ]
+      .filter(Boolean)
+      .join("\n"),
+    html: `
+      <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827">
+        <h2 style="margin:0 0 12px">We received your message</h2>
+        <p>Hi ${escapeHtml(safeName)},</p>
+        <p>Thanks for contacting <strong>${escapeHtml(payload.siteName)}</strong>. We have received your message and our team will contact you soon if a response is needed.</p>
+        ${
+          payload.subject
+            ? `<p><strong>Your subject:</strong> ${escapeHtml(payload.subject)}</p>`
+            : ""
+        }
+        <p style="margin-top:20px">Regards,<br/>${escapeHtml(payload.siteName)} Team</p>
+      </div>
+    `,
+  };
 };

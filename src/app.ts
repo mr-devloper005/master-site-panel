@@ -4,6 +4,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 
 import authRoutes from "./modules/auth/auth.routes";
+import { startContactEmailQueueWorker } from "./modules/contact/contact-email-queue";
 import contactRoutes from "./modules/contact/contact.routes";
 import postsRoutes from "./modules/posts/posts.routes";
 import publicRoutes from "./modules/public/public.routes";
@@ -38,6 +39,7 @@ app.use("/api/v1/public", publicRoutes);
 app.use("/api/v1/runtime", runtimeRoutes);
 
 startIndexingScheduler();
+startContactEmailQueueWorker();
 
 app.use(notFoundHandler);
 app.use(errorHandler);
