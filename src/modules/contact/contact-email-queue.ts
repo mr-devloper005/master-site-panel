@@ -3,6 +3,7 @@ import { ContactEmailQueueStatus, ContactEmailQueueType } from "@prisma/client";
 import { env } from "../../config/env";
 import { prisma } from "../../config/db";
 import { ContactEmailPayload, sendContactEmail } from "./contact-email";
+import { getResolvedSmtpSettings } from "../settings/smtp-settings-service";
 
 const retryDelayMs = (attempts: number): number => {
   const minutes = [1, 5, 15][Math.min(attempts, 2)];
@@ -14,13 +15,14 @@ export const enqueueContactEmail = async (input: {
   type: ContactEmailQueueType;
   email: ContactEmailPayload;
 }) => {
+  const settings = await getResolvedSmtpSettings();
   return prisma.contactEmailQueue.create({
     data: {
       contactSubmissionId: input.contactSubmissionId,
       type: input.type,
       toEmail: input.email.to,
       ccEmails: input.email.cc || [],
-      fromEmail: input.email.from || env.smtpFrom || env.smtpUser,
+      fromEmail: input.email.from || settings?.fromEmail || env.smtpFrom || env.smtpUser || "not-configured@example.com",
       replyTo: input.email.replyTo,
       subject: input.email.subject,
       textBody: input.email.text,
@@ -58,7 +60,7 @@ export const processContactEmailQueue = async (limit = env.contactEmailQueueBatc
       await sendContactEmail({
         to: item.toEmail,
         cc: item.ccEmails,
-        from: item.fromEmail,
+        from: item.fromEmail === "not-configured@example.com" ? undefined : item.fromEmail,
         replyTo: item.replyTo || undefined,
         subject: item.subject,
         text: item.textBody,

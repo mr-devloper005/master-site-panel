@@ -1,4 +1,5 @@
 import { env } from "../../config/env";
+import { getResolvedSmtpSettings } from "../settings/smtp-settings-service";
 
 export type ContactEmailPayload = {
   to: string;
@@ -34,7 +35,8 @@ export const isContactEmailConfigured = (): boolean =>
   Boolean(env.smtpHost && env.smtpUser && env.smtpPass && env.smtpFrom);
 
 export const sendContactEmail = async (payload: ContactEmailPayload): Promise<void> => {
-  if (!isContactEmailConfigured()) {
+  const settings = await getResolvedSmtpSettings();
+  if (!settings) {
     throw new Error("SMTP is not configured.");
   }
 
@@ -45,17 +47,17 @@ export const sendContactEmail = async (payload: ContactEmailPayload): Promise<vo
     };
   };
   const transporter = nodemailer.createTransport({
-    host: env.smtpHost,
-    port: env.smtpPort,
-    secure: env.smtpPort === 465,
+    host: settings.host,
+    port: settings.port,
+    secure: settings.secure,
     auth: {
-      user: env.smtpUser,
-      pass: env.smtpPass,
+      user: settings.username,
+      pass: settings.password,
     },
   });
 
   await transporter.sendMail({
-    from: payload.from || env.smtpFrom,
+    from: payload.from || settings.fromEmail,
     to: payload.to,
     cc: payload.cc?.length ? payload.cc : undefined,
     replyTo: payload.replyTo,

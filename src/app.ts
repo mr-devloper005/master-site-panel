@@ -9,6 +9,7 @@ import contactRoutes from "./modules/contact/contact.routes";
 import postsRoutes from "./modules/posts/posts.routes";
 import publicRoutes from "./modules/public/public.routes";
 import runtimeRoutes from "./modules/runtime/runtime.routes";
+import settingsRoutes from "./modules/settings/settings.routes";
 import sitesRoutes from "./modules/sites/sites.routes";
 import { startIndexingScheduler } from "./modules/sites/indexing-scheduler";
 import tasksRoutes, { siteTaskRouter } from "./modules/tasks/tasks.routes";
@@ -32,6 +33,7 @@ app.get("/health", (_req, res) => {
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/sites", sitesRoutes);
 app.use("/api/v1/contact-submissions", contactRoutes);
+app.use("/api/v1/settings", settingsRoutes);
 app.use("/api/v1/posts", postsRoutes);
 app.use("/api/v1/tasks", tasksRoutes);
 app.use("/", siteTaskRouter);

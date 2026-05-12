@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildVisitorAckEmail = exports.buildTeamNotificationEmail = exports.sendContactEmail = exports.isContactEmailConfigured = exports.escapeHtml = void 0;
 const env_1 = require("../../config/env");
+const smtp_settings_service_1 = require("../settings/smtp-settings-service");
 const escapeHtml = (value) => value
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -11,22 +12,23 @@ exports.escapeHtml = escapeHtml;
 const isContactEmailConfigured = () => Boolean(env_1.env.smtpHost && env_1.env.smtpUser && env_1.env.smtpPass && env_1.env.smtpFrom);
 exports.isContactEmailConfigured = isContactEmailConfigured;
 const sendContactEmail = async (payload) => {
-    if (!(0, exports.isContactEmailConfigured)()) {
+    const settings = await (0, smtp_settings_service_1.getResolvedSmtpSettings)();
+    if (!settings) {
         throw new Error("SMTP is not configured.");
     }
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const nodemailer = require("nodemailer");
     const transporter = nodemailer.createTransport({
-        host: env_1.env.smtpHost,
-        port: env_1.env.smtpPort,
-        secure: env_1.env.smtpPort === 465,
+        host: settings.host,
+        port: settings.port,
+        secure: settings.secure,
         auth: {
-            user: env_1.env.smtpUser,
-            pass: env_1.env.smtpPass,
+            user: settings.username,
+            pass: settings.password,
         },
     });
     await transporter.sendMail({
-        from: payload.from || env_1.env.smtpFrom,
+        from: payload.from || settings.fromEmail,
         to: payload.to,
         cc: payload.cc?.length ? payload.cc : undefined,
         replyTo: payload.replyTo,

@@ -451,6 +451,27 @@ export const updateContactSubmission = async (submissionId, payload) => {
   return response.data;
 };
 
+export const fetchSmtpSettings = async () => {
+  const response = await request("/api/v1/settings/smtp");
+  return response.data;
+};
+
+export const updateSmtpSettings = async (payload) => {
+  const response = await request("/api/v1/settings/smtp", {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+  return response.data;
+};
+
+export const testSmtpSettings = async (toEmail) => {
+  const response = await request("/api/v1/settings/smtp/test", {
+    method: "POST",
+    body: JSON.stringify({ toEmail }),
+  });
+  return response.data;
+};
+
 export const runSiteIndexingInspections = async (siteId, limit = 20) => {
   const response = await request(`/api/v1/sites/${siteId}/indexing/run-inspections`, {
     method: "POST",

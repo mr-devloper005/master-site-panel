@@ -6,6 +6,7 @@ import { ApiError } from "../../utils/api-error";
 import { sanitizeSiteConfig } from "../sites/site-contract";
 import { buildTeamNotificationEmail, buildVisitorAckEmail } from "./contact-email";
 import { enqueueContactEmail } from "./contact-email-queue";
+import { getResolvedSmtpSettings } from "../settings/smtp-settings-service";
 
 export type ContactSubmissionInput = {
   name?: unknown;
@@ -37,13 +38,14 @@ const cleanMeta = (value: unknown): Prisma.InputJsonObject | undefined => {
   return Object.fromEntries(entries) as Prisma.InputJsonObject;
 };
 
-export const getSiteContactRecipient = (site: {
+export const getSiteContactRecipient = async (site: {
   config: Prisma.JsonValue | null;
-}): { to?: string; cc: string[]; enabled: boolean; fromName?: string } => {
+}): Promise<{ to?: string; cc: string[]; enabled: boolean; fromName?: string }> => {
   const config = sanitizeSiteConfig(site.config);
+  const settings = await getResolvedSmtpSettings();
   return {
     enabled: config.contact?.enabled !== false,
-    to: config.contact?.notifyEmail || env.contactDefaultNotifyEmail || undefined,
+    to: config.contact?.notifyEmail || settings?.defaultNotifyEmail || env.contactDefaultNotifyEmail || undefined,
     cc: config.contact?.ccEmails || [],
     fromName: config.contact?.fromName,
   };
@@ -101,7 +103,7 @@ export const createContactSubmission = async (
     },
   });
 
-  const recipient = getSiteContactRecipient(site);
+  const recipient = await getSiteContactRecipient(site);
 
   const queued = [];
   queued.push(

@@ -8,6 +8,7 @@ const api_error_1 = require("../../utils/api-error");
 const site_contract_1 = require("../sites/site-contract");
 const contact_email_1 = require("./contact-email");
 const contact_email_queue_1 = require("./contact-email-queue");
+const smtp_settings_service_1 = require("../settings/smtp-settings-service");
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const cleanString = (value, maxLength) => typeof value === "string" ? value.trim().slice(0, maxLength) : "";
 const cleanOptionalString = (value, maxLength) => {
@@ -24,11 +25,12 @@ const cleanMeta = (value) => {
         return undefined;
     return Object.fromEntries(entries);
 };
-const getSiteContactRecipient = (site) => {
+const getSiteContactRecipient = async (site) => {
     const config = (0, site_contract_1.sanitizeSiteConfig)(site.config);
+    const settings = await (0, smtp_settings_service_1.getResolvedSmtpSettings)();
     return {
         enabled: config.contact?.enabled !== false,
-        to: config.contact?.notifyEmail || env_1.env.contactDefaultNotifyEmail || undefined,
+        to: config.contact?.notifyEmail || settings?.defaultNotifyEmail || env_1.env.contactDefaultNotifyEmail || undefined,
         cc: config.contact?.ccEmails || [],
         fromName: config.contact?.fromName,
     };
@@ -78,7 +80,7 @@ const createContactSubmission = async (siteCode, payload, requestMeta = {}) => {
             },
         },
     });
-    const recipient = (0, exports.getSiteContactRecipient)(site);
+    const recipient = await (0, exports.getSiteContactRecipient)(site);
     const queued = [];
     queued.push(await (0, contact_email_queue_1.enqueueContactEmail)({
         contactSubmissionId: submission.id,
