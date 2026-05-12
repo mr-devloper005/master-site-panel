@@ -229,3 +229,20 @@ model ContactEmailQueue {
   @@index([status, nextAttemptAt])
   @@index([contactSubmissionId, type])
 }
+
+model SmtpSettings {
+  id                 String   @id @default("default")
+  host               String
+  port               Int      @default(587)
+  username           String
+  passwordCipher     String?
+  fromEmail          String
+  defaultNotifyEmail String?
+  secure             Boolean  @default(false)
+  isEnabled          Boolean  @default(true)
+  lastTestAt         DateTime?
+  lastTestStatus     String?
+  lastTestError      String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
