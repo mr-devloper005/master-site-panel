@@ -137,11 +137,22 @@ export const AppProvider = ({ children }) => {
     if (!globalQuery.trim()) return sites;
     const q = safeLower(globalQuery);
     return sites.filter(
-      (site) =>
-        safeLower(site.name).includes(q) ||
-        safeLower(site.code).includes(q) ||
-        safeLower(site.url).includes(q) ||
-        safeLower(site.description).includes(q)
+      (site) => {
+        const searchValues = [
+          site.name,
+          site.code,
+          site.url,
+          site.domain,
+          site.description,
+          site.raw?.config?.frontendUrl,
+          site.raw?.config?.liveUrl,
+          site.raw?.config?.siteUrl,
+          site.raw?.config?.url,
+          site.raw?.config?.domain,
+        ];
+
+        return searchValues.some((value) => safeLower(value).includes(q));
+      }
     );
   }, [sites, globalQuery]);
 

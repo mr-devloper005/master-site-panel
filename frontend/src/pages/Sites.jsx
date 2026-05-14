@@ -25,16 +25,24 @@ export default function Sites() {
       postCount: posts.filter((post) => post.siteId === site.id).length
     }));
 
-      const filtered = withCounts.filter((site) => {
-        if (!query.trim()) return true;
-        const q = query.toLowerCase();
-        return (
-          site.name.toLowerCase().includes(q) ||
-          site.code.toLowerCase().includes(q) ||
-          site.url.toLowerCase().includes(q) ||
-          site.description.toLowerCase().includes(q)
-        );
-      });
+    const filtered = withCounts.filter((site) => {
+      if (!query.trim()) return true;
+      const q = query.toLowerCase();
+      const searchValues = [
+        site.name,
+        site.code,
+        site.url,
+        site.domain,
+        site.description,
+        site.raw?.config?.frontendUrl,
+        site.raw?.config?.liveUrl,
+        site.raw?.config?.siteUrl,
+        site.raw?.config?.url,
+        site.raw?.config?.domain,
+      ];
+
+      return searchValues.some((value) => String(value || "").toLowerCase().includes(q));
+    });
 
     return filtered.sort((a, b) => {
       if (sortBy === "id") return a.id.localeCompare(b.id);

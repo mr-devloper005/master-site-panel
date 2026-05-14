@@ -46,6 +46,13 @@ const sentenceCase = (value) =>
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
 
+const resolveSiteUrl = (config) =>
+  config.frontendUrl ||
+  config.liveUrl ||
+  config.siteUrl ||
+  config.url ||
+  (config.domain ? `https://${String(config.domain).replace(/^https?:\/\//, "")}` : "");
+
 const mapSite = (site) => {
   const config = site.config || {};
   const blueprint = site.blueprint || {};
@@ -60,7 +67,8 @@ const mapSite = (site) => {
     framework: site.framework,
     category: site.category,
     theme: site.theme || "",
-    url: config.frontendUrl || config.liveUrl || config.siteUrl || "",
+    url: resolveSiteUrl(config),
+    domain: config.domain || "",
     description: config.description || `${sentenceCase(site.category)} site managed from master panel`,
     status: site.isActive ? "Active" : "Inactive",
     createdAt: site.createdAt,
