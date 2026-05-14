@@ -333,6 +333,30 @@ router.get("/", (0, auth_1.requireApiKey)("sites:read"), (0, async_handler_1.asy
         where.OR = [
             { name: { contains: search, mode: "insensitive" } },
             { code: { contains: search, mode: "insensitive" } },
+            {
+                config: {
+                    path: ["frontendUrl"],
+                    string_contains: search,
+                },
+            },
+            {
+                config: {
+                    path: ["liveUrl"],
+                    string_contains: search,
+                },
+            },
+            {
+                config: {
+                    path: ["siteUrl"],
+                    string_contains: search,
+                },
+            },
+            {
+                config: {
+                    path: ["domain"],
+                    string_contains: search,
+                },
+            },
         ];
     }
     if (framework && framework in client_1.SiteFramework) {

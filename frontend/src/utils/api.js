@@ -39,6 +39,23 @@ const request = async (path, options = {}) => {
   return json;
 };
 
+const requestPaginated = async (path, { limit = 200, mapItem = (item) => item } = {}) => {
+  let page = 1;
+  let totalPages = 1;
+  const items = [];
+
+  do {
+    const separator = path.includes("?") ? "&" : "?";
+    const response = await request(`${path}${separator}page=${page}&limit=${limit}`);
+    const pageItems = Array.isArray(response.data) ? response.data : [];
+    items.push(...pageItems.map(mapItem));
+    totalPages = Math.max(Number(response.meta?.totalPages) || 1, 1);
+    page += 1;
+  } while (page <= totalPages);
+
+  return items;
+};
+
 const sentenceCase = (value) =>
   value
     .toLowerCase()
@@ -173,14 +190,28 @@ export const loginMock = async (email, password) => {
 };
 
 export const fetchDashboardData = async () => {
-  const [sitesResponse, postsResponse] = await Promise.all([
-    request("/api/v1/sites?limit=500"),
-    request("/api/v1/posts?limit=200"),
+  const [sites, posts] = await Promise.all([
+    requestPaginated("/api/v1/sites", { limit: 200, mapItem: mapSite }),
+    requestPaginated("/api/v1/posts", { limit: 200, mapItem: mapPost }),
   ]);
 
   return {
-    sites: sitesResponse.data.map(mapSite),
-    posts: postsResponse.data.map(mapPost),
+    sites,
+    posts,
+  };
+};
+
+export const fetchSitesPage = async ({ page = 1, limit = 50, search = "" } = {}) => {
+  const query = new URLSearchParams();
+  query.set("page", String(page));
+  query.set("limit", String(limit));
+  if (search.trim()) query.set("search", search.trim());
+
+  const response = await request(`/api/v1/sites?${query.toString()}`);
+
+  return {
+    sites: Array.isArray(response.data) ? response.data.map(mapSite) : [],
+    meta: response.meta || { page, limit, total: 0, totalPages: 1 },
   };
 };
 

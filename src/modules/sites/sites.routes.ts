@@ -426,6 +426,30 @@ router.get("/", requireApiKey("sites:read"), asyncHandler(async (req, res) => {
     where.OR = [
       { name: { contains: search, mode: "insensitive" } },
       { code: { contains: search, mode: "insensitive" } },
+      {
+        config: {
+          path: ["frontendUrl"],
+          string_contains: search,
+        },
+      },
+      {
+        config: {
+          path: ["liveUrl"],
+          string_contains: search,
+        },
+      },
+      {
+        config: {
+          path: ["siteUrl"],
+          string_contains: search,
+        },
+      },
+      {
+        config: {
+          path: ["domain"],
+          string_contains: search,
+        },
+      },
     ];
   }
   if (framework && framework in SiteFramework) {

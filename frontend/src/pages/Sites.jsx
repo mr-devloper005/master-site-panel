@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -7,9 +7,12 @@ import SiteFormModal from "../components/sites/SiteFormModal";
 import SiteProvisioningModal from "../components/sites/SiteProvisioningModal";
 import SiteTaskModal from "../components/sites/SiteTaskModal";
 import { useAppData } from "../context/AppContext";
+import { fetchSitesPage } from "../utils/api";
+
+const PAGE_SIZE = 50;
 
 export default function Sites() {
-  const { sites, posts, createSite, editSite, addTaskToSite, runSiteBulkAction } = useAppData();
+  const { createSite, editSite, addTaskToSite, runSiteBulkAction } = useAppData();
   const [query, setQuery] = useState("");
   const [sortBy, setSortBy] = useState("name");
   const [selected, setSelected] = useState([]);
@@ -17,38 +20,55 @@ export default function Sites() {
   const [editing, setEditing] = useState(null);
   const [taskSite, setTaskSite] = useState(null);
   const [packageData, setPackageData] = useState(null);
+  const [rows, setRows] = useState([]);
+  const [page, setPage] = useState(1);
+  const [meta, setMeta] = useState({ page: 1, limit: PAGE_SIZE, total: 0, totalPages: 1 });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const rows = useMemo(() => {
-    const withCounts = sites.map((site) => ({
-      ...site,
-      postCount: posts.filter((post) => post.siteId === site.id).length
-    }));
+  const loadSites = async (nextPage = page, nextQuery = query) => {
+    setLoading(true);
+    try {
+      const result = await fetchSitesPage({
+        page: nextPage,
+        limit: PAGE_SIZE,
+        search: nextQuery,
+      });
 
-    const filtered = withCounts.filter((site) => {
-      if (!query.trim()) return true;
-      const q = query.toLowerCase();
-      const searchValues = [
-        site.name,
-        site.code,
-        site.url,
-        site.domain,
-        site.description,
-        site.raw?.config?.frontendUrl,
-        site.raw?.config?.liveUrl,
-        site.raw?.config?.siteUrl,
-        site.raw?.config?.url,
-        site.raw?.config?.domain,
-      ];
+      setRows(
+        [...result.sites].sort((a, b) => {
+          if (sortBy === "id") return a.id.localeCompare(b.id);
+          return a.name.localeCompare(b.name);
+        })
+      );
+      setMeta(result.meta);
+      setSelected([]);
+    } catch (error) {
+      toast.error(error.message || "Failed to load sites");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      return searchValues.some((value) => String(value || "").toLowerCase().includes(q));
-    });
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPage(1);
+      loadSites(1, query);
+    }, 250);
 
-    return filtered.sort((a, b) => {
+    return () => clearTimeout(timer);
+  }, [query, sortBy]);
+
+  useEffect(() => {
+    loadSites(page, query);
+  }, [page]);
+
+  const sortedRows = useMemo(() => {
+    return [...rows].sort((a, b) => {
       if (sortBy === "id") return a.id.localeCompare(b.id);
       return a.name.localeCompare(b.name);
     });
-  }, [sites, posts, query, sortBy]);
+  }, [rows, sortBy]);
 
   const toggle = (id) => {
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
@@ -81,12 +101,34 @@ export default function Sites() {
         </div>
       </div>
 
+      <div className="flex items-center justify-between gap-3 text-sm text-[var(--text-secondary)]">
+        <p>
+          {loading ? "Loading sites..." : `Showing page ${meta.page} of ${meta.totalPages} · ${meta.total} total sites`}
+        </p>
+        <div className="flex gap-2">
+          <button
+            className="min-h-10 rounded-lg border border-[var(--border-color)] px-3 disabled:opacity-50"
+            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+            disabled={loading || page <= 1}
+          >
+            Prev
+          </button>
+          <button
+            className="min-h-10 rounded-lg border border-[var(--border-color)] px-3 disabled:opacity-50"
+            onClick={() => setPage((prev) => Math.min(prev + 1, meta.totalPages))}
+            disabled={loading || page >= meta.totalPages}
+          >
+            Next
+          </button>
+        </div>
+      </div>
+
       <div className="min-h-0 flex-1 overflow-hidden">
         <SiteTable
-          sites={rows}
+          sites={sortedRows}
           selectedIds={selected}
           onToggle={toggle}
-          onToggleAll={(checked) => setSelected(checked ? rows.map((row) => row.id) : [])}
+          onToggleAll={(checked) => setSelected(checked ? sortedRows.map((row) => row.id) : [])}
           onEdit={(site) => {
             setEditing(site);
             setOpenModal(true);
@@ -95,6 +137,7 @@ export default function Sites() {
             if (!confirm("Delete this site and its posts?")) return;
             await runSiteBulkAction([id], "delete");
             toast.success("Site deleted");
+            await loadSites(page, query);
           }}
           onViewPosts={(site) => navigate(`/posts?site=${site.id}`)}
           onManageTasks={(site) => setTaskSite(site)}
@@ -115,6 +158,7 @@ export default function Sites() {
             setPackageData({ type: "site", ...created });
           }
           setOpenModal(false);
+          await loadSites(page, query);
         }}
       />
 
@@ -127,6 +171,7 @@ export default function Sites() {
           const provisioned = await addTaskToSite(taskSite.id, task);
           setPackageData({ type: "task", ...provisioned });
           setTaskSite(null);
+          await loadSites(page, query);
         }}
       />
 
