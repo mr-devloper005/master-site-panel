@@ -37,6 +37,9 @@ exports.CATEGORY_OPTIONS = [
     { name: "Event", slug: "event" },
     { name: "Digital", slug: "digital" },
     { name: "News", slug: "news" },
+    { name: "V News Media", slug: "v-news-media" },
+    { name: "Vefogix Media Agency", slug: "vefogix-media-agency" },
+    { name: "Vefogix Media News", slug: "vefogix-media-news" },
     { name: "Industry & Manufacturing", slug: "industry-manufacturing" },
 ];
 const allowedNames = new Set(exports.CATEGORY_OPTIONS.map((item) => item.name.toLowerCase()));
