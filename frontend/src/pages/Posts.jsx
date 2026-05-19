@@ -1,9 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import toast from "react-hot-toast";
+
 import PostTable from "../components/posts/PostTable";
 import PostEditorModal from "../components/posts/PostEditorModal";
 import SearchableSelect from "../components/ui/SearchableSelect";
 import { useAppData } from "../context/AppContext";
+import { fetchPostsPage } from "../utils/api";
 
 const PAGE_SIZE = 15;
 const TASK_LABELS = {
@@ -22,7 +25,7 @@ const TASK_LABELS = {
 };
 
 export default function Posts() {
-  const { posts: allPosts, filteredPosts, sites, globalQuery, setGlobalQuery, runPostBulkAction, editPost } = useAppData();
+  const { posts: recentPosts, sites, globalQuery, setGlobalQuery, runPostBulkAction, editPost } = useAppData();
   const [params] = useSearchParams();
   const initialSiteId = params.get("site") || "all";
   const initialSearch = params.get("search") || "";
@@ -38,6 +41,9 @@ export default function Posts() {
   const [selected, setSelected] = useState([]);
   const [sortBy, setSortBy] = useState("date");
   const [page, setPage] = useState(1);
+  const [meta, setMeta] = useState({ page: 1, limit: PAGE_SIZE, total: 0, totalPages: 1 });
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [openEditor, setOpenEditor] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
   const [savedSearches, setSavedSearches] = useState(() => {
@@ -45,8 +51,6 @@ export default function Posts() {
     return raw ? JSON.parse(raw) : [];
   });
 
-  const selectedSite = sites.find((site) => site.id === siteFilter);
-  const posts = globalQuery.trim() ? filteredPosts : allPosts;
   const siteOptions = useMemo(
     () =>
       sites.map((site) => ({
@@ -58,51 +62,61 @@ export default function Posts() {
   );
 
   const taskOptions = useMemo(() => {
-    const uniqueTasks = Array.from(new Set(posts.map((post) => post.taskType).filter(Boolean)));
+    const source = rows.length ? rows : recentPosts;
+    const uniqueTasks = Array.from(new Set(source.map((post) => post.taskType).filter(Boolean)));
     return uniqueTasks
       .sort((a, b) => (TASK_LABELS[a] || a).localeCompare(TASK_LABELS[b] || b))
-      .map((task) => ({
-        value: task,
-        label: TASK_LABELS[task] || task,
-        meta: task,
-      }));
-  }, [posts]);
+      .map((task) => ({ value: task, label: TASK_LABELS[task] || task, meta: task }));
+  }, [rows, recentPosts]);
 
-  const filtered = useMemo(() => {
-    const effectiveQuery = query.trim() || globalQuery.trim();
-    const q = effectiveQuery.toLowerCase();
+  const loadPosts = async (nextPage = page) => {
+    setLoading(true);
+    try {
+      const result = await fetchPostsPage({
+        page: nextPage,
+        limit: PAGE_SIZE,
+        search: query || globalQuery,
+        siteId: tab === "site" ? siteFilter : "all",
+        status: statusFilter,
+        taskType: taskFilter,
+      });
 
-    let result = posts.filter((post) => {
-      const matchTab =
-        tab === "all" ||
-        siteFilter === "all" ||
-        post.siteId === siteFilter ||
-        (selectedSite ? post.siteName === selectedSite.name : false);
-      const matchStatus = statusFilter === "all" ? true : post.status === statusFilter;
-      const matchTask = taskFilter === "all" ? true : post.taskType === taskFilter;
-      const matchSearch = !effectiveQuery
-        ? true
-        : [post.title, post.excerpt, post.author, post.siteName, post.date].some((field) =>
-            field.toLowerCase().includes(q)
-          );
-      const date = new Date(post.date).getTime();
-      const matchFrom = dateFrom ? date >= new Date(dateFrom).getTime() : true;
-      const matchTo = dateTo ? date <= new Date(dateTo).getTime() + 24 * 60 * 60 * 1000 : true;
-      return matchTab && matchStatus && matchTask && matchSearch && matchFrom && matchTo;
-    });
+      let nextRows = result.posts;
+      if (dateFrom || dateTo) {
+        nextRows = nextRows.filter((post) => {
+          const date = new Date(post.date).getTime();
+          const matchFrom = dateFrom ? date >= new Date(dateFrom).getTime() : true;
+          const matchTo = dateTo ? date <= new Date(dateTo).getTime() + 24 * 60 * 60 * 1000 : true;
+          return matchFrom && matchTo;
+        });
+      }
+      nextRows = [...nextRows].sort((a, b) => {
+        if (sortBy === "title") return a.title.localeCompare(b.title);
+        return new Date(b.date) - new Date(a.date);
+      });
 
-    result = result.sort((a, b) => {
-      if (sortBy === "title") return a.title.localeCompare(b.title);
-      return new Date(b.date) - new Date(a.date);
-    });
-
-    return result;
-  }, [posts, tab, siteFilter, selectedSite, statusFilter, taskFilter, query, globalQuery, dateFrom, dateTo, sortBy]);
+      setRows(nextRows);
+      setMeta(result.meta);
+      setSelected([]);
+    } catch (error) {
+      toast.error(error.message || "Failed to load posts");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    setPage(1);
-    setSelected([]);
-  }, [tab, siteFilter, statusFilter, taskFilter, query, dateFrom, dateTo, sortBy]);
+    const timer = setTimeout(() => {
+      setPage(1);
+      loadPosts(1);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [tab, siteFilter, statusFilter, taskFilter, query, globalQuery, dateFrom, dateTo, sortBy]);
+
+  useEffect(() => {
+    loadPosts(page);
+  }, [page]);
 
   useEffect(() => {
     const paramSearch = params.get("search") || "";
@@ -112,15 +126,18 @@ export default function Posts() {
     }
   }, [params, query, setGlobalQuery]);
 
-  const totalPages = Math.max(Math.ceil(filtered.length / PAGE_SIZE), 1);
-  const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-
+  const totalPages = Math.max(Number(meta.totalPages) || 1, 1);
   const toggle = (id) => setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-4 overflow-hidden">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-xl font-bold">Posts Management</h1>
+        <div>
+          <h1 className="text-xl font-bold">Posts Management</h1>
+          <p className="text-xs text-[var(--text-secondary)]">
+            {loading ? "Loading posts..." : `Showing page ${meta.page || page} of ${totalPages} · ${meta.total || 0} total posts`}
+          </p>
+        </div>
         <div className="flex gap-2">
           <button
             className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
@@ -135,17 +152,16 @@ export default function Posts() {
           <button
             className="rounded-lg border border-rose-400 bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:bg-rose-950/30 dark:text-rose-300"
             onClick={async () => {
-              const confirmed = window.confirm(
-                "Delete ALL posts from all sites? This cannot be undone."
-              );
+              const confirmed = window.confirm("Delete ALL posts from all sites? This cannot be undone.");
               if (!confirmed) return;
               await runPostBulkAction({ action: "deleteAll" });
+              await loadPosts(1);
             }}
           >
             Delete All Posts
           </button>
-          <button className="rounded-lg bg-blue-600 px-3 py-2 text-sm text-white" onClick={() => runPostBulkAction({ postIds: selected, action: "publish" })} disabled={!selected.length}>Bulk Publish</button>
-          <button className="rounded-lg border border-red-300 px-3 py-2 text-sm text-red-600" onClick={() => runPostBulkAction({ postIds: selected, action: "delete" })} disabled={!selected.length}>Bulk Delete</button>
+          <button className="rounded-lg bg-blue-600 px-3 py-2 text-sm text-white" onClick={async () => { await runPostBulkAction({ postIds: selected, action: "publish" }); await loadPosts(page); }} disabled={!selected.length}>Bulk Publish</button>
+          <button className="rounded-lg border border-red-300 px-3 py-2 text-sm text-red-600" onClick={async () => { await runPostBulkAction({ postIds: selected, action: "delete" }); await loadPosts(page); }} disabled={!selected.length}>Bulk Delete</button>
         </div>
       </div>
 
@@ -168,9 +184,7 @@ export default function Posts() {
           <select className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm" value={taskFilter} onChange={(e) => setTaskFilter(e.target.value)}>
             <option value="all">All Tasks</option>
             {taskOptions.map((task) => (
-              <option key={task.value} value={task.value}>
-                {task.label}
-              </option>
+              <option key={task.value} value={task.value}>{task.label}</option>
             ))}
           </select>
           <select className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
@@ -216,16 +230,16 @@ export default function Posts() {
 
       <div className="min-h-0 flex-1 overflow-hidden">
         <PostTable
-          posts={paged}
+          posts={rows}
           selectedIds={selected}
           onSelect={toggle}
-          onSelectAll={(checked) => setSelected(checked ? paged.map((post) => post.id) : [])}
+          onSelectAll={(checked) => setSelected(checked ? rows.map((post) => post.id) : [])}
           onView={(post) => {
             setEditingPost(post);
             setOpenEditor(true);
           }}
-          onDelete={(id) => runPostBulkAction({ postIds: [id], action: "delete" })}
-          onInlineStatus={(postId, status) => editPost(postId, { status })}
+          onDelete={async (id) => { await runPostBulkAction({ postIds: [id], action: "delete" }); await loadPosts(page); }}
+          onInlineStatus={async (postId, status) => { await editPost(postId, { status }); await loadPosts(page); }}
           page={page}
           totalPages={totalPages}
           setPage={setPage}
@@ -240,6 +254,7 @@ export default function Posts() {
         onClose={() => setOpenEditor(false)}
         onSave={async (payload) => {
           await editPost(editingPost.id, payload);
+          await loadPosts(page);
           setOpenEditor(false);
         }}
       />

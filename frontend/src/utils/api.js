@@ -190,14 +190,39 @@ export const loginMock = async (email, password) => {
 };
 
 export const fetchDashboardData = async () => {
-  const [sites, posts] = await Promise.all([
-    requestPaginated("/api/v1/sites", { limit: 200, mapItem: mapSite }),
-    requestPaginated("/api/v1/posts", { limit: 200, mapItem: mapPost }),
+  // Keep app bootstrap lightweight. Heavy all-post loading made every page slow.
+  const [sitesResponse, postsResponse] = await Promise.all([
+    request("/api/v1/sites?page=1&limit=200"),
+    request("/api/v1/posts?page=1&limit=50"),
   ]);
 
   return {
-    sites,
-    posts,
+    sites: Array.isArray(sitesResponse.data) ? sitesResponse.data.map(mapSite) : [],
+    posts: Array.isArray(postsResponse.data) ? postsResponse.data.map(mapPost) : [],
+  };
+};
+
+export const fetchPostsPage = async ({
+  page = 1,
+  limit = 15,
+  search = "",
+  siteId = "",
+  status = "",
+  taskType = "",
+} = {}) => {
+  const query = new URLSearchParams();
+  query.set("page", String(page));
+  query.set("limit", String(limit));
+  if (search.trim()) query.set("search", search.trim());
+  if (siteId && siteId !== "all") query.set("siteId", siteId);
+  if (status && status !== "all") query.set("status", status.toUpperCase());
+  if (taskType && taskType !== "all") query.set("taskType", taskType);
+
+  const response = await request(`/api/v1/posts?${query.toString()}`);
+
+  return {
+    posts: Array.isArray(response.data) ? response.data.map(mapPost) : [],
+    meta: response.meta || { page, limit, total: 0, totalPages: 1 },
   };
 };
 
