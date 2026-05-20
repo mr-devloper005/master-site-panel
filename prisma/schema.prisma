@@ -107,6 +107,7 @@ model Post {
   indexingRecord    SiteIndexingRecord?
 
   @@index([siteId, status, publishedAt])
+  @@index([siteId, status, slug])
 }
 
 model SiteIndexingRecord {

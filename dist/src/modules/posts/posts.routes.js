@@ -55,6 +55,7 @@ router.get("/", (0, auth_1.requireApiKey)("posts:read"), (0, async_handler_1.asy
     const siteId = req.query.siteId?.toString();
     const status = mapStatus(req.query.status?.toString());
     const search = req.query.search?.toString().trim();
+    const taskType = req.query.taskType?.toString().trim();
     const page = Math.max(Number(req.query.page) || 1, 1);
     const limit = Math.min(Math.max(Number(req.query.limit) || 30, 1), 200);
     const where = {};
@@ -64,12 +65,25 @@ router.get("/", (0, auth_1.requireApiKey)("posts:read"), (0, async_handler_1.asy
         where.siteId = siteId;
     if (status)
         where.status = status;
-    if (search) {
+    if (taskType && taskType !== "all") {
         where.OR = [
-            { title: { contains: search, mode: "insensitive" } },
-            { summary: { contains: search, mode: "insensitive" } },
-            { tags: { has: search } },
+            { content: { path: ["type"], string_contains: taskType } },
+            { content: { path: ["postType"], string_contains: taskType } },
+            { content: { path: ["taskType"], string_contains: taskType } },
+            { tags: { has: taskType } },
         ];
+    }
+    if (search) {
+        const searchFilter = {
+            OR: [
+                { title: { contains: search, mode: "insensitive" } },
+                { summary: { contains: search, mode: "insensitive" } },
+                { authorName: { contains: search, mode: "insensitive" } },
+                { slug: { contains: search, mode: "insensitive" } },
+                { tags: { has: search } },
+            ],
+        };
+        where.AND = Array.isArray(where.AND) ? [...where.AND, searchFilter] : [searchFilter];
     }
     if (!canBypassSitePermissions(apiKey.scopes)) {
         const allowedSiteIds = await (0, auth_1.getAllowedSiteIds)(apiKey.id, "read");
@@ -81,14 +95,16 @@ router.get("/", (0, auth_1.requireApiKey)("posts:read"), (0, async_handler_1.asy
                 in: allowedSiteIds.length > 0 ? allowedSiteIds : ["__no_match__"],
             };
     }
-    const posts = await db_1.prisma.post.findMany({
-        where,
-        include: { site: true },
-        orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
-        skip: (page - 1) * limit,
-        take: limit,
-    });
-    const total = await db_1.prisma.post.count({ where });
+    const [posts, total] = await Promise.all([
+        db_1.prisma.post.findMany({
+            where,
+            include: { site: { select: { id: true, name: true, code: true } } },
+            orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+            skip: (page - 1) * limit,
+            take: limit,
+        }),
+        db_1.prisma.post.count({ where }),
+    ]);
     res.json({
         success: true,
         data: posts,
