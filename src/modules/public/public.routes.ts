@@ -180,22 +180,46 @@ router.get("/:siteCode/post/:slug", asyncHandler(async (req, res) => {
     return;
   }
 
-  const candidates = await prisma.post.findMany({
-    where: {
-      siteId: site.id,
-      status: PostStatus.PUBLISHED,
-      slug,
-    },
-    orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
-    take: task ? 20 : 1,
-    select: publicPostSelect,
-  });
-
   const post = task
-    ? candidates.find((item) => resolvePostType(item.content, item.tags) === task) || null
-    : candidates[0] || null;
+    ? await prisma.post.findFirst({
+        where: {
+          siteId: site.id,
+          status: PostStatus.PUBLISHED,
+          slug,
+          content: {
+            path: ["type"],
+            equals: task,
+          },
+        },
+        orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+        select: publicPostSelect,
+      })
+    : await prisma.post.findFirst({
+        where: {
+          siteId: site.id,
+          status: PostStatus.PUBLISHED,
+          slug,
+        },
+        orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+        select: publicPostSelect,
+      });
 
-  if (!post) {
+  // Legacy safety: older imports may have stored task in tags/postType/taskType.
+  // Keep this bounded and indexed by site/status/slug; never fall back to feed scans.
+  const legacyPost = post || !task
+    ? post
+    : (await prisma.post.findMany({
+        where: {
+          siteId: site.id,
+          status: PostStatus.PUBLISHED,
+          slug,
+        },
+        orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+        take: 20,
+        select: publicPostSelect,
+      })).find((item) => resolvePostType(item.content, item.tags) === task) || null;
+
+  if (!legacyPost) {
     res.status(404).json({ success: false, message: "Post not found." });
     return;
   }
@@ -208,7 +232,7 @@ router.get("/:siteCode/post/:slug", asyncHandler(async (req, res) => {
         config: sanitizeSiteConfig(site.config),
       },
       blueprint: buildSiteBlueprint(site.code, site.config),
-      post,
+      post: legacyPost,
     },
   });
 }));

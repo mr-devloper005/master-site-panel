@@ -164,20 +164,44 @@ router.get("/:siteCode/post/:slug", (0, async_handler_1.asyncHandler)(async (req
         res.status(404).json({ success: false, message: "Site not found." });
         return;
     }
-    const candidates = await db_1.prisma.post.findMany({
-        where: {
-            siteId: site.id,
-            status: client_1.PostStatus.PUBLISHED,
-            slug,
-        },
-        orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
-        take: task ? 20 : 1,
-        select: publicPostSelect,
-    });
     const post = task
-        ? candidates.find((item) => resolvePostType(item.content, item.tags) === task) || null
-        : candidates[0] || null;
-    if (!post) {
+        ? await db_1.prisma.post.findFirst({
+            where: {
+                siteId: site.id,
+                status: client_1.PostStatus.PUBLISHED,
+                slug,
+                content: {
+                    path: ["type"],
+                    equals: task,
+                },
+            },
+            orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+            select: publicPostSelect,
+        })
+        : await db_1.prisma.post.findFirst({
+            where: {
+                siteId: site.id,
+                status: client_1.PostStatus.PUBLISHED,
+                slug,
+            },
+            orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+            select: publicPostSelect,
+        });
+    // Legacy safety: older imports may have stored task in tags/postType/taskType.
+    // Keep this bounded and indexed by site/status/slug; never fall back to feed scans.
+    const legacyPost = post || !task
+        ? post
+        : (await db_1.prisma.post.findMany({
+            where: {
+                siteId: site.id,
+                status: client_1.PostStatus.PUBLISHED,
+                slug,
+            },
+            orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+            take: 20,
+            select: publicPostSelect,
+        })).find((item) => resolvePostType(item.content, item.tags) === task) || null;
+    if (!legacyPost) {
         res.status(404).json({ success: false, message: "Post not found." });
         return;
     }
@@ -189,7 +213,7 @@ router.get("/:siteCode/post/:slug", (0, async_handler_1.asyncHandler)(async (req
                 config: (0, site_contract_1.sanitizeSiteConfig)(site.config),
             },
             blueprint: (0, site_contract_1.buildSiteBlueprint)(site.code, site.config),
-            post,
+            post: legacyPost,
         },
     });
 }));
