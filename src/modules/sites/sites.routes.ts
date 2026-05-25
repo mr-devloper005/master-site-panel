@@ -492,6 +492,82 @@ router.get("/", requireApiKey("sites:read"), asyncHandler(async (req, res) => {
   });
 }));
 
+router.get("/summary", requireApiKey("sites:read"), asyncHandler(async (_req, res) => {
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+  const [
+    totalSites,
+    activeSiteRows,
+    publishedPosts,
+    draftPosts,
+    recentPosts,
+    runtimeRows,
+    topSiteRows,
+  ] = await Promise.all([
+    prisma.site.count(),
+    prisma.post.groupBy({
+      by: ["siteId"],
+      where: { status: "PUBLISHED" },
+      _count: { _all: true },
+    }),
+    prisma.post.count({ where: { status: "PUBLISHED" } }),
+    prisma.post.count({ where: { status: "DRAFT" } }),
+    prisma.post.count({
+      where: {
+        status: "PUBLISHED",
+        OR: [{ publishedAt: { gte: sevenDaysAgo } }, { createdAt: { gte: sevenDaysAgo } }],
+      },
+    }),
+    prisma.$queryRaw<Array<{ status: string; count: bigint }>>(Prisma.sql`
+      SELECT "status", COUNT(*)::bigint AS count
+      FROM (
+        SELECT DISTINCT ON ("siteId") "siteId", "status", "lastHeartbeatAt"
+        FROM "SiteRuntimeStatus"
+        ORDER BY "siteId", "lastHeartbeatAt" DESC
+      ) latest
+      GROUP BY "status"
+    `),
+    prisma.post.groupBy({
+      by: ["siteId"],
+      where: { status: "PUBLISHED" },
+      _count: { _all: true },
+      orderBy: { _count: { siteId: "desc" } },
+      take: 1,
+    }),
+  ]);
+
+  const runtimeCounts = runtimeRows.reduce<Record<string, number>>((acc, row) => {
+    acc[row.status] = Number(row.count || 0);
+    return acc;
+  }, {});
+
+  const topSiteId = topSiteRows[0]?.siteId;
+  const topSite = topSiteId
+    ? await prisma.site.findUnique({
+        where: { id: topSiteId },
+        select: { id: true, name: true, code: true },
+      })
+    : null;
+
+  res.json({
+    success: true,
+    data: {
+      totalSites,
+      activeSites: activeSiteRows.length,
+      onlineSites: runtimeCounts.ONLINE || 0,
+      degradedSites: runtimeCounts.DEGRADED || 0,
+      offlineSites: runtimeCounts.OFFLINE || 0,
+      publishedPosts,
+      draftPosts,
+      recentPosts,
+      avgPosts: totalSites ? Number((publishedPosts / totalSites).toFixed(1)) : 0,
+      topSite: topSite
+        ? { ...topSite, postCount: topSiteRows[0]?._count?._all || 0 }
+        : null,
+    },
+  });
+}));
+
 router.get("/:siteId", requireApiKey("sites:read"), asyncHandler(async (req, res) => {
   const siteId = String(req.params.siteId);
   const site = await prisma.site.findUnique({

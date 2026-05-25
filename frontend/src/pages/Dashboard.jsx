@@ -23,10 +23,31 @@ const isWithinLastDays = (iso, days) => {
 };
 
 export default function Dashboard() {
-  const { sites, posts, createSite } = useAppData();
+  const { sites, posts, dashboardSummary, createSite } = useAppData();
   const [openAddSite, setOpenAddSite] = useState(false);
 
   const metrics = useMemo(() => {
+    if (dashboardSummary) {
+      const totalSites = Number(dashboardSummary.totalSites || 0);
+      const publishedPosts = Number(dashboardSummary.publishedPosts || 0);
+      const totalPosts = publishedPosts + Number(dashboardSummary.draftPosts || 0);
+
+      return {
+        totalSites,
+        totalPosts,
+        activeSites: Number(dashboardSummary.activeSites || 0),
+        onlineSites: Number(dashboardSummary.onlineSites || 0),
+        degradedSites: Number(dashboardSummary.degradedSites || 0),
+        avgPosts: String(dashboardSummary.avgPosts ?? (totalSites ? (publishedPosts / totalSites).toFixed(1) : "0.0")),
+        publishedPosts,
+        draftPosts: Number(dashboardSummary.draftPosts || 0),
+        recentPosts: Number(dashboardSummary.recentPosts || 0),
+        totalViews: posts.reduce((sum, post) => sum + (post.views || 0), 0),
+        totalLikes: posts.reduce((sum, post) => sum + (post.likes || 0), 0),
+        topSite: dashboardSummary.topSite || null,
+      };
+    }
+
     const totalSites = sites.length;
     const totalPosts = posts.length;
     const activeSites = sites.filter((site) => posts.some((post) => post.siteId === site.id)).length;
@@ -57,7 +78,7 @@ export default function Dashboard() {
       totalLikes,
       topSite
     };
-  }, [sites, posts]);
+  }, [sites, posts, dashboardSummary]);
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-4 overflow-hidden">

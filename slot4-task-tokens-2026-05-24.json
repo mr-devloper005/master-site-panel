@@ -1,0 +1,1040 @@
+{
+  "generatedAt": "2026-05-24T18:40:31.769Z",
+  "summary": {
+    "inventorySites": 120,
+    "upserted": 120,
+    "rotatedKeys": 0,
+    "tokenCount": 147
+  },
+  "tokens": [
+    {
+      "siteCode": "owlknowsbest",
+      "domain": "owlknowsbest.com",
+      "taskType": "article",
+      "name": "Owlknowsbest Article",
+      "token": "58024eef96c9761ca509d3c1624cae60912307564d147e97"
+    },
+    {
+      "siteCode": "reviewlystes",
+      "domain": "reviewlystes.com",
+      "taskType": "article",
+      "name": "Reviewlystes Article",
+      "token": "bb6aefcce32435cfc024fac006e5b1b537c39677d45c17e2"
+    },
+    {
+      "siteCode": "postbarrs",
+      "domain": "postbarrs.com",
+      "taskType": "article",
+      "name": "Postbarrs Article",
+      "token": "734e546552ddb70bbafb9f4cb07e79317fb2d6d79130b5ca"
+    },
+    {
+      "siteCode": "wordwareshub",
+      "domain": "wordwareshub.com",
+      "taskType": "article",
+      "name": "Wordwareshub Article",
+      "token": "de9b05835a2a0ee635f8c075c67bb29f6fbf82a59ee4cc1e"
+    },
+    {
+      "siteCode": "dailymaffs",
+      "domain": "dailymaffs.com",
+      "taskType": "article",
+      "name": "Dailymaffs Article",
+      "token": "2a2b91e9d04829bfff3da05042c06820b1be2d95271ed413"
+    },
+    {
+      "siteCode": "thegemluxe",
+      "domain": "thegemluxe.com",
+      "taskType": "article",
+      "name": "Thegemluxe Article",
+      "token": "ffad8d3e8bd19ffd3ff4458150184528162f6303110f1b18"
+    },
+    {
+      "siteCode": "xperthinks",
+      "domain": "xperthinks.com",
+      "taskType": "article",
+      "name": "Xperthinks Article",
+      "token": "f8e7a233f58caa45fa06164f4a8fd0d7f550214894ff654e"
+    },
+    {
+      "siteCode": "dochirp",
+      "domain": "dochirp.com",
+      "taskType": "article",
+      "name": "Dochirp Article",
+      "token": "d414066c8060c4efcfaae62ac1207becfcff2ffbc522ef33"
+    },
+    {
+      "siteCode": "corazonesguru",
+      "domain": "corazonesguru.com",
+      "taskType": "article",
+      "name": "Corazonesguru Article",
+      "token": "7c30bdf7d6832ae4e04400bfbc31346d5a7f89cb8f1d2c2b"
+    },
+    {
+      "siteCode": "thewalltimes",
+      "domain": "thewalltimes.com",
+      "taskType": "article",
+      "name": "Thewalltimes Article",
+      "token": "db58f9a8a397510a857a205dde8409b20ab33a7c504bf91a"
+    },
+    {
+      "siteCode": "toretopic",
+      "domain": "toretopic.com",
+      "taskType": "article",
+      "name": "Toretopic Article",
+      "token": "9797a88d326f3fe11fdf7b35cf2da7ca35e953cdb8630d97"
+    },
+    {
+      "siteCode": "thecorise",
+      "domain": "thecorise.com",
+      "taskType": "article",
+      "name": "Thecorise Article",
+      "token": "4c3f63646280f47fe0120c41c8ab79372f21a6e3b3a7dfa6"
+    },
+    {
+      "siteCode": "bsayblog",
+      "domain": "bsayblog.com",
+      "taskType": "article",
+      "name": "Bsayblog Article",
+      "token": "f72d279163a4450e041474f17635bb99295b3068fab822c8"
+    },
+    {
+      "siteCode": "bsayblog",
+      "domain": "bsayblog.com",
+      "taskType": "profile",
+      "name": "Bsayblog Profile",
+      "token": "283643b9010afa1d72e70dbb1a418fca2ff4c2dac5c74413"
+    },
+    {
+      "siteCode": "mundodeoracao",
+      "domain": "mundodeoracao.com",
+      "taskType": "article",
+      "name": "Mundodeoracao Article",
+      "token": "e43ab49fc7d1e25c1cb255fef631302b041bb2320547886a"
+    },
+    {
+      "siteCode": "orbitsvalues",
+      "domain": "orbitsvalues.com",
+      "taskType": "article",
+      "name": "Orbitsvalues Article",
+      "token": "e474416193bf6734af767b039c548a12be9f6ce0f0ae0f4c"
+    },
+    {
+      "siteCode": "thereadsessions",
+      "domain": "thereadsessions.com",
+      "taskType": "article",
+      "name": "Thereadsessions Article",
+      "token": "f005ec6c9fead3227bcbd63f88d63da3535adce9daea833e"
+    },
+    {
+      "siteCode": "thereadsessions",
+      "domain": "thereadsessions.com",
+      "taskType": "profile",
+      "name": "Thereadsessions Profile",
+      "token": "02079ec8177bc20fd1c1e5f91403769ef84c103008bd1890"
+    },
+    {
+      "siteCode": "bloggingraftar",
+      "domain": "bloggingraftar.com",
+      "taskType": "article",
+      "name": "Bloggingraftar Article",
+      "token": "75983503db1ee58349f3f746351fa6d822b2bbba39892b83"
+    },
+    {
+      "siteCode": "bloggingraftar",
+      "domain": "bloggingraftar.com",
+      "taskType": "profile",
+      "name": "Bloggingraftar Profile",
+      "token": "8e79b7ee130fdcf4458cb54ef4565b427af5b7307f74aee1"
+    },
+    {
+      "siteCode": "infodirectaya",
+      "domain": "infodirectaya.com",
+      "taskType": "article",
+      "name": "Infodirectaya Article",
+      "token": "c113029e02b60e57104ca87fa0a82c35d7091b7947e16aa7"
+    },
+    {
+      "siteCode": "admiralreviews",
+      "domain": "admiralreviews.com",
+      "taskType": "article",
+      "name": "Admiralreviews Article",
+      "token": "91a6b9103628a6ac8929785c6aefc48625590e2877e9f931"
+    },
+    {
+      "siteCode": "snapdigo",
+      "domain": "snapdigo.com",
+      "taskType": "article",
+      "name": "Snapdigo Article",
+      "token": "69d2040a86847967c875584c1ac527c1fb38d6062544b308"
+    },
+    {
+      "siteCode": "goolatam",
+      "domain": "goolatam.com",
+      "taskType": "article",
+      "name": "Goolatam Article",
+      "token": "9c29f8ad63009971024dd7f482b2105394366200ddb75197"
+    },
+    {
+      "siteCode": "hellabird",
+      "domain": "hellabird.com",
+      "taskType": "article",
+      "name": "Hellabird Article",
+      "token": "11ac37bb70e1ab3fe5b7c887261ea78af4bcd0e175b2c5a5"
+    },
+    {
+      "siteCode": "innaterhythm",
+      "domain": "innaterhythm.com",
+      "taskType": "article",
+      "name": "Innaterhythm Article",
+      "token": "4cfb15568c22b4c433c3f7a6e6691c20906e7337952e2178"
+    },
+    {
+      "siteCode": "aticgrafic",
+      "domain": "aticgrafic.com",
+      "taskType": "article",
+      "name": "Aticgrafic Article",
+      "token": "761761e0e5cbb4f8812397127926920a685bba3bd839830c"
+    },
+    {
+      "siteCode": "dailyshareinfo",
+      "domain": "dailyshareinfo.com",
+      "taskType": "article",
+      "name": "Dailyshareinfo Article",
+      "token": "c7d6e64e7f4eb1376df608cb87015b42c735835f3cdc0c29"
+    },
+    {
+      "siteCode": "weblybd",
+      "domain": "weblybd.com",
+      "taskType": "sbm",
+      "name": "Weblybd SBM",
+      "token": "0f10f70a282b4ab73db9fa3c9c831db542304c7d6f539be1"
+    },
+    {
+      "siteCode": "coodect",
+      "domain": "coodect.com",
+      "taskType": "sbm",
+      "name": "Coodect SBM",
+      "token": "abffb7b1c81ce40f5d592f59de970bbbf10fd30fe1fca6b9"
+    },
+    {
+      "siteCode": "justtmd",
+      "domain": "justtmd.com",
+      "taskType": "sbm",
+      "name": "Justtmd SBM",
+      "token": "81f395cb1af7891d1128854f03d8197125505ac8aa5182b0"
+    },
+    {
+      "siteCode": "growthswave",
+      "domain": "growthswave.com",
+      "taskType": "sbm",
+      "name": "Growthswave SBM",
+      "token": "d32ff1119109530d229f6b1188824486ed61ab3aaa0d49a0"
+    },
+    {
+      "siteCode": "keytoscale",
+      "domain": "keytoscale.com",
+      "taskType": "sbm",
+      "name": "Keytoscale SBM",
+      "token": "e9bcecfe7f8c49d576375fdb10ea9ddba5a43ab7f043b23a"
+    },
+    {
+      "siteCode": "cliktock",
+      "domain": "cliktock.com",
+      "taskType": "sbm",
+      "name": "Cliktock SBM",
+      "token": "6617fcd5ffc66a23908d48e8f4b093014d9fb2a7a6c07548"
+    },
+    {
+      "siteCode": "cliktock",
+      "domain": "cliktock.com",
+      "taskType": "profile",
+      "name": "Cliktock Profile",
+      "token": "852f1d170da3f8b70842a788ae32acb237a7965a01c9799b"
+    },
+    {
+      "siteCode": "gofkar",
+      "domain": "gofkar.com",
+      "taskType": "sbm",
+      "name": "Gofkar SBM",
+      "token": "54f80dccaf1327f08ace52506491a8ac24ef8f38c1f74256"
+    },
+    {
+      "siteCode": "tenfiftyone",
+      "domain": "tenfiftyone.com",
+      "taskType": "sbm",
+      "name": "Tenfiftyone SBM",
+      "token": "c0d746c6dca3e79dbeaf7762905ca317268029dc73ba65d5"
+    },
+    {
+      "siteCode": "searcr",
+      "domain": "searcr.com",
+      "taskType": "sbm",
+      "name": "Searcr SBM",
+      "token": "8b753245a61e47e651d3f8e9dd12d38186080e68c4899432"
+    },
+    {
+      "siteCode": "letsactuallygo",
+      "domain": "letsactuallygo.com",
+      "taskType": "sbm",
+      "name": "Letsactuallygo SBM",
+      "token": "c997102144cb61e48c607a8a64ddaa927d567fc3e6e76297"
+    },
+    {
+      "siteCode": "teeaction",
+      "domain": "teeaction.com",
+      "taskType": "sbm",
+      "name": "Teeaction SBM",
+      "token": "369e7c60617fc1f70bd88ad418977a3e51ff98aa58bb55c3"
+    },
+    {
+      "siteCode": "chaojefe",
+      "domain": "chaojefe.com",
+      "taskType": "sbm",
+      "name": "Chaojefe SBM",
+      "token": "816bf973f018936363a7ef883e8e39e75459b4ec529a8618"
+    },
+    {
+      "siteCode": "leclicplus",
+      "domain": "leclicplus.com",
+      "taskType": "sbm",
+      "name": "Leclicplus SBM",
+      "token": "9bda9498d05088f57f156fdb2e8f74d0de5b8a141e35597e"
+    },
+    {
+      "siteCode": "immediategrid",
+      "domain": "immediategrid.com",
+      "taskType": "sbm",
+      "name": "Immediategrid SBM",
+      "token": "3782f62130c415a5cf8a7664c87c436b7c683e6ee9e54a63"
+    },
+    {
+      "siteCode": "attendtheway",
+      "domain": "attendtheway.com",
+      "taskType": "sbm",
+      "name": "Attendtheway SBM",
+      "token": "735336247ef7321ed5f771c8ccc21d49a8d0c2b36b53066d"
+    },
+    {
+      "siteCode": "fluideosolutions",
+      "domain": "fluideosolutions.com",
+      "taskType": "pdf",
+      "name": "Fluideosolutions PDF",
+      "token": "e04036f5e566836e59feb69231835468ca0f3e52ff88005f"
+    },
+    {
+      "siteCode": "intelloidea",
+      "domain": "intelloidea.com",
+      "taskType": "pdf",
+      "name": "Intelloidea PDF",
+      "token": "58089732fa7dcdbc729aa862791f2923b02aef8ca148d131"
+    },
+    {
+      "siteCode": "truedispositions",
+      "domain": "truedispositions.com",
+      "taskType": "pdf",
+      "name": "Truedispositions PDF",
+      "token": "44e1a18147c3f09c2b7f5239baddfd703848645531fb1122"
+    },
+    {
+      "siteCode": "innociv",
+      "domain": "innociv.com",
+      "taskType": "pdf",
+      "name": "Innociv PDF",
+      "token": "eadd1d1b360d8e3f9dd0e9f56445efcc86499e85ece92925"
+    },
+    {
+      "siteCode": "proothisionline",
+      "domain": "proothisionline.com",
+      "taskType": "pdf",
+      "name": "Proothisionline PDF",
+      "token": "68c069daec5299f24ccd04e54901fcbc7b0dc9932da10880"
+    },
+    {
+      "siteCode": "filingone",
+      "domain": "filingone.com",
+      "taskType": "pdf",
+      "name": "Filingone PDF",
+      "token": "198d8eb86a0c6cc6269db422eb5e1f995483a61407aa715d"
+    },
+    {
+      "siteCode": "incanova",
+      "domain": "incanova.com",
+      "taskType": "pdf",
+      "name": "Incanova PDF",
+      "token": "f2ceb297475fe47cb569d5275260e2bfb42fb878f403ed71"
+    },
+    {
+      "siteCode": "amoebicexpansion",
+      "domain": "amoebicexpansion.com",
+      "taskType": "pdf",
+      "name": "Amoebicexpansion PDF",
+      "token": "b3d2e0c1aefde36d6989e7359a0ca15430a7bed4f0186f6d"
+    },
+    {
+      "siteCode": "tasmeimi",
+      "domain": "tasmeimi.com",
+      "taskType": "pdf",
+      "name": "Tasmeimi PDF",
+      "token": "138da8613199b1d3a79374fcef7d521f9dea525635acce25"
+    },
+    {
+      "siteCode": "valuevaultcorp",
+      "domain": "valuevaultcorp.com",
+      "taskType": "pdf",
+      "name": "Valuevaultcorp PDF",
+      "token": "9bccee68dd375b3dd07d93dcf55bcfcd7bee42253686f6f3"
+    },
+    {
+      "siteCode": "solveease",
+      "domain": "solveease.net",
+      "taskType": "pdf",
+      "name": "Solveease PDF",
+      "token": "fa4f41cf376b4b4763de668124f5508aafd4d8ebc4751c44"
+    },
+    {
+      "siteCode": "devonter",
+      "domain": "devonter.com",
+      "taskType": "pdf",
+      "name": "Devonter PDF",
+      "token": "984de217a72bcd815ef8702ae85d2e63dcd94d9612d23372"
+    },
+    {
+      "siteCode": "astraelementor",
+      "domain": "astraelementor.com",
+      "taskType": "pdf",
+      "name": "Astraelementor PDF",
+      "token": "34fe469f152bed323cf8b7a0adba972396ed0eab07391cb4"
+    },
+    {
+      "siteCode": "affordibly",
+      "domain": "affordibly.com",
+      "taskType": "classified",
+      "name": "Affordibly Classified",
+      "token": "31541c245093f4f74f8cb6eae919900a562a0882e74ae69b"
+    },
+    {
+      "siteCode": "dreamimportados",
+      "domain": "dreamimportados.com",
+      "taskType": "classified",
+      "name": "Dreamimportados Classified",
+      "token": "16b75e6d7c0e412a99238a695e207b9b12a13c5c15af1f0f"
+    },
+    {
+      "siteCode": "granelda",
+      "domain": "granelda.com",
+      "taskType": "classified",
+      "name": "Granelda Classified",
+      "token": "9616324c2f9c1fea743baaeb51827f9d434513f845c4b3b3"
+    },
+    {
+      "siteCode": "serbegum",
+      "domain": "serbegum.com",
+      "taskType": "classified",
+      "name": "Serbegum Classified",
+      "token": "ea706afd2c0d6b3af8cf70b850c26933c32451ab06a84686"
+    },
+    {
+      "siteCode": "abknuaf",
+      "domain": "abknuaf.com",
+      "taskType": "classified",
+      "name": "Abknuaf Classified",
+      "token": "0ae3b871b9b700b12154d2ba969c65911ee26385ee5f3704"
+    },
+    {
+      "siteCode": "entreasmelhores",
+      "domain": "entreasmelhores.com",
+      "taskType": "classified",
+      "name": "Entreasmelhores Classified",
+      "token": "b84a5c04c16689bbce83ce121af9f0eafca90f8e53eeb20c"
+    },
+    {
+      "siteCode": "pelandoofertas",
+      "domain": "pelandoofertas.com",
+      "taskType": "classified",
+      "name": "Pelandoofertas Classified",
+      "token": "b592a25b07b3798be1417343a1e1e99299370814bb17e041"
+    },
+    {
+      "siteCode": "ibullinfo",
+      "domain": "ibullinfo.com",
+      "taskType": "classified",
+      "name": "Ibullinfo Classified",
+      "token": "5fbc58e10d32d2e6c5793fffae16a884960182df490b3a3e"
+    },
+    {
+      "siteCode": "fastportatil",
+      "domain": "fastportatil.com",
+      "taskType": "classified",
+      "name": "Fastportatil Classified",
+      "token": "b07915b3b3b9f099b2faf231a58e2f642102d39763fd7834"
+    },
+    {
+      "siteCode": "axidra",
+      "domain": "axidra.net",
+      "taskType": "classified",
+      "name": "Axidra Classified",
+      "token": "35ce4dff65588a7189761df069251dbb7e27fac43b46aecf"
+    },
+    {
+      "siteCode": "remodelerar",
+      "domain": "remodelerar.com",
+      "taskType": "classified",
+      "name": "Remodelerar Classified",
+      "token": "8032097c8f04efa11b43bf27d57e589bd6049e068ea73462"
+    },
+    {
+      "siteCode": "leventakinti",
+      "domain": "leventakinti.com",
+      "taskType": "classified",
+      "name": "Leventakinti Classified",
+      "token": "93bfdeb8901669d70073b06df8b4e435b04bd39e7e169587"
+    },
+    {
+      "siteCode": "capsigrow",
+      "domain": "capsigrow.com",
+      "taskType": "classified",
+      "name": "Capsigrow Classified",
+      "token": "671fe6ac2eedc599b796ac3d59fb0a977bcc100354d71d64"
+    },
+    {
+      "siteCode": "griyo",
+      "domain": "griyo.net",
+      "taskType": "classified",
+      "name": "Griyo Classified",
+      "token": "31df0be8ef753359b53b0945c5876d3cb14da77ad05e2a3e"
+    },
+    {
+      "siteCode": "smashindevil",
+      "domain": "smashindevil.com",
+      "taskType": "classified",
+      "name": "Smashindevil Classified",
+      "token": "4ab1602d47ec27cea3eb024f41c2d37df008c7960fb7936b"
+    },
+    {
+      "siteCode": "reniwn",
+      "domain": "reniwn.com",
+      "taskType": "classified",
+      "name": "Reniwn Classified",
+      "token": "8bb885fba4c798c4fcd687ff917787e28f616b5500b790d4"
+    },
+    {
+      "siteCode": "viendoanhnhan",
+      "domain": "viendoanhnhan.com",
+      "taskType": "classified",
+      "name": "Viendoanhnhan Classified",
+      "token": "2578b1d15b74438d693bb08c0335b97ebbc313ba0d82ab31"
+    },
+    {
+      "siteCode": "zyvorapit",
+      "domain": "zyvorapit.com",
+      "taskType": "classified",
+      "name": "Zyvorapit Classified",
+      "token": "055ffed4f1a58728bfbd97cfd3ee47f74441a6e4a9a78e4f"
+    },
+    {
+      "siteCode": "collectivebyte",
+      "domain": "collectivebyte.com",
+      "taskType": "listing",
+      "name": "Collectivebyte Business Listing",
+      "token": "099c1852ab6af0f97640f8c5374febdeb0852bb90875b981"
+    },
+    {
+      "siteCode": "gustorest",
+      "domain": "gustorest.com",
+      "taskType": "listing",
+      "name": "Gustorest Business Listing",
+      "token": "80c3055cc4b0ffe05c8d71528bab5df04cc07ec3214d3a76"
+    },
+    {
+      "siteCode": "fanstgh",
+      "domain": "fanstgh.com",
+      "taskType": "listing",
+      "name": "Fanstgh Business Listing",
+      "token": "e07cfa56a1627b8d7f5e6fed032ececcfb69375f5f9f557d"
+    },
+    {
+      "siteCode": "lechantdelinos",
+      "domain": "lechantdelinos.com",
+      "taskType": "listing",
+      "name": "Lechantdelinos Business Listing",
+      "token": "6ffee6f73eb04e4ca590ff34a644befeeeede04b2d8071db"
+    },
+    {
+      "siteCode": "maxkavosh",
+      "domain": "maxkavosh.com",
+      "taskType": "listing",
+      "name": "Maxkavosh Business Listing",
+      "token": "0f927422500db6b4c5462933b2360b0f11ef17acb3cb2fee"
+    },
+    {
+      "siteCode": "jasamaklonpro",
+      "domain": "jasamaklonpro.com",
+      "taskType": "listing",
+      "name": "Jasamaklonpro Business Listing",
+      "token": "2b59c4daa72c0d1b4a16b4d2827b6320e4a5e516c3e12b1a"
+    },
+    {
+      "siteCode": "proserviceon",
+      "domain": "proserviceon.com",
+      "taskType": "listing",
+      "name": "Proserviceon Business Listing",
+      "token": "aed12ccb723c4e8050dde4f01943da3e1e34ea40e8918019"
+    },
+    {
+      "siteCode": "alnancompass",
+      "domain": "alnancompass.com",
+      "taskType": "listing",
+      "name": "Alnancompass Business Listing",
+      "token": "45143dd368c39f25e3cca74273a4cb1bbe61971eb06176ec"
+    },
+    {
+      "siteCode": "stsondemand",
+      "domain": "stsondemand.com",
+      "taskType": "listing",
+      "name": "Stsondemand Business Listing",
+      "token": "d5e58719e70da7191dd0bd8de7b81044dded05c8f26605bc"
+    },
+    {
+      "siteCode": "branmedya",
+      "domain": "branmedya.com",
+      "taskType": "listing",
+      "name": "Branmedya Business Listing",
+      "token": "c1430462f4249f382b2a946fecea87a30c0b8913e4f5868d"
+    },
+    {
+      "siteCode": "rilfinserve",
+      "domain": "rilfinserve.com",
+      "taskType": "listing",
+      "name": "Rilfinserve Business Listing",
+      "token": "cd3b6a0077cf659284b834a601e7da68cc5868cca342bccd"
+    },
+    {
+      "siteCode": "vectorduo",
+      "domain": "vectorduo.com",
+      "taskType": "listing",
+      "name": "Vectorduo Business Listing",
+      "token": "13913bd7875b0dff12710cb5cc8d24a1a71bbbf85da760d9"
+    },
+    {
+      "siteCode": "nglobals",
+      "domain": "nglobals.com",
+      "taskType": "listing",
+      "name": "Nglobals Business Listing",
+      "token": "8d6a6b79f5d4cbadcfc06d52cf4aa31797e1e9fd8e87f7fd"
+    },
+    {
+      "siteCode": "scalemesolutions",
+      "domain": "scalemesolutions.com",
+      "taskType": "listing",
+      "name": "Scalemesolutions Business Listing",
+      "token": "f027fedc7abc59fcc330c5f130ce16bd427f06e6c84b004e"
+    },
+    {
+      "siteCode": "leadtore",
+      "domain": "leadtore.com",
+      "taskType": "listing",
+      "name": "Leadtore Business Listing",
+      "token": "50e885291dc053e5daf0ececa5cb95f3e6e0505ec61666ee"
+    },
+    {
+      "siteCode": "ginfosolution",
+      "domain": "ginfosolution.com",
+      "taskType": "listing",
+      "name": "Ginfosolution Business Listing",
+      "token": "27e388635e1810c4d5050b03e6ce96d7d1e2b5d74ad11a57"
+    },
+    {
+      "siteCode": "karlinit",
+      "domain": "karlinit.com",
+      "taskType": "listing",
+      "name": "Karlinit Business Listing",
+      "token": "19aa5fe3207e104b8e9e4b50134d6a4f5e72fd664cf00151"
+    },
+    {
+      "siteCode": "safeerindo",
+      "domain": "safeerindo.com",
+      "taskType": "listing",
+      "name": "Safeerindo Business Listing",
+      "token": "e726d4177a7b6aa302436d11f8708f003b043429b3188dcb"
+    },
+    {
+      "siteCode": "movisgesettle",
+      "domain": "movisgesettle.com",
+      "taskType": "listing",
+      "name": "Movisgesettle Business Listing",
+      "token": "082b8de985130b5ad740b844e99e2ed85487ea2b435c4e74"
+    },
+    {
+      "siteCode": "ibizanetworks",
+      "domain": "ibizanetworks.com",
+      "taskType": "listing",
+      "name": "Ibizanetworks Business Listing",
+      "token": "805975c80bf5bfa9a662ce452df76895affdc7755f561b64"
+    },
+    {
+      "siteCode": "lynovato",
+      "domain": "lynovato.com",
+      "taskType": "listing",
+      "name": "Lynovato Business Listing",
+      "token": "d7da543e2d9bf35587f0e9bea5ebb32262f9d715d6607ef7"
+    },
+    {
+      "siteCode": "hibvest",
+      "domain": "hibvest.com",
+      "taskType": "listing",
+      "name": "Hibvest Business Listing",
+      "token": "efba58a5b0efdac7f436f503d26a1733bb02e625ed7c3b09"
+    },
+    {
+      "siteCode": "rokusbotlek",
+      "domain": "rokusbotlek.com",
+      "taskType": "listing",
+      "name": "Rokusbotlek Business Listing",
+      "token": "4069abbafa5087c72fe245f935ce55685e9c47c7d9438da7"
+    },
+    {
+      "siteCode": "fitlloyd",
+      "domain": "fitlloyd.com",
+      "taskType": "image",
+      "name": "Fitlloyd Image",
+      "token": "8d472b6b67428a43241fa82ecea1014305f3dc6e9a17c467"
+    },
+    {
+      "siteCode": "fitlloyd",
+      "domain": "fitlloyd.com",
+      "taskType": "profile",
+      "name": "Fitlloyd Profile",
+      "token": "ad7177b4366a79f659e61784cbc4c7875992cc1d8b3e84b7"
+    },
+    {
+      "siteCode": "lexertainment",
+      "domain": "lexertainment.com",
+      "taskType": "image",
+      "name": "Lexertainment Image",
+      "token": "b3d9834334d26b6db36380cc108dd9d5564a0e48dbe08eba"
+    },
+    {
+      "siteCode": "lexertainment",
+      "domain": "lexertainment.com",
+      "taskType": "profile",
+      "name": "Lexertainment Profile",
+      "token": "d6f155ffd6b6e8758b4bd64831d41c15de8f144e8305c293"
+    },
+    {
+      "siteCode": "flawlessnoises",
+      "domain": "flawlessnoises.com",
+      "taskType": "image",
+      "name": "Flawlessnoises Image",
+      "token": "8d444c0b83ddd9a98a75a4718909638b1ea6f3abc34f4bac"
+    },
+    {
+      "siteCode": "flawlessnoises",
+      "domain": "flawlessnoises.com",
+      "taskType": "profile",
+      "name": "Flawlessnoises Profile",
+      "token": "dc21feb7c659a087bc44709a76dbd35ad791a180ba083952"
+    },
+    {
+      "siteCode": "baboonet",
+      "domain": "baboonet.com",
+      "taskType": "image",
+      "name": "Baboonet Image",
+      "token": "8ecd36730585eac9105ac967c57d792f7c02526c8f1a3aca"
+    },
+    {
+      "siteCode": "baboonet",
+      "domain": "baboonet.com",
+      "taskType": "profile",
+      "name": "Baboonet Profile",
+      "token": "049d8383ed8ca8bfc9a19d04d83aa7d71bfc4cd204691144"
+    },
+    {
+      "siteCode": "furrioo",
+      "domain": "furrioo.com",
+      "taskType": "image",
+      "name": "Furrioo Image",
+      "token": "a19672fc66b09da60c74d318856ab5fcae6b7f71bc59763e"
+    },
+    {
+      "siteCode": "showdavida",
+      "domain": "showdavida.com",
+      "taskType": "image",
+      "name": "Showdavida Image",
+      "token": "9f4f77f8c3bb52f9f6305040d283ccd1725923c90ec73716"
+    },
+    {
+      "siteCode": "showdavida",
+      "domain": "showdavida.com",
+      "taskType": "profile",
+      "name": "Showdavida Profile",
+      "token": "70e4be373206067b6b3db214aff9434303c0a795f07af830"
+    },
+    {
+      "siteCode": "phiyall",
+      "domain": "phiyall.com",
+      "taskType": "image",
+      "name": "Phiyall Image",
+      "token": "e20e15a76ef339399065d30bd0995f676a01cc5bf568e9ee"
+    },
+    {
+      "siteCode": "phiyall",
+      "domain": "phiyall.com",
+      "taskType": "profile",
+      "name": "Phiyall Profile",
+      "token": "10c46eaf97f7b16b27cdd9314ce7568979bfb5b6ea5ff158"
+    },
+    {
+      "siteCode": "golgator",
+      "domain": "golgator.com",
+      "taskType": "image",
+      "name": "Golgator Image",
+      "token": "4b81d13cfc9c2aeccec237f29e7e4ad353c51ba589c8ae7c"
+    },
+    {
+      "siteCode": "golgator",
+      "domain": "golgator.com",
+      "taskType": "profile",
+      "name": "Golgator Profile",
+      "token": "dc625328ba676505b1682e864001818a119f779c0bef6b06"
+    },
+    {
+      "siteCode": "siteforgeart",
+      "domain": "siteforgeart.com",
+      "taskType": "image",
+      "name": "Siteforgeart Image",
+      "token": "20c0d44e715e12de32fcbc0445a47c188440e4a807e5a7c1"
+    },
+    {
+      "siteCode": "lotologyy",
+      "domain": "lotologyy.com",
+      "taskType": "image",
+      "name": "Lotologyy Image",
+      "token": "4eacbc4684cec54695e5aa2446c413dabf6982d7ec316dad"
+    },
+    {
+      "siteCode": "lotologyy",
+      "domain": "lotologyy.com",
+      "taskType": "profile",
+      "name": "Lotologyy Profile",
+      "token": "104448d02535482839952aa10b65fe5e3cecf5d0c3808508"
+    },
+    {
+      "siteCode": "laruchebleue",
+      "domain": "laruchebleue.net",
+      "taskType": "image",
+      "name": "Laruchebleue Image",
+      "token": "37ed230e07f92567c46e6915dc58194c9cfc912b9ab6ca38"
+    },
+    {
+      "siteCode": "laruchebleue",
+      "domain": "laruchebleue.net",
+      "taskType": "profile",
+      "name": "Laruchebleue Profile",
+      "token": "acbcdbb437964c52deed6e4efb05363ec8fe9809fb12e75a"
+    },
+    {
+      "siteCode": "aireblowdry",
+      "domain": "aireblowdry.com",
+      "taskType": "image",
+      "name": "Aireblowdry Image",
+      "token": "8b518233063fc5e54cbfa9dc23398c3b5e1ab2d397b20899"
+    },
+    {
+      "siteCode": "aireblowdry",
+      "domain": "aireblowdry.com",
+      "taskType": "profile",
+      "name": "Aireblowdry Profile",
+      "token": "d17f19d72ce0658b9c186831ad3cb868e4e219975938c21b"
+    },
+    {
+      "siteCode": "stetsonukims",
+      "domain": "stetsonukims.com",
+      "taskType": "image",
+      "name": "Stetsonukims Image",
+      "token": "d5e3c6ce05feb0452f6682f7450adf4b4d6ba8e569bc989f"
+    },
+    {
+      "siteCode": "stetsonukims",
+      "domain": "stetsonukims.com",
+      "taskType": "profile",
+      "name": "Stetsonukims Profile",
+      "token": "f2bfe8b393e926759289b4fe5ccd31c5b6e5c2327a805a55"
+    },
+    {
+      "siteCode": "nickelsandlinc",
+      "domain": "nickelsandlinc.com",
+      "taskType": "image",
+      "name": "Nickelsandlinc Image",
+      "token": "1f7748cfd854b52f808e7bfeddc3bceda7ec472ac30d2317"
+    },
+    {
+      "siteCode": "nickelsandlinc",
+      "domain": "nickelsandlinc.com",
+      "taskType": "profile",
+      "name": "Nickelsandlinc Profile",
+      "token": "6fdd9d0543ed57dbeca9f123d24ee8bacb6f632f983267ec"
+    },
+    {
+      "siteCode": "ankavisual",
+      "domain": "ankavisual.com",
+      "taskType": "image",
+      "name": "Ankavisual Image",
+      "token": "7900c2d94c4ce3bdf9433233813bea87e8f68ebaac7536f6"
+    },
+    {
+      "siteCode": "ankavisual",
+      "domain": "ankavisual.com",
+      "taskType": "profile",
+      "name": "Ankavisual Profile",
+      "token": "469b7af59f8026673aadb97836797ff41e7ee2e236bab550"
+    },
+    {
+      "siteCode": "gloexpressdel",
+      "domain": "gloexpressdel.com",
+      "taskType": "image",
+      "name": "Gloexpressdel Image",
+      "token": "01287008fc2f3a8bba2f3c6b8dbeba9fe825d4cf88d802c9"
+    },
+    {
+      "siteCode": "gloexpressdel",
+      "domain": "gloexpressdel.com",
+      "taskType": "profile",
+      "name": "Gloexpressdel Profile",
+      "token": "e83abcd29121c8116999121adf0c8a7ac06fb58411fe9c02"
+    },
+    {
+      "siteCode": "ilsoleditabiano",
+      "domain": "ilsoleditabiano.com",
+      "taskType": "image",
+      "name": "Ilsoleditabiano Image",
+      "token": "b02bf27a987e7eec7c23d7ef4da3d2163c56fc8b9f9e89d5"
+    },
+    {
+      "siteCode": "ilsoleditabiano",
+      "domain": "ilsoleditabiano.com",
+      "taskType": "profile",
+      "name": "Ilsoleditabiano Profile",
+      "token": "d7553835d238373e07b36667c07fdcf0310ea23fe839e653"
+    },
+    {
+      "siteCode": "minnorec",
+      "domain": "minnorec.com",
+      "taskType": "image",
+      "name": "Minnorec Image",
+      "token": "fd54b7a6969ec518cebde26e7ec5be054583afbdb14ab77d"
+    },
+    {
+      "siteCode": "minnorec",
+      "domain": "minnorec.com",
+      "taskType": "profile",
+      "name": "Minnorec Profile",
+      "token": "7d74261169d614b673a7f61ce295390f39729f064b54a2f6"
+    },
+    {
+      "siteCode": "maannoslo",
+      "domain": "maannoslo.com",
+      "taskType": "image",
+      "name": "Maannoslo Image",
+      "token": "ad036312a59d805df4259fbd790fa87b330a8b97516257ea"
+    },
+    {
+      "siteCode": "maannoslo",
+      "domain": "maannoslo.com",
+      "taskType": "profile",
+      "name": "Maannoslo Profile",
+      "token": "421807d746190637c6fdddf156140af20769c21e69002eff"
+    },
+    {
+      "siteCode": "gabeetown",
+      "domain": "gabeetown.com",
+      "taskType": "image",
+      "name": "Gabeetown Image",
+      "token": "7362bff1693abd700d09e44e0ac638d93af55beebebf280e"
+    },
+    {
+      "siteCode": "gabeetown",
+      "domain": "gabeetown.com",
+      "taskType": "profile",
+      "name": "Gabeetown Profile",
+      "token": "7cc69acf33481ff26d486f46050b216f9853267aec239459"
+    },
+    {
+      "siteCode": "zeotheory",
+      "domain": "zeotheory.com",
+      "taskType": "image",
+      "name": "Zeotheory Image",
+      "token": "71ad9216ee09ab0fc3acdc983e1d47210a943143515efec9"
+    },
+    {
+      "siteCode": "zeotheory",
+      "domain": "zeotheory.com",
+      "taskType": "profile",
+      "name": "Zeotheory Profile",
+      "token": "95836a6def76e4ccb0b6270780bb40d07fb744c6ac763a6e"
+    },
+    {
+      "siteCode": "varwestgallery",
+      "domain": "varwestgallery.com",
+      "taskType": "image",
+      "name": "Varwestgallery Image",
+      "token": "61a8ad699713a99b4770115791dd27799b1c5aaf034e5500"
+    },
+    {
+      "siteCode": "varwestgallery",
+      "domain": "varwestgallery.com",
+      "taskType": "profile",
+      "name": "Varwestgallery Profile",
+      "token": "c4045fde177ad70b4d26e4b22bca7c26db805e58d6abb415"
+    },
+    {
+      "siteCode": "vivementlapluie",
+      "domain": "vivementlapluie.com",
+      "taskType": "image",
+      "name": "Vivementlapluie Image",
+      "token": "d782f48d9a9fb22a1ca02a77b810147f611c6ade4f0fd6a0"
+    },
+    {
+      "siteCode": "vivementlapluie",
+      "domain": "vivementlapluie.com",
+      "taskType": "profile",
+      "name": "Vivementlapluie Profile",
+      "token": "c33a3cd57f09d18f840cad90741f7f68fae8eb2898568162"
+    },
+    {
+      "siteCode": "pixelschmixel",
+      "domain": "pixelschmixel.com",
+      "taskType": "image",
+      "name": "Pixelschmixel Image",
+      "token": "d67bfd6ff294ae4a7ad2ec6ffb356df64d77b7cabc1b53e2"
+    },
+    {
+      "siteCode": "pixelschmixel",
+      "domain": "pixelschmixel.com",
+      "taskType": "profile",
+      "name": "Pixelschmixel Profile",
+      "token": "b8c8dde60ffc41007c054662be3bbec75dd1a3885c308cb9"
+    },
+    {
+      "siteCode": "eyscreative",
+      "domain": "eyscreative.com",
+      "taskType": "image",
+      "name": "Eyscreative Image",
+      "token": "88240c4059fb364368a3e88f52094b414cfc68fe936d7e8d"
+    },
+    {
+      "siteCode": "eyscreative",
+      "domain": "eyscreative.com",
+      "taskType": "profile",
+      "name": "Eyscreative Profile",
+      "token": "26b1d840834e393be9461269b9d21f1cd9575dde6c7c165a"
+    },
+    {
+      "siteCode": "veluzatom",
+      "domain": "veluzatom.com",
+      "taskType": "image",
+      "name": "Veluzatom Image",
+      "token": "23adb8a5afc5b0a68ca52689081a455af163ea2888a9f060"
+    }
+  ]
+}

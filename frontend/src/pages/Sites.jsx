@@ -9,7 +9,7 @@ import SiteTaskModal from "../components/sites/SiteTaskModal";
 import { useAppData } from "../context/AppContext";
 import { fetchSitesPage } from "../utils/api";
 
-const PAGE_SIZE = 50;
+const DEFAULT_PAGE_SIZE = 100;
 
 export default function Sites() {
   const { createSite, editSite, addTaskToSite, runSiteBulkAction } = useAppData();
@@ -22,7 +22,8 @@ export default function Sites() {
   const [packageData, setPackageData] = useState(null);
   const [rows, setRows] = useState([]);
   const [page, setPage] = useState(1);
-  const [meta, setMeta] = useState({ page: 1, limit: PAGE_SIZE, total: 0, totalPages: 1 });
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const [meta, setMeta] = useState({ page: 1, limit: DEFAULT_PAGE_SIZE, total: 0, totalPages: 1 });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -31,7 +32,7 @@ export default function Sites() {
     try {
       const result = await fetchSitesPage({
         page: nextPage,
-        limit: PAGE_SIZE,
+        limit: pageSize,
         search: nextQuery,
       });
 
@@ -57,11 +58,11 @@ export default function Sites() {
     }, 250);
 
     return () => clearTimeout(timer);
-  }, [query, sortBy]);
+  }, [query, sortBy, pageSize]);
 
   useEffect(() => {
     loadSites(page, query);
-  }, [page]);
+  }, [page, pageSize]);
 
   const sortedRows = useMemo(() => {
     return [...rows].sort((a, b) => {
@@ -84,6 +85,18 @@ export default function Sites() {
       <div className="glass rounded-panel p-3">
         <div className="flex flex-wrap gap-2">
           <input className="min-h-11 flex-1 rounded-lg border border-[var(--border-color)] px-3" placeholder="Search sites" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <select
+            className="min-h-11 rounded-lg border border-[var(--border-color)] bg-white px-3 text-sm text-slate-900"
+            value={pageSize}
+            onChange={(e) => {
+              setPage(1);
+              setPageSize(Number(e.target.value));
+            }}
+          >
+            <option value={50}>50 / page</option>
+            <option value={100}>100 / page</option>
+            <option value={200}>200 / page</option>
+          </select>
           <button className="min-h-11 rounded-lg border border-[var(--border-color)] px-4" onClick={() => runSiteBulkAction(selected, "activate")} disabled={!selected.length}>Activate</button>
           <button className="min-h-11 rounded-lg border border-[var(--border-color)] px-4" onClick={() => runSiteBulkAction(selected, "deactivate")} disabled={!selected.length}>Deactivate</button>
           <button
@@ -103,7 +116,7 @@ export default function Sites() {
 
       <div className="flex items-center justify-between gap-3 text-sm text-[var(--text-secondary)]">
         <p>
-          {loading ? "Loading sites..." : `Showing page ${meta.page} of ${meta.totalPages} · ${meta.total} total sites`}
+          {loading ? "Loading sites..." : `Showing ${sortedRows.length} sites · page ${meta.page} of ${meta.totalPages} · ${meta.total} total sites`}
         </p>
         <div className="flex gap-2">
           <button

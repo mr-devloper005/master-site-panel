@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = require("express");
 const client_1 = require("@prisma/client");
+const express_1 = require("express");
+const client_2 = require("@prisma/client");
 const db_1 = require("../../config/db");
 const auth_1 = require("../../middleware/auth");
 const api_error_1 = require("../../utils/api-error");
@@ -23,11 +24,11 @@ const normalizeSiteCategory = (value) => {
         return undefined;
     const normalized = value.trim().toUpperCase();
     if (normalized === "IMAGES")
-        return client_1.SiteCategory.IMAGE_SHARING;
+        return client_2.SiteCategory.IMAGE_SHARING;
     if (normalized === "MEDIA_DISTRIBUTION" || normalized === "MEDIADISTRIBUTION") {
-        return client_1.SiteCategory.MEDIA_DISTRIBUTION;
+        return client_2.SiteCategory.MEDIA_DISTRIBUTION;
     }
-    if (normalized in client_1.SiteCategory)
+    if (normalized in client_2.SiteCategory)
         return normalized;
     return undefined;
 };
@@ -359,7 +360,7 @@ router.get("/", (0, auth_1.requireApiKey)("sites:read"), (0, async_handler_1.asy
             },
         ];
     }
-    if (framework && framework in client_1.SiteFramework) {
+    if (framework && framework in client_2.SiteFramework) {
         where.framework = framework;
     }
     const normalizedCategory = normalizeSiteCategory(category);
@@ -394,6 +395,69 @@ router.get("/", (0, auth_1.requireApiKey)("sites:read"), (0, async_handler_1.asy
             }),
         })),
         meta: { page, limit, total, totalPages: Math.max(Math.ceil(total / limit), 1) },
+    });
+}));
+router.get("/summary", (0, auth_1.requireApiKey)("sites:read"), (0, async_handler_1.asyncHandler)(async (_req, res) => {
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const [totalSites, activeSiteRows, publishedPosts, draftPosts, recentPosts, runtimeRows, topSiteRows,] = await Promise.all([
+        db_1.prisma.site.count(),
+        db_1.prisma.post.groupBy({
+            by: ["siteId"],
+            where: { status: "PUBLISHED" },
+            _count: { _all: true },
+        }),
+        db_1.prisma.post.count({ where: { status: "PUBLISHED" } }),
+        db_1.prisma.post.count({ where: { status: "DRAFT" } }),
+        db_1.prisma.post.count({
+            where: {
+                status: "PUBLISHED",
+                OR: [{ publishedAt: { gte: sevenDaysAgo } }, { createdAt: { gte: sevenDaysAgo } }],
+            },
+        }),
+        db_1.prisma.$queryRaw(client_1.Prisma.sql `
+      SELECT "status", COUNT(*)::bigint AS count
+      FROM (
+        SELECT DISTINCT ON ("siteId") "siteId", "status", "lastHeartbeatAt"
+        FROM "SiteRuntimeStatus"
+        ORDER BY "siteId", "lastHeartbeatAt" DESC
+      ) latest
+      GROUP BY "status"
+    `),
+        db_1.prisma.post.groupBy({
+            by: ["siteId"],
+            where: { status: "PUBLISHED" },
+            _count: { _all: true },
+            orderBy: { _count: { siteId: "desc" } },
+            take: 1,
+        }),
+    ]);
+    const runtimeCounts = runtimeRows.reduce((acc, row) => {
+        acc[row.status] = Number(row.count || 0);
+        return acc;
+    }, {});
+    const topSiteId = topSiteRows[0]?.siteId;
+    const topSite = topSiteId
+        ? await db_1.prisma.site.findUnique({
+            where: { id: topSiteId },
+            select: { id: true, name: true, code: true },
+        })
+        : null;
+    res.json({
+        success: true,
+        data: {
+            totalSites,
+            activeSites: activeSiteRows.length,
+            onlineSites: runtimeCounts.ONLINE || 0,
+            degradedSites: runtimeCounts.DEGRADED || 0,
+            offlineSites: runtimeCounts.OFFLINE || 0,
+            publishedPosts,
+            draftPosts,
+            recentPosts,
+            avgPosts: totalSites ? Number((publishedPosts / totalSites).toFixed(1)) : 0,
+            topSite: topSite
+                ? { ...topSite, postCount: topSiteRows[0]?._count?._all || 0 }
+                : null,
+        },
     });
 }));
 router.get("/:siteId", (0, auth_1.requireApiKey)("sites:read"), (0, async_handler_1.asyncHandler)(async (req, res) => {
@@ -1372,7 +1436,7 @@ router.post("/", (0, auth_1.requireApiKey)("sites:write"), (0, async_handler_1.a
     if (!code || !name || !framework || !category) {
         throw new api_error_1.ApiError(400, "code, name, framework and category are required fields.");
     }
-    if (!(framework in client_1.SiteFramework)) {
+    if (!(framework in client_2.SiteFramework)) {
         throw new api_error_1.ApiError(400, "Invalid framework value.");
     }
     const normalizedCategory = normalizeSiteCategory(category);
@@ -1611,7 +1675,7 @@ router.patch("/:siteId", (0, auth_1.requireApiKey)("sites:write"), (0, async_han
     if (isActive !== undefined)
         updateData.isActive = Boolean(isActive);
     if (framework !== undefined) {
-        if (!(framework in client_1.SiteFramework)) {
+        if (!(framework in client_2.SiteFramework)) {
             throw new api_error_1.ApiError(400, "Invalid framework value.");
         }
         updateData.framework = framework;

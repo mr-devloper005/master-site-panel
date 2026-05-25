@@ -191,14 +191,16 @@ export const loginMock = async (email, password) => {
 
 export const fetchDashboardData = async () => {
   // Keep app bootstrap lightweight. Heavy all-post loading made every page slow.
-  const [sitesResponse, postsResponse] = await Promise.all([
+  const [sitesResponse, postsResponse, summaryResponse] = await Promise.all([
     request("/api/v1/sites?page=1&limit=200"),
     request("/api/v1/posts?page=1&limit=50"),
+    request("/api/v1/sites/summary"),
   ]);
 
   return {
     sites: Array.isArray(sitesResponse.data) ? sitesResponse.data.map(mapSite) : [],
     posts: Array.isArray(postsResponse.data) ? postsResponse.data.map(mapPost) : [],
+    summary: summaryResponse.data || null,
   };
 };
 

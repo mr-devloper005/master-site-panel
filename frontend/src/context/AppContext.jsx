@@ -34,6 +34,7 @@ const saveTokenCache = (cache) => {
 export const AppProvider = ({ children }) => {
   const [sites, setSites] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [dashboardSummary, setDashboardSummary] = useState(null);
   const [loading, setLoading] = useState(false);
   const [globalQuery, setGlobalQuery] = useState("");
 
@@ -47,9 +48,11 @@ export const AppProvider = ({ children }) => {
         )
       );
       setPosts(data.posts);
+      setDashboardSummary(data.summary || null);
     } catch (error) {
       setSites([]);
       setPosts([]);
+      setDashboardSummary(null);
       toast.error(error.message || "Failed to load backend data");
     } finally {
       setLoading(false);
@@ -175,6 +178,7 @@ export const AppProvider = ({ children }) => {
     () => ({
       sites,
       posts,
+      dashboardSummary,
       loading,
       globalQuery,
       setGlobalQuery,
@@ -191,7 +195,7 @@ export const AppProvider = ({ children }) => {
       filteredSites,
       filteredPosts
     }),
-    [sites, posts, loading, globalQuery, filteredSites, filteredPosts]
+    [sites, posts, dashboardSummary, loading, globalQuery, filteredSites, filteredPosts]
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
