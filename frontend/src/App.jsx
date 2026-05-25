@@ -13,6 +13,7 @@ const Sites = lazy(() => import("./pages/Sites"));
 const Tasks = lazy(() => import("./pages/Tasks"));
 const Posts = lazy(() => import("./pages/Posts"));
 const PostSafety = lazy(() => import("./pages/PostSafety"));
+const DeleteHistory = lazy(() => import("./pages/DeleteHistory"));
 const ContactRequests = lazy(() => import("./pages/ContactRequests"));
 const RecentActivity = lazy(() => import("./pages/RecentActivity"));
 const Analytics = lazy(() => import("./pages/Analytics"));
@@ -52,6 +53,7 @@ export default function App() {
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/posts" element={<Posts />} />
             <Route path="/post-safety" element={<PostSafety />} />
+            <Route path="/delete-history" element={<DeleteHistory />} />
             <Route path="/contacts" element={<ContactRequests />} />
             <Route path="/activity" element={<RecentActivity />} />
             <Route path="/analytics" element={<Analytics />} />

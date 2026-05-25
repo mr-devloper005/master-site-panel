@@ -132,6 +132,61 @@ const archivePostsForRestore = async ({
   });
 };
 
+const restoreDeletedPostRecord = async ({
+  deletedPost,
+  apiKey,
+}: {
+  deletedPost: Prisma.DeletedPostGetPayload<{}>;
+  apiKey: { id: string; scopes: string[] };
+}) => {
+  if (deletedPost.restoredAt) {
+    throw new ApiError(400, "Post already restored.");
+  }
+  if (deletedPost.restoreUntil.getTime() < Date.now()) {
+    throw new ApiError(410, "Restore window expired.");
+  }
+
+  if (!canBypassSitePermissions(apiKey.scopes)) {
+    const allowed = await ensureSiteAccess(apiKey.id, deletedPost.siteId, "post");
+    if (!allowed) throw new ApiError(403, "No posting access for this site.");
+  }
+
+  const existing = await prisma.post.findUnique({ where: { id: deletedPost.originalPostId } });
+  if (existing) throw new ApiError(409, "A post with the original ID already exists.");
+
+  const restored = await prisma.post.create({
+    data: {
+      id: deletedPost.originalPostId,
+      siteId: deletedPost.siteId,
+      externalPostId: deletedPost.externalPostId,
+      title: deletedPost.title,
+      slug: deletedPost.slug,
+      summary: deletedPost.summary,
+      metaTitle: deletedPost.metaTitle,
+      metaDescription: deletedPost.metaDescription,
+      content: deletedPost.content as Prisma.InputJsonValue,
+      media: (deletedPost.media ?? Prisma.JsonNull) as Prisma.InputJsonValue,
+      tags: deletedPost.tags,
+      authorName: deletedPost.authorName,
+      status: deletedPost.status,
+      publishedAt: deletedPost.publishedAt,
+      createdByApiKeyId: deletedPost.createdByApiKeyId,
+      createdAt: deletedPost.originalCreatedAt,
+      updatedAt: deletedPost.originalUpdatedAt,
+    },
+  });
+
+  await prisma.deletedPost.update({
+    where: { id: deletedPost.id },
+    data: { restoredAt: new Date(), restoredByApiKeyId: apiKey.id },
+  });
+
+  const site = await prisma.site.findUnique({ where: { id: deletedPost.siteId }, select: { config: true } });
+  if (site) void triggerRevalidate(site.config, deletedPost.slug, taskFromContent(deletedPost.content));
+
+  return restored;
+};
+
 router.post("/", requireApiKey("posts:write"), asyncHandler(async (req, res) => {
     const apiKey = req.apiKey;
     if (!apiKey) {
@@ -318,6 +373,20 @@ router.post("/links/lookup", requireApiKey("posts:read"), asyncHandler(async (re
           publishedAt: post.publishedAt,
           createdAt: post.createdAt,
           liveUrl,
+          payload: {
+            title: post.title,
+            slug: post.slug,
+            summary: post.summary,
+            metaTitle: post.metaTitle,
+            metaDescription: post.metaDescription,
+            content: post.content,
+            media: post.media,
+            tags: post.tags,
+            authorName: post.authorName,
+            status: post.status,
+            publishedAt: post.publishedAt,
+            externalPostId: post.externalPostId,
+          },
         };
       });
   });
@@ -373,52 +442,120 @@ router.get("/deleted", requireApiKey("posts:read"), asyncHandler(async (req, res
   });
 }));
 
+router.post("/deleted/links/lookup", requireApiKey("posts:read"), asyncHandler(async (req, res) => {
+  const apiKey = req.apiKey;
+  if (!apiKey) throw new ApiError(401, "API key context missing.");
+
+  const links = normalizeLinks(req.body.links || req.body.text);
+  if (links.length === 0) throw new ApiError(400, "Paste at least one link.");
+  if (links.length > 500) throw new ApiError(400, "Maximum 500 links can be searched at once.");
+
+  const parsedLinks = links.map((link) => ({ link, host: hostFromUrl(link), slug: slugFromLink(link) }));
+  const slugs = Array.from(new Set(parsedLinks.map((item) => item.slug).filter(Boolean))) as string[];
+
+  let deleted = slugs.length
+    ? await prisma.deletedPost.findMany({
+        where: {
+          slug: { in: slugs },
+          restoredAt: null,
+          restoreUntil: { gte: new Date() },
+        },
+        orderBy: { deletedAt: "desc" },
+      })
+    : [];
+
+  if (!canBypassSitePermissions(apiKey.scopes)) {
+    const allowedSiteIds = await getAllowedSiteIds(apiKey.id, "read");
+    const allowed = new Set(allowedSiteIds);
+    deleted = deleted.filter((post) => allowed.has(post.siteId));
+  }
+
+  const found = parsedLinks.flatMap((item) => {
+    if (!item.slug) return [];
+    return deleted
+      .filter((post) => {
+        if (post.slug !== item.slug) return false;
+        return !item.host || item.host.includes(post.siteCode.toLowerCase()) || post.siteCode.toLowerCase().includes(item.host);
+      })
+      .map((post) => ({
+        inputUrl: item.link,
+        id: post.id,
+        originalPostId: post.originalPostId,
+        siteId: post.siteId,
+        siteCode: post.siteCode,
+        siteName: post.siteName,
+        title: post.title,
+        slug: post.slug,
+        summary: post.summary,
+        status: post.status,
+        deletedAt: post.deletedAt,
+        restoreUntil: post.restoreUntil,
+        deletedByName: post.deletedByName,
+        deletionSource: post.deletionSource,
+        payload: {
+          title: post.title,
+          slug: post.slug,
+          summary: post.summary,
+          metaTitle: post.metaTitle,
+          metaDescription: post.metaDescription,
+          content: post.content,
+          media: post.media,
+          tags: post.tags,
+          authorName: post.authorName,
+          status: post.status,
+          publishedAt: post.publishedAt,
+          externalPostId: post.externalPostId,
+        },
+      }));
+  });
+
+  const foundInputUrls = new Set(found.map((item) => item.inputUrl));
+  res.json({
+    success: true,
+    data: {
+      searchedCount: links.length,
+      foundCount: found.length,
+      missingCount: links.filter((link) => !foundInputUrls.has(link)).length,
+      found,
+      missing: links.filter((link) => !foundInputUrls.has(link)),
+    },
+  });
+}));
+
+router.post("/deleted/bulk/restore", requireApiKey("posts:write"), asyncHandler(async (req, res) => {
+  const apiKey = req.apiKey;
+  if (!apiKey) throw new ApiError(401, "API key context missing.");
+
+  const deletedPostIds: string[] = Array.isArray(req.body.deletedPostIds) ? req.body.deletedPostIds : [];
+  if (deletedPostIds.length === 0) throw new ApiError(400, "deletedPostIds[] is required.");
+  if (deletedPostIds.length > 200) throw new ApiError(400, "Maximum 200 posts can be restored at once.");
+
+  const deletedPosts = await prisma.deletedPost.findMany({ where: { id: { in: deletedPostIds } } });
+  if (deletedPosts.length !== deletedPostIds.length) {
+    throw new ApiError(404, "One or more deleted posts were not found.");
+  }
+
+  const restored = [];
+  const failed: Array<{ id: string; error: string }> = [];
+
+  for (const deletedPost of deletedPosts) {
+    try {
+      restored.push(await restoreDeletedPostRecord({ deletedPost, apiKey }));
+    } catch (error) {
+      failed.push({ id: deletedPost.id, error: error instanceof Error ? error.message : "Restore failed" });
+    }
+  }
+
+  res.json({ success: true, data: { restoredCount: restored.length, failedCount: failed.length, failed } });
+}));
+
 router.post("/deleted/:deletedPostId/restore", requireApiKey("posts:write"), asyncHandler(async (req, res) => {
   const apiKey = req.apiKey;
   if (!apiKey) throw new ApiError(401, "API key context missing.");
 
   const deletedPost = await prisma.deletedPost.findUnique({ where: { id: String(req.params.deletedPostId) } });
   if (!deletedPost) throw new ApiError(404, "Deleted post history not found.");
-  if (deletedPost.restoredAt) throw new ApiError(400, "Post already restored.");
-  if (deletedPost.restoreUntil.getTime() < Date.now()) throw new ApiError(410, "Restore window expired.");
-
-  if (!canBypassSitePermissions(apiKey.scopes)) {
-    const allowed = await ensureSiteAccess(apiKey.id, deletedPost.siteId, "post");
-    if (!allowed) throw new ApiError(403, "No posting access for this site.");
-  }
-
-  const existing = await prisma.post.findUnique({ where: { id: deletedPost.originalPostId } });
-  if (existing) throw new ApiError(409, "A post with the original ID already exists.");
-
-  const restored = await prisma.post.create({
-    data: {
-      id: deletedPost.originalPostId,
-      siteId: deletedPost.siteId,
-      externalPostId: deletedPost.externalPostId,
-      title: deletedPost.title,
-      slug: deletedPost.slug,
-      summary: deletedPost.summary,
-      metaTitle: deletedPost.metaTitle,
-      metaDescription: deletedPost.metaDescription,
-      content: deletedPost.content as Prisma.InputJsonValue,
-      media: (deletedPost.media ?? Prisma.JsonNull) as Prisma.InputJsonValue,
-      tags: deletedPost.tags,
-      authorName: deletedPost.authorName,
-      status: deletedPost.status,
-      publishedAt: deletedPost.publishedAt,
-      createdByApiKeyId: deletedPost.createdByApiKeyId,
-      createdAt: deletedPost.originalCreatedAt,
-      updatedAt: deletedPost.originalUpdatedAt,
-    },
-  });
-
-  await prisma.deletedPost.update({
-    where: { id: deletedPost.id },
-    data: { restoredAt: new Date(), restoredByApiKeyId: apiKey.id },
-  });
-
-  const site = await prisma.site.findUnique({ where: { id: deletedPost.siteId }, select: { config: true } });
-  if (site) void triggerRevalidate(site.config, deletedPost.slug, taskFromContent(deletedPost.content));
+  const restored = await restoreDeletedPostRecord({ deletedPost, apiKey });
 
   res.json({ success: true, data: restored });
 }));
@@ -674,9 +811,16 @@ router.post("/bulk/update", requireApiKey("posts:write"), asyncHandler(async (re
 
   const status = mapStatus(data.status);
   const patch: Prisma.PostUpdateManyMutationInput = {};
+  if (posts.length === 1 && data.title !== undefined) patch.title = String(data.title);
+  if (posts.length === 1 && data.slug !== undefined) patch.slug = data.slug ? String(data.slug) : null;
   if (status) patch.status = status;
   if (data.authorName !== undefined) patch.authorName = data.authorName;
   if (data.summary !== undefined) patch.summary = data.summary;
+  if (data.metaTitle !== undefined) patch.metaTitle = data.metaTitle ? String(data.metaTitle).trim() : null;
+  if (data.metaDescription !== undefined) patch.metaDescription = data.metaDescription ? String(data.metaDescription).trim() : null;
+  if (data.content !== undefined && posts.length === 1) patch.content = data.content as Prisma.InputJsonValue;
+  if (data.media !== undefined && posts.length === 1) patch.media = (data.media ?? Prisma.JsonNull) as Prisma.InputJsonValue;
+  if (Array.isArray(data.tags) && posts.length === 1) patch.tags = data.tags.map((tag: unknown) => String(tag));
   if (data.publishedAt !== undefined) {
     patch.publishedAt = data.publishedAt ? new Date(data.publishedAt) : null;
   }
@@ -700,6 +844,36 @@ router.post("/bulk/update", requireApiKey("posts:write"), asyncHandler(async (re
           data: { tags: Array.from(new Set([...post.tags, ...uniqueTags])) },
         })
       )
+    );
+  }
+
+  if (data.contentMerge && typeof data.contentMerge === "object" && !Array.isArray(data.contentMerge)) {
+    await Promise.all(
+      posts.map(async (post) => {
+        const current = await prisma.post.findUnique({ where: { id: post.id }, select: { content: true } });
+        const currentContent = current?.content && typeof current.content === "object" && !Array.isArray(current.content)
+          ? current.content as Record<string, unknown>
+          : {};
+        await prisma.post.update({
+          where: { id: post.id },
+          data: { content: { ...currentContent, ...data.contentMerge } as Prisma.InputJsonValue },
+        });
+      })
+    );
+  }
+
+  if (data.mediaMerge && typeof data.mediaMerge === "object" && !Array.isArray(data.mediaMerge)) {
+    await Promise.all(
+      posts.map(async (post) => {
+        const current = await prisma.post.findUnique({ where: { id: post.id }, select: { media: true } });
+        const currentMedia = current?.media && typeof current.media === "object" && !Array.isArray(current.media)
+          ? current.media as Record<string, unknown>
+          : {};
+        await prisma.post.update({
+          where: { id: post.id },
+          data: { media: { ...currentMedia, ...data.mediaMerge } as Prisma.InputJsonValue },
+        });
+      })
     );
   }
 

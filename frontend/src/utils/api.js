@@ -365,6 +365,22 @@ export const fetchDeletedPostsPage = async ({ page = 1, limit = 100, search = ""
   };
 };
 
+export const lookupDeletedPostsByLinks = async (links) => {
+  const response = await request("/api/v1/posts/deleted/links/lookup", {
+    method: "POST",
+    body: JSON.stringify({ links }),
+  });
+  return response.data || { found: [], missing: [], foundCount: 0, missingCount: 0, searchedCount: 0 };
+};
+
+export const restoreDeletedPostsBulk = async (deletedPostIds) => {
+  const response = await request("/api/v1/posts/deleted/bulk/restore", {
+    method: "POST",
+    body: JSON.stringify({ deletedPostIds }),
+  });
+  return response.data;
+};
+
 export const restoreDeletedPost = async (deletedPostId) => {
   const response = await request(`/api/v1/posts/deleted/${deletedPostId}/restore`, {
     method: "POST",
