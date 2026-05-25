@@ -211,6 +211,10 @@ export const fetchPostsPage = async ({
   siteId = "",
   status = "",
   taskType = "",
+  dateFrom = "",
+  dateTo = "",
+  timeFrom = "",
+  timeTo = "",
 } = {}) => {
   const query = new URLSearchParams();
   query.set("page", String(page));
@@ -219,6 +223,10 @@ export const fetchPostsPage = async ({
   if (siteId && siteId !== "all") query.set("siteId", siteId);
   if (status && status !== "all") query.set("status", status.toUpperCase());
   if (taskType && taskType !== "all") query.set("taskType", taskType);
+  if (dateFrom) query.set("dateFrom", dateFrom);
+  if (dateTo) query.set("dateTo", dateTo);
+  if (timeFrom) query.set("timeFrom", timeFrom);
+  if (timeTo) query.set("timeTo", timeTo);
 
   const response = await request(`/api/v1/posts?${query.toString()}`);
 

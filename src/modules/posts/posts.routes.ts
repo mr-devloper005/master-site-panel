@@ -20,6 +20,17 @@ const mapStatus = (status?: string): PostStatus | undefined => {
 
 const canBypassSitePermissions = (scopes: string[]): boolean => scopes.includes("*");
 
+const parseDateBoundary = (date?: string, time?: string, endOfDay = false): Date | null => {
+  const cleanDate = String(date || "").trim();
+  if (!cleanDate) return null;
+
+  const cleanTime = String(time || "").trim();
+  const fallbackTime = endOfDay ? "23:59:59.999" : "00:00:00.000";
+  const value = `${cleanDate}T${cleanTime || fallbackTime}`;
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
+
 router.post("/", requireApiKey("posts:write"), asyncHandler(async (req, res) => {
     const apiKey = req.apiKey;
     if (!apiKey) {
@@ -74,6 +85,10 @@ router.get("/", requireApiKey("posts:read"), asyncHandler(async (req, res) => {
     const status = mapStatus(req.query.status?.toString());
     const search = req.query.search?.toString().trim();
     const taskType = req.query.taskType?.toString().trim();
+    const dateFrom = req.query.dateFrom?.toString();
+    const dateTo = req.query.dateTo?.toString();
+    const timeFrom = req.query.timeFrom?.toString();
+    const timeTo = req.query.timeTo?.toString();
     const page = Math.max(Number(req.query.page) || 1, 1);
     const limit = Math.min(Math.max(Number(req.query.limit) || 30, 1), 200);
 
@@ -82,13 +97,30 @@ router.get("/", requireApiKey("posts:read"), asyncHandler(async (req, res) => {
     if (siteId) where.siteId = siteId;
     if (status) where.status = status;
     if (taskType && taskType !== "all") {
-      where.OR = [
+      const taskFilter: Prisma.PostWhereInput = {
+        OR: [
         { content: { path: ["type"], string_contains: taskType } },
         { content: { path: ["postType"], string_contains: taskType } },
         { content: { path: ["taskType"], string_contains: taskType } },
         { tags: { has: taskType } },
-      ];
+        ],
+      };
+      where.AND = Array.isArray(where.AND) ? [...where.AND, taskFilter] : [taskFilter];
     }
+
+    const from = parseDateBoundary(dateFrom, timeFrom, false);
+    const to = parseDateBoundary(dateTo || dateFrom, timeTo, true);
+    if (from || to) {
+      const range: Prisma.DateTimeFilter = {};
+      if (from) range.gte = from;
+      if (to) range.lte = to;
+
+      const dateFilter: Prisma.PostWhereInput = {
+        OR: [{ publishedAt: range }, { createdAt: range }],
+      };
+      where.AND = Array.isArray(where.AND) ? [...where.AND, dateFilter] : [dateFilter];
+    }
+
     if (search) {
       const searchFilter: Prisma.PostWhereInput = {
         OR: [

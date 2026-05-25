@@ -18,6 +18,16 @@ const mapStatus = (status) => {
     return status;
 };
 const canBypassSitePermissions = (scopes) => scopes.includes("*");
+const parseDateBoundary = (date, time, endOfDay = false) => {
+    const cleanDate = String(date || "").trim();
+    if (!cleanDate)
+        return null;
+    const cleanTime = String(time || "").trim();
+    const fallbackTime = endOfDay ? "23:59:59.999" : "00:00:00.000";
+    const value = `${cleanDate}T${cleanTime || fallbackTime}`;
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
 router.post("/", (0, auth_1.requireApiKey)("posts:write"), (0, async_handler_1.asyncHandler)(async (req, res) => {
     const apiKey = req.apiKey;
     if (!apiKey) {
@@ -56,6 +66,10 @@ router.get("/", (0, auth_1.requireApiKey)("posts:read"), (0, async_handler_1.asy
     const status = mapStatus(req.query.status?.toString());
     const search = req.query.search?.toString().trim();
     const taskType = req.query.taskType?.toString().trim();
+    const dateFrom = req.query.dateFrom?.toString();
+    const dateTo = req.query.dateTo?.toString();
+    const timeFrom = req.query.timeFrom?.toString();
+    const timeTo = req.query.timeTo?.toString();
     const page = Math.max(Number(req.query.page) || 1, 1);
     const limit = Math.min(Math.max(Number(req.query.limit) || 30, 1), 200);
     const where = {};
@@ -66,12 +80,28 @@ router.get("/", (0, auth_1.requireApiKey)("posts:read"), (0, async_handler_1.asy
     if (status)
         where.status = status;
     if (taskType && taskType !== "all") {
-        where.OR = [
-            { content: { path: ["type"], string_contains: taskType } },
-            { content: { path: ["postType"], string_contains: taskType } },
-            { content: { path: ["taskType"], string_contains: taskType } },
-            { tags: { has: taskType } },
-        ];
+        const taskFilter = {
+            OR: [
+                { content: { path: ["type"], string_contains: taskType } },
+                { content: { path: ["postType"], string_contains: taskType } },
+                { content: { path: ["taskType"], string_contains: taskType } },
+                { tags: { has: taskType } },
+            ],
+        };
+        where.AND = Array.isArray(where.AND) ? [...where.AND, taskFilter] : [taskFilter];
+    }
+    const from = parseDateBoundary(dateFrom, timeFrom, false);
+    const to = parseDateBoundary(dateTo || dateFrom, timeTo, true);
+    if (from || to) {
+        const range = {};
+        if (from)
+            range.gte = from;
+        if (to)
+            range.lte = to;
+        const dateFilter = {
+            OR: [{ publishedAt: range }, { createdAt: range }],
+        };
+        where.AND = Array.isArray(where.AND) ? [...where.AND, dateFilter] : [dateFilter];
     }
     if (search) {
         const searchFilter = {

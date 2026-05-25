@@ -24,6 +24,11 @@ const TASK_LABELS = {
   general: "General",
 };
 
+const TASK_OPTIONS = Object.entries(TASK_LABELS)
+  .filter(([value]) => value !== "general")
+  .map(([value, label]) => ({ value, label, meta: value }))
+  .sort((a, b) => a.label.localeCompare(b.label));
+
 export default function Posts() {
   const { posts: recentPosts, sites, globalQuery, setGlobalQuery, runPostBulkAction, editPost } = useAppData();
   const [params] = useSearchParams();
@@ -38,6 +43,8 @@ export default function Posts() {
   const [siteSearch, setSiteSearch] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [timeFrom, setTimeFrom] = useState("");
+  const [timeTo, setTimeTo] = useState("");
   const [selected, setSelected] = useState([]);
   const [sortBy, setSortBy] = useState("date");
   const [page, setPage] = useState(1);
@@ -61,14 +68,6 @@ export default function Posts() {
     [sites]
   );
 
-  const taskOptions = useMemo(() => {
-    const source = rows.length ? rows : recentPosts;
-    const uniqueTasks = Array.from(new Set(source.map((post) => post.taskType).filter(Boolean)));
-    return uniqueTasks
-      .sort((a, b) => (TASK_LABELS[a] || a).localeCompare(TASK_LABELS[b] || b))
-      .map((task) => ({ value: task, label: TASK_LABELS[task] || task, meta: task }));
-  }, [rows, recentPosts]);
-
   const loadPosts = async (nextPage = page) => {
     setLoading(true);
     try {
@@ -79,17 +78,13 @@ export default function Posts() {
         siteId: tab === "site" ? siteFilter : "all",
         status: statusFilter,
         taskType: taskFilter,
+        dateFrom,
+        dateTo,
+        timeFrom,
+        timeTo,
       });
 
       let nextRows = result.posts;
-      if (dateFrom || dateTo) {
-        nextRows = nextRows.filter((post) => {
-          const date = new Date(post.date).getTime();
-          const matchFrom = dateFrom ? date >= new Date(dateFrom).getTime() : true;
-          const matchTo = dateTo ? date <= new Date(dateTo).getTime() + 24 * 60 * 60 * 1000 : true;
-          return matchFrom && matchTo;
-        });
-      }
       nextRows = [...nextRows].sort((a, b) => {
         if (sortBy === "title") return a.title.localeCompare(b.title);
         return new Date(b.date) - new Date(a.date);
@@ -112,7 +107,7 @@ export default function Posts() {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [tab, siteFilter, statusFilter, taskFilter, query, globalQuery, dateFrom, dateTo, sortBy]);
+  }, [tab, siteFilter, statusFilter, taskFilter, query, globalQuery, dateFrom, dateTo, timeFrom, timeTo, sortBy]);
 
   useEffect(() => {
     loadPosts(page);
@@ -142,7 +137,7 @@ export default function Posts() {
           <button
             className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
             onClick={() => {
-              const next = [...savedSearches, { tab, siteFilter, statusFilter, taskFilter, query, dateFrom, dateTo }].slice(-8);
+              const next = [...savedSearches, { tab, siteFilter, statusFilter, taskFilter, query, dateFrom, dateTo, timeFrom, timeTo }].slice(-8);
               setSavedSearches(next);
               localStorage.setItem("site-master-saved-searches", JSON.stringify(next));
             }}
@@ -183,7 +178,7 @@ export default function Posts() {
           )}
           <select className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm" value={taskFilter} onChange={(e) => setTaskFilter(e.target.value)}>
             <option value="all">All Tasks</option>
-            {taskOptions.map((task) => (
+            {TASK_OPTIONS.map((task) => (
               <option key={task.value} value={task.value}>{task.label}</option>
             ))}
           </select>
@@ -203,6 +198,24 @@ export default function Posts() {
           />
           <input type="date" className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
           <input type="date" className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
+          <input type="time" className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm" value={timeFrom} onChange={(e) => setTimeFrom(e.target.value)} title="Start time" />
+          <input type="time" className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm" value={timeTo} onChange={(e) => setTimeTo(e.target.value)} title="End time" />
+          <button
+            className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
+            onClick={() => {
+              setTaskFilter("all");
+              setStatusFilter("all");
+              setDateFrom("");
+              setDateTo("");
+              setTimeFrom("");
+              setTimeTo("");
+              setQuery("");
+              setGlobalQuery("");
+              setPage(1);
+            }}
+          >
+            Clear
+          </button>
         </div>
 
         {savedSearches.length > 0 && (
@@ -219,6 +232,8 @@ export default function Posts() {
                   setQuery(s.query);
                   setDateFrom(s.dateFrom);
                   setDateTo(s.dateTo);
+                  setTimeFrom(s.timeFrom || "");
+                  setTimeTo(s.timeTo || "");
                 }}
               >
                 {s.query || "Saved filter"}
