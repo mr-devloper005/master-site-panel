@@ -5,8 +5,8 @@ import { prisma } from "../../config/db";
 import { ensureSiteAccess, getAllowedSiteIds, requireApiKey } from "../../middleware/auth";
 import { ApiError } from "../../utils/api-error";
 import { asyncHandler } from "../../utils/async-handler";
-import { createPublishedPost, triggerRevalidate } from "./post-service";
-import { isSiteTask } from "../sites/site-contract";
+import { buildPostLiveUrl, createPublishedPost, triggerRevalidate } from "./post-service";
+import { getSiteFrontendBaseUrl, isSiteTask, type SiteTask } from "../sites/site-contract";
 
 const router = Router();
 
@@ -29,6 +29,107 @@ const parseDateBoundary = (date?: string, time?: string, endOfDay = false): Date
   const value = `${cleanDate}T${cleanTime || fallbackTime}`;
   const parsed = new Date(value);
   return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
+
+const RESTORE_WINDOW_DAYS = 7;
+const BULK_LINK_DELETE_LIMIT = 200;
+
+const taskFromContent = (content: unknown): SiteTask | null => {
+  const record = content && typeof content === "object" && !Array.isArray(content)
+    ? (content as Record<string, unknown>)
+    : null;
+  const value = typeof record?.type === "string" ? record.type : null;
+  return value && isSiteTask(value) ? value : null;
+};
+
+const hostFromUrl = (value?: string | null): string => {
+  if (!value) return "";
+  try {
+    return new URL(value).host.replace(/^www\./, "").toLowerCase();
+  } catch {
+    return String(value).replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0].toLowerCase();
+  }
+};
+
+const normalizeLinks = (input: unknown): string[] => {
+  const values = Array.isArray(input)
+    ? input
+    : String(input || "").split(/[\n,\s]+/g);
+  return Array.from(new Set(values.map((item) => String(item).trim()).filter(Boolean)));
+};
+
+const slugFromLink = (link: string): string | null => {
+  try {
+    const parsed = new URL(link);
+    const parts = parsed.pathname.split("/").map((part) => part.trim()).filter(Boolean);
+    return parts.length ? parts[parts.length - 1] : null;
+  } catch {
+    const parts = link.split("?")[0].split("/").map((part) => part.trim()).filter(Boolean);
+    return parts.length ? parts[parts.length - 1] : null;
+  }
+};
+
+const archivePostsForRestore = async ({
+  posts,
+  apiKey,
+  source,
+  reason,
+}: {
+  posts: Array<Prisma.PostGetPayload<{ include: { site: { select: { id: true; code: true; name: true } } } }>>;
+  apiKey: { id: string; name?: string | null };
+  source: string;
+  reason?: string | null;
+}) => {
+  if (!posts.length) return;
+
+  const restoreUntil = new Date(Date.now() + RESTORE_WINDOW_DAYS * 24 * 60 * 60 * 1000);
+  await prisma.deletedPost.createMany({
+    data: posts.map((post) => ({
+      originalPostId: post.id,
+      siteId: post.siteId,
+      siteCode: post.site.code,
+      siteName: post.site.name,
+      externalPostId: post.externalPostId,
+      title: post.title,
+      slug: post.slug,
+      summary: post.summary,
+      metaTitle: post.metaTitle,
+      metaDescription: post.metaDescription,
+      content: post.content as Prisma.InputJsonValue,
+      media: (post.media ?? Prisma.JsonNull) as Prisma.InputJsonValue,
+      tags: post.tags,
+      authorName: post.authorName,
+      status: post.status,
+      publishedAt: post.publishedAt,
+      createdByApiKeyId: post.createdByApiKeyId,
+      originalCreatedAt: post.createdAt,
+      originalUpdatedAt: post.updatedAt,
+      snapshot: {
+        id: post.id,
+        siteId: post.siteId,
+        externalPostId: post.externalPostId,
+        title: post.title,
+        slug: post.slug,
+        summary: post.summary,
+        metaTitle: post.metaTitle,
+        metaDescription: post.metaDescription,
+        content: post.content,
+        media: post.media,
+        tags: post.tags,
+        authorName: post.authorName,
+        status: post.status,
+        publishedAt: post.publishedAt,
+        createdByApiKeyId: post.createdByApiKeyId,
+        createdAt: post.createdAt,
+        updatedAt: post.updatedAt,
+      } as Prisma.InputJsonValue,
+      deletedByApiKeyId: apiKey.id,
+      deletedByName: apiKey.name || null,
+      deletionSource: source,
+      deletionReason: reason || null,
+      restoreUntil,
+    })),
+  });
 };
 
 router.post("/", requireApiKey("posts:write"), asyncHandler(async (req, res) => {
@@ -163,6 +264,165 @@ router.get("/", requireApiKey("posts:read"), asyncHandler(async (req, res) => {
     });
 }));
 
+router.post("/links/lookup", requireApiKey("posts:read"), asyncHandler(async (req, res) => {
+  const apiKey = req.apiKey;
+  if (!apiKey) throw new ApiError(401, "API key context missing.");
+
+  const links = normalizeLinks(req.body.links || req.body.text);
+  if (links.length === 0) throw new ApiError(400, "Paste at least one link.");
+  if (links.length > 500) throw new ApiError(400, "Maximum 500 links can be searched at once.");
+
+  const parsedLinks = links.map((link) => ({
+    link,
+    host: hostFromUrl(link),
+    slug: slugFromLink(link),
+  }));
+  const slugs = Array.from(new Set(parsedLinks.map((item) => item.slug).filter(Boolean))) as string[];
+
+  const posts = slugs.length
+    ? await prisma.post.findMany({
+        where: { slug: { in: slugs } },
+        include: { site: { select: { id: true, code: true, name: true, config: true } } },
+      })
+    : [];
+
+  if (!canBypassSitePermissions(apiKey.scopes)) {
+    const allowedSiteIds = await getAllowedSiteIds(apiKey.id, "read");
+    const allowed = new Set(allowedSiteIds);
+    posts.splice(0, posts.length, ...posts.filter((post) => allowed.has(post.siteId)));
+  }
+
+  const found = parsedLinks.flatMap((item) => {
+    if (!item.slug) return [];
+    return posts
+      .filter((post) => {
+        if (post.slug !== item.slug) return false;
+        const siteHost = hostFromUrl(getSiteFrontendBaseUrl(post.site.config));
+        const codeHost = hostFromUrl(post.site.code);
+        return !item.host || item.host === siteHost || item.host === codeHost;
+      })
+      .map((post) => {
+        const task = taskFromContent(post.content);
+        const liveUrl = buildPostLiveUrl(getSiteFrontendBaseUrl(post.site.config), post.slug, post.site.config, task);
+        return {
+          inputUrl: item.link,
+          id: post.id,
+          siteId: post.siteId,
+          siteCode: post.site.code,
+          siteName: post.site.name,
+          title: post.title,
+          slug: post.slug,
+          summary: post.summary,
+          status: post.status,
+          taskType: task || "general",
+          publishedAt: post.publishedAt,
+          createdAt: post.createdAt,
+          liveUrl,
+        };
+      });
+  });
+
+  const foundInputUrls = new Set(found.map((item) => item.inputUrl));
+  res.json({
+    success: true,
+    data: {
+      searchedCount: links.length,
+      foundCount: found.length,
+      missingCount: links.filter((link) => !foundInputUrls.has(link)).length,
+      found,
+      missing: links.filter((link) => !foundInputUrls.has(link)),
+      bulkDeleteLimit: BULK_LINK_DELETE_LIMIT,
+    },
+  });
+}));
+
+router.get("/deleted", requireApiKey("posts:read"), asyncHandler(async (req, res) => {
+  const page = Math.max(Number(req.query.page) || 1, 1);
+  const limit = Math.min(Math.max(Number(req.query.limit) || 100, 1), 100);
+  const search = req.query.search?.toString().trim();
+  const restorableOnly = req.query.restorableOnly !== "false";
+
+  const where: Prisma.DeletedPostWhereInput = {};
+  if (restorableOnly) {
+    where.restoredAt = null;
+    where.restoreUntil = { gte: new Date() };
+  }
+  if (search) {
+    where.OR = [
+      { title: { contains: search, mode: "insensitive" } },
+      { slug: { contains: search, mode: "insensitive" } },
+      { siteCode: { contains: search, mode: "insensitive" } },
+      { siteName: { contains: search, mode: "insensitive" } },
+    ];
+  }
+
+  const [items, total] = await Promise.all([
+    prisma.deletedPost.findMany({
+      where,
+      orderBy: { deletedAt: "desc" },
+      skip: (page - 1) * limit,
+      take: limit,
+    }),
+    prisma.deletedPost.count({ where }),
+  ]);
+
+  res.json({
+    success: true,
+    data: items,
+    meta: { page, limit, total, totalPages: Math.max(Math.ceil(total / limit), 1) },
+  });
+}));
+
+router.post("/deleted/:deletedPostId/restore", requireApiKey("posts:write"), asyncHandler(async (req, res) => {
+  const apiKey = req.apiKey;
+  if (!apiKey) throw new ApiError(401, "API key context missing.");
+
+  const deletedPost = await prisma.deletedPost.findUnique({ where: { id: String(req.params.deletedPostId) } });
+  if (!deletedPost) throw new ApiError(404, "Deleted post history not found.");
+  if (deletedPost.restoredAt) throw new ApiError(400, "Post already restored.");
+  if (deletedPost.restoreUntil.getTime() < Date.now()) throw new ApiError(410, "Restore window expired.");
+
+  if (!canBypassSitePermissions(apiKey.scopes)) {
+    const allowed = await ensureSiteAccess(apiKey.id, deletedPost.siteId, "post");
+    if (!allowed) throw new ApiError(403, "No posting access for this site.");
+  }
+
+  const existing = await prisma.post.findUnique({ where: { id: deletedPost.originalPostId } });
+  if (existing) throw new ApiError(409, "A post with the original ID already exists.");
+
+  const restored = await prisma.post.create({
+    data: {
+      id: deletedPost.originalPostId,
+      siteId: deletedPost.siteId,
+      externalPostId: deletedPost.externalPostId,
+      title: deletedPost.title,
+      slug: deletedPost.slug,
+      summary: deletedPost.summary,
+      metaTitle: deletedPost.metaTitle,
+      metaDescription: deletedPost.metaDescription,
+      content: deletedPost.content as Prisma.InputJsonValue,
+      media: (deletedPost.media ?? Prisma.JsonNull) as Prisma.InputJsonValue,
+      tags: deletedPost.tags,
+      authorName: deletedPost.authorName,
+      status: deletedPost.status,
+      publishedAt: deletedPost.publishedAt,
+      createdByApiKeyId: deletedPost.createdByApiKeyId,
+      createdAt: deletedPost.originalCreatedAt,
+      updatedAt: deletedPost.originalUpdatedAt,
+    },
+  });
+
+  await prisma.deletedPost.update({
+    where: { id: deletedPost.id },
+    data: { restoredAt: new Date(), restoredByApiKeyId: apiKey.id },
+  });
+
+  const site = await prisma.site.findUnique({ where: { id: deletedPost.siteId }, select: { config: true } });
+  if (site) void triggerRevalidate(site.config, deletedPost.slug, taskFromContent(deletedPost.content));
+
+  res.json({ success: true, data: restored });
+}));
+
 router.get("/:postId", requireApiKey("posts:read"), asyncHandler(async (req, res) => {
   const postId = String(req.params.postId);
   const apiKey = req.apiKey;
@@ -264,7 +524,7 @@ router.delete("/:postId", requireApiKey("posts:write"), asyncHandler(async (req,
 
   const current = await prisma.post.findUnique({
     where: { id: postId },
-    select: { siteId: true, slug: true, content: true },
+    include: { site: { select: { id: true, code: true, name: true } } },
   });
   if (!current) throw new ApiError(404, "Post not found.");
 
@@ -274,6 +534,13 @@ router.delete("/:postId", requireApiKey("posts:write"), asyncHandler(async (req,
       throw new ApiError(403, "No posting access for this post's site.");
     }
   }
+
+  await archivePostsForRestore({
+    posts: [current],
+    apiKey,
+    source: "posts-single-delete",
+    reason: req.body?.reason || null,
+  });
 
   await prisma.post.delete({ where: { id: postId } });
 
@@ -293,7 +560,7 @@ router.delete("/:postId", requireApiKey("posts:write"), asyncHandler(async (req,
     void triggerRevalidate(site.config, current.slug, task);
   }
 
-  res.json({ success: true, message: "Post deleted." });
+  res.json({ success: true, message: "Post deleted. Restore available for 7 days." });
 }));
 
 router.post("/bulk/delete", requireApiKey("posts:write"), asyncHandler(async (req, res) => {
@@ -306,31 +573,78 @@ router.post("/bulk/delete", requireApiKey("posts:write"), asyncHandler(async (re
     throw new ApiError(400, "postIds[] is required.");
   }
 
-  const where: Prisma.PostWhereInput =
-    deleteAll ? {} : { id: { in: postIds } };
+  let where: Prisma.PostWhereInput = deleteAll ? {} : { id: { in: postIds } };
+
+  if (!canBypassSitePermissions(apiKey.scopes)) {
+    const allowedSiteIds = await getAllowedSiteIds(apiKey.id, "post");
+    if (allowedSiteIds.length === 0) {
+      throw new ApiError(403, "No posting access for any site.");
+    }
+    where = deleteAll
+      ? { siteId: { in: allowedSiteIds } }
+      : { AND: [{ id: { in: postIds } }, { siteId: { in: allowedSiteIds } }] };
+  }
+
+  if (deleteAll) {
+    let deletedCount = 0;
+    const batchSize = 500;
+
+    while (true) {
+      const batch = await prisma.post.findMany({
+        where,
+        include: { site: { select: { id: true, code: true, name: true } } },
+        orderBy: { createdAt: "asc" },
+        take: batchSize,
+      });
+
+      if (batch.length === 0) break;
+
+      await archivePostsForRestore({
+        posts: batch,
+        apiKey,
+        source: "posts-delete-all",
+        reason: req.body.reason || null,
+      });
+
+      const result = await prisma.post.deleteMany({
+        where: { id: { in: batch.map((post) => post.id) } },
+      });
+      deletedCount += result.count;
+    }
+
+    res.json({ success: true, data: { deletedCount, restoreDays: RESTORE_WINDOW_DAYS } });
+    return;
+  }
 
   const posts = await prisma.post.findMany({
     where,
-    select: { id: true, siteId: true },
+    include: { site: { select: { id: true, code: true, name: true } } },
   });
   if (posts.length === 0) {
     res.json({ success: true, data: { deletedCount: 0 } });
     return;
   }
 
-  if (!canBypassSitePermissions(apiKey.scopes)) {
-    const allowedSiteIds = await getAllowedSiteIds(apiKey.id, "post");
-    const unauthorized = posts.some((post) => !allowedSiteIds.includes(post.siteId));
-    if (unauthorized) {
-      throw new ApiError(403, "One or more posts are outside your permission scope.");
-    }
+  if (posts.length !== postIds.length) {
+    throw new ApiError(403, "One or more posts were not found or are outside your permission scope.");
   }
+
+  if (posts.length > BULK_LINK_DELETE_LIMIT) {
+    throw new ApiError(400, `Maximum ${BULK_LINK_DELETE_LIMIT} posts can be deleted at once.`);
+  }
+
+  await archivePostsForRestore({
+    posts,
+    apiKey,
+    source: req.body.source || "posts-bulk-delete",
+    reason: req.body.reason || null,
+  });
 
   const result = await prisma.post.deleteMany({
     where: { id: { in: posts.map((post) => post.id) } },
   });
 
-  res.json({ success: true, data: { deletedCount: result.count } });
+  res.json({ success: true, data: { deletedCount: result.count, restoreDays: RESTORE_WINDOW_DAYS } });
 }));
 
 router.post("/bulk/update", requireApiKey("posts:write"), asyncHandler(async (req, res) => {

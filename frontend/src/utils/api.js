@@ -343,6 +343,35 @@ export const bulkPostAction = async ({ postIds, action, data }) => {
   return true;
 };
 
+export const lookupPostsByLinks = async (links) => {
+  const response = await request("/api/v1/posts/links/lookup", {
+    method: "POST",
+    body: JSON.stringify({ links }),
+  });
+  return response.data || { found: [], missing: [], foundCount: 0, missingCount: 0, searchedCount: 0 };
+};
+
+export const fetchDeletedPostsPage = async ({ page = 1, limit = 100, search = "", restorableOnly = true } = {}) => {
+  const query = new URLSearchParams();
+  query.set("page", String(page));
+  query.set("limit", String(limit));
+  query.set("restorableOnly", String(restorableOnly));
+  if (search.trim()) query.set("search", search.trim());
+
+  const response = await request(`/api/v1/posts/deleted?${query.toString()}`);
+  return {
+    posts: Array.isArray(response.data) ? response.data : [],
+    meta: response.meta || { page, limit, total: 0, totalPages: 1 },
+  };
+};
+
+export const restoreDeletedPost = async (deletedPostId) => {
+  const response = await request(`/api/v1/posts/deleted/${deletedPostId}/restore`, {
+    method: "POST",
+  });
+  return response.data;
+};
+
 export const reorderSites = async (orderedIds) => orderedIds;
 
 export const resetMockDb = async () => {

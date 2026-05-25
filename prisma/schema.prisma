@@ -110,6 +110,44 @@ model Post {
   @@index([siteId, status, slug])
 }
 
+model DeletedPost {
+  id                String     @id @default(cuid())
+  originalPostId    String
+  siteId            String
+  siteCode          String
+  siteName          String
+  externalPostId    String?
+  title             String
+  slug              String?
+  summary           String?
+  metaTitle         String?
+  metaDescription   String?
+  content           Json
+  media             Json?
+  tags              String[]
+  authorName        String?
+  status            PostStatus
+  publishedAt       DateTime?
+  createdByApiKeyId String?
+  originalCreatedAt DateTime
+  originalUpdatedAt DateTime
+  snapshot          Json
+  deletedByApiKeyId String?
+  deletedByName     String?
+  deletionSource    String     @default("posts")
+  deletionReason    String?
+  deletedAt         DateTime   @default(now())
+  restoreUntil      DateTime
+  restoredAt        DateTime?
+  restoredByApiKeyId String?
+
+  @@index([deletedAt])
+  @@index([restoreUntil])
+  @@index([siteId, deletedAt])
+  @@index([originalPostId])
+  @@index([slug])
+}
+
 model SiteIndexingRecord {
   id                     String                   @id @default(cuid())
   siteId                 String
