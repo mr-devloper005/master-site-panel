@@ -466,7 +466,8 @@ router.get("/lookup/search", (0, auth_1.requireApiKey)("sites:read"), (0, async_
         .split(",")
         .map((id) => id.trim())
         .filter(Boolean);
-    const limit = Math.min(Math.max(Number(req.query.limit) || 25, 1), 50);
+    const page = Math.max(Number(req.query.page) || 1, 1);
+    const limit = Math.min(Math.max(Number(req.query.limit) || 25, 1), 100);
     const where = {};
     if (ids.length) {
         where.id = { in: ids };
@@ -504,6 +505,7 @@ router.get("/lookup/search", (0, auth_1.requireApiKey)("sites:read"), (0, async_
     const sites = await db_1.prisma.site.findMany({
         where,
         orderBy: [{ isActive: "desc" }, { name: "asc" }],
+        skip: ids.length ? 0 : (page - 1) * limit,
         take: ids.length ? Math.min(ids.length, 100) : limit,
         select: {
             id: true,
@@ -521,6 +523,7 @@ router.get("/lookup/search", (0, auth_1.requireApiKey)("sites:read"), (0, async_
             },
         },
     });
+    const total = ids.length ? sites.length : await db_1.prisma.site.count({ where });
     res.json({
         success: true,
         data: sites.map((site) => ({
@@ -528,8 +531,10 @@ router.get("/lookup/search", (0, auth_1.requireApiKey)("sites:read"), (0, async_
             config: (0, site_contract_1.sanitizeSiteConfig)(site.config),
         })),
         meta: {
+            page,
             limit,
-            total: sites.length,
+            total,
+            totalPages: Math.max(Math.ceil(total / limit), 1),
             search,
         },
     });

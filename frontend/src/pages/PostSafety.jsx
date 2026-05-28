@@ -266,6 +266,7 @@ export default function PostSafety() {
                     <th className="px-3 py-2">Title</th>
                     <th className="px-3 py-2">Site</th>
                     <th className="px-3 py-2">Task</th>
+                    <th className="px-3 py-2">Created By</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -278,6 +279,12 @@ export default function PostSafety() {
                       </td>
                       <td className="px-3 py-2">{row.siteName}<br /><span className="text-xs text-[var(--text-secondary)]">{row.siteCode}</span></td>
                       <td className="px-3 py-2">{row.taskType}</td>
+                      <td className="px-3 py-2 text-xs text-[var(--text-secondary)]">
+                        <div className="flex flex-col gap-1">
+                          <span>{row.createdByApiKey?.user?.name || "Legacy / Unknown"}</span>
+                          <span>{row.createdByApiKey?.name || "No key tracked"}</span>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

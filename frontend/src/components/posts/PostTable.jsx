@@ -42,6 +42,7 @@ export default function PostTable({
               <th className="px-3 py-2"><button onClick={() => setSortBy("title")}>Title {sortBy === "title" ? "↑" : ""}</button></th>
               <th className="px-3 py-2">Site</th>
               <th className="px-3 py-2">Author</th>
+              <th className="px-3 py-2">Created By</th>
               <th className="px-3 py-2"><button onClick={() => setSortBy("date")}>Date {sortBy === "date" ? "↑" : ""}</button></th>
               <th className="px-3 py-2">Status</th>
               <th className="px-3 py-2">Excerpt</th>
@@ -63,6 +64,12 @@ export default function PostTable({
                 </td>
                 <td className="px-3 py-2">{post.siteName}</td>
                 <td className="px-3 py-2">{post.author}</td>
+                <td className="px-3 py-2 text-xs text-[var(--text-secondary)]">
+                  <div className="flex flex-col gap-1">
+                    <span>{post.createdByUser?.name || "Legacy / Unknown"}</span>
+                    <span>{post.createdByApiKey?.name || "No key tracked"}</span>
+                  </div>
+                </td>
                 <td className="px-3 py-2">{new Date(post.date).toLocaleDateString()}</td>
                 <td className="px-3 py-2">
                   <select className="rounded border border-[var(--border-color)] px-2 py-1" value={post.status} onChange={(e) => onInlineStatus(post.id, e.target.value)}>

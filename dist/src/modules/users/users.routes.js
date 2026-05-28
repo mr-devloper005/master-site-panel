@@ -115,6 +115,25 @@ router.patch("/:userId", (0, auth_1.requireApiKey)("keys:write"), (0, async_hand
     });
     res.json({ success: true, data: user });
 }));
+router.delete("/:userId", (0, auth_1.requireApiKey)("keys:write"), (0, async_handler_1.asyncHandler)(async (req, res) => {
+    const userId = String(req.params.userId);
+    const [user] = await db_1.prisma.$transaction([
+        db_1.prisma.panelUser.update({
+            where: { id: userId },
+            data: { status: client_1.PanelUserStatus.DISABLED },
+            select: userSelect,
+        }),
+        db_1.prisma.apiKey.updateMany({
+            where: { userId, isActive: true },
+            data: { isActive: false, revokedAt: new Date() },
+        }),
+        db_1.prisma.userSiteTaskAccess.updateMany({
+            where: { userId, isActive: true },
+            data: { isActive: false },
+        }),
+    ]);
+    res.json({ success: true, data: user });
+}));
 router.get("/site-capabilities/list", (0, auth_1.requireApiKey)("sites:read"), (0, async_handler_1.asyncHandler)(async (_req, res) => {
     const sites = await db_1.prisma.site.findMany({
         where: { isActive: true },

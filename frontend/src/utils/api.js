@@ -256,9 +256,10 @@ export const fetchSitesPage = async ({ page = 1, limit = 50, search = "" } = {})
   };
 };
 
-export const searchSites = async ({ search = "", ids = [], limit = 25 } = {}) => {
+export const searchSites = async ({ search = "", ids = [], limit = 25, page = 1 } = {}) => {
   const query = new URLSearchParams();
   query.set("limit", String(limit));
+  query.set("page", String(page));
   if (search.trim()) query.set("search", search.trim());
   if (ids.length) query.set("ids", ids.join(","));
 
@@ -266,7 +267,7 @@ export const searchSites = async ({ search = "", ids = [], limit = 25 } = {}) =>
 
   return {
     sites: Array.isArray(response.data) ? response.data.map(mapSite) : [],
-    meta: response.meta || { total: 0, limit },
+    meta: response.meta || { total: 0, limit, page, totalPages: 1 },
   };
 };
 
@@ -449,6 +450,13 @@ export const updatePanelUser = async (userId, payload) => {
   const response = await request(`/api/v1/users/${userId}`, {
     method: "PATCH",
     body: JSON.stringify(payload),
+  });
+  return response.data;
+};
+
+export const deletePanelUser = async (userId) => {
+  const response = await request(`/api/v1/users/${userId}`, {
+    method: "DELETE",
   });
   return response.data;
 };

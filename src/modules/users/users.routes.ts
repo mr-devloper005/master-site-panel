@@ -119,6 +119,28 @@ router.patch("/:userId", requireApiKey("keys:write"), asyncHandler(async (req, r
   res.json({ success: true, data: user });
 }));
 
+router.delete("/:userId", requireApiKey("keys:write"), asyncHandler(async (req, res) => {
+  const userId = String(req.params.userId);
+
+  const [user] = await prisma.$transaction([
+    prisma.panelUser.update({
+      where: { id: userId },
+      data: { status: PanelUserStatus.DISABLED },
+      select: userSelect,
+    }),
+    prisma.apiKey.updateMany({
+      where: { userId, isActive: true },
+      data: { isActive: false, revokedAt: new Date() },
+    }),
+    prisma.userSiteTaskAccess.updateMany({
+      where: { userId, isActive: true },
+      data: { isActive: false },
+    }),
+  ]);
+
+  res.json({ success: true, data: user });
+}));
+
 router.get("/site-capabilities/list", requireApiKey("sites:read"), asyncHandler(async (_req, res) => {
   const sites = await prisma.site.findMany({
     where: { isActive: true },
