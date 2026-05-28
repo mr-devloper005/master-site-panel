@@ -10,6 +10,7 @@ import {
   updateSitemapSubmissionForSite,
 } from "../sites/google-indexing";
 import { getSiteFrontendBaseUrl, isSiteTask, sanitizeSiteConfig, type SiteTask } from "../sites/site-contract";
+import { enforceUserPostPolicy, logApiActivity } from "../users/user-access-service";
 import { isValidCategory, normalizeCategory } from "./category-constants";
 
 const REVALIDATE_SECRET =
@@ -126,7 +127,7 @@ export const buildPostLiveUrl = (
 };
 
 type CreatePublishedPostInput = {
-  apiKey: { id: string; scopes: string[] };
+  apiKey: { id: string; scopes: string[]; userId?: string | null };
   siteCode: string;
   title: string;
   slug?: string | null;
@@ -218,11 +219,18 @@ export const createPublishedPost = async ({
   }
 
   if (!apiKey.scopes.includes("*")) {
-    const canUseTask = apiKey.scopes.includes(getTaskScope(resolvedTask));
+    const canUseTask = apiKey.userId || apiKey.scopes.includes(getTaskScope(resolvedTask));
     if (!canUseTask) {
       throw new ApiError(403, `API key is not allowed to post ${resolvedTask} content.`);
     }
   }
+
+  await enforceUserPostPolicy({
+    apiKey,
+    siteId: site.id,
+    taskKey: resolvedTask,
+    action: "post",
+  });
 
   if (contentRecord && normalizedContentTask) {
     const normalizedContentType =
@@ -362,6 +370,19 @@ export const createPublishedPost = async ({
       createdByApiKeyId: apiKey.id,
     },
   });
+
+  if (apiKey.userId) {
+    void logApiActivity({
+      apiKeyId: apiKey.id,
+      userId: apiKey.userId,
+      siteId: site.id,
+      postId: post.id,
+      taskKey: resolvedTask,
+      action: "post:create",
+      status: "SUCCESS",
+      meta: { slug: post.slug, title: post.title } as Prisma.InputJsonValue,
+    }).catch((error) => console.warn("Failed to log user API activity", error));
+  }
 
   const frontendBaseUrl = getSiteFrontendBaseUrl(site.config);
   let liveUrl = buildPostLiveUrl(frontendBaseUrl, post.slug, site.config, resolvedTask);

@@ -12,6 +12,7 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Sites = lazy(() => import("./pages/Sites"));
 const Tasks = lazy(() => import("./pages/Tasks"));
 const Posts = lazy(() => import("./pages/Posts"));
+const Users = lazy(() => import("./pages/Users"));
 const PostSafety = lazy(() => import("./pages/PostSafety"));
 const DeleteHistory = lazy(() => import("./pages/DeleteHistory"));
 const ContactRequests = lazy(() => import("./pages/ContactRequests"));
@@ -51,6 +52,7 @@ export default function App() {
             <Route index element={<Dashboard />} />
             <Route path="/sites" element={<Sites />} />
             <Route path="/tasks" element={<Tasks />} />
+            <Route path="/users" element={<Users />} />
             <Route path="/posts" element={<Posts />} />
             <Route path="/post-safety" element={<PostSafety />} />
             <Route path="/delete-history" element={<DeleteHistory />} />

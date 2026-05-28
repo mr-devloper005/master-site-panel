@@ -8,6 +8,7 @@ const api_error_1 = require("../../utils/api-error");
 const async_handler_1 = require("../../utils/async-handler");
 const post_service_1 = require("./post-service");
 const site_contract_1 = require("../sites/site-contract");
+const user_access_service_1 = require("../users/user-access-service");
 const router = (0, express_1.Router)();
 const mapStatus = (status) => {
     if (!status)
@@ -199,6 +200,8 @@ router.get("/", (0, auth_1.requireApiKey)("posts:read"), (0, async_handler_1.asy
     const status = mapStatus(req.query.status?.toString());
     const search = req.query.search?.toString().trim();
     const taskType = req.query.taskType?.toString().trim();
+    const userId = req.query.userId?.toString().trim();
+    const apiKeyId = req.query.apiKeyId?.toString().trim();
     const dateFrom = req.query.dateFrom?.toString();
     const dateTo = req.query.dateTo?.toString();
     const timeFrom = req.query.timeFrom?.toString();
@@ -222,6 +225,17 @@ router.get("/", (0, auth_1.requireApiKey)("posts:read"), (0, async_handler_1.asy
             ],
         };
         where.AND = Array.isArray(where.AND) ? [...where.AND, taskFilter] : [taskFilter];
+    }
+    if (apiKeyId) {
+        where.createdByApiKeyId = apiKeyId;
+    }
+    else if (userId) {
+        const userKeys = await db_1.prisma.apiKey.findMany({
+            where: { userId },
+            select: { id: true },
+        });
+        const keyIds = userKeys.map((key) => key.id);
+        where.createdByApiKeyId = { in: keyIds.length ? keyIds : ["__no_match__"] };
     }
     const from = parseDateBoundary(dateFrom, timeFrom, false);
     const to = parseDateBoundary(dateTo || dateFrom, timeTo, true);
@@ -261,7 +275,16 @@ router.get("/", (0, auth_1.requireApiKey)("posts:read"), (0, async_handler_1.asy
     const [posts, total] = await Promise.all([
         db_1.prisma.post.findMany({
             where,
-            include: { site: { select: { id: true, name: true, code: true } } },
+            include: {
+                site: { select: { id: true, name: true, code: true } },
+                createdByApiKey: {
+                    select: {
+                        id: true,
+                        name: true,
+                        user: { select: { id: true, name: true, email: true, status: true } },
+                    },
+                },
+            },
             orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
             skip: (page - 1) * limit,
             take: limit,
@@ -292,7 +315,16 @@ router.post("/links/lookup", (0, auth_1.requireApiKey)("posts:read"), (0, async_
     const posts = slugs.length
         ? await db_1.prisma.post.findMany({
             where: { slug: { in: slugs } },
-            include: { site: { select: { id: true, code: true, name: true, config: true } } },
+            include: {
+                site: { select: { id: true, code: true, name: true, config: true } },
+                createdByApiKey: {
+                    select: {
+                        id: true,
+                        name: true,
+                        user: { select: { id: true, name: true, email: true } },
+                    },
+                },
+            },
         })
         : [];
     if (!canBypassSitePermissions(apiKey.scopes)) {
@@ -328,6 +360,7 @@ router.post("/links/lookup", (0, auth_1.requireApiKey)("posts:read"), (0, async_
                 publishedAt: post.publishedAt,
                 createdAt: post.createdAt,
                 liveUrl,
+                createdByApiKey: post.createdByApiKey,
                 payload: {
                     title: post.title,
                     slug: post.slug,
@@ -590,6 +623,20 @@ router.patch("/:postId", (0, auth_1.requireApiKey)("posts:write"), (0, async_han
             : null;
         void (0, post_service_1.triggerRevalidate)(site.config, updated.slug, task);
     }
+    if (apiKey.userId) {
+        void (0, user_access_service_1.logApiActivity)({
+            apiKeyId: apiKey.id,
+            userId: apiKey.userId,
+            siteId: current.siteId,
+            postId,
+            taskKey: taskFromContent(updated.content),
+            action: "post:update",
+            status: "SUCCESS",
+            method: req.method,
+            path: req.path,
+            ipAddress: req.ip,
+        }).catch((error) => console.warn("Failed to log user API activity", error));
+    }
     res.json({ success: true, data: updated });
 }));
 router.delete("/:postId", (0, auth_1.requireApiKey)("posts:write"), (0, async_handler_1.asyncHandler)(async (req, res) => {
@@ -629,6 +676,20 @@ router.delete("/:postId", (0, auth_1.requireApiKey)("posts:write"), (0, async_ha
             ? contentRecord.type
             : null;
         void (0, post_service_1.triggerRevalidate)(site.config, current.slug, task);
+    }
+    if (apiKey.userId) {
+        void (0, user_access_service_1.logApiActivity)({
+            apiKeyId: apiKey.id,
+            userId: apiKey.userId,
+            siteId: current.siteId,
+            postId,
+            taskKey: taskFromContent(current.content),
+            action: "post:delete",
+            status: "SUCCESS",
+            method: req.method,
+            path: req.path,
+            ipAddress: req.ip,
+        }).catch((error) => console.warn("Failed to log user API activity", error));
     }
     res.json({ success: true, message: "Post deleted. Restore available for 7 days." });
 }));
@@ -700,6 +761,18 @@ router.post("/bulk/delete", (0, auth_1.requireApiKey)("posts:write"), (0, async_
     const result = await db_1.prisma.post.deleteMany({
         where: { id: { in: posts.map((post) => post.id) } },
     });
+    if (apiKey.userId) {
+        void (0, user_access_service_1.logApiActivity)({
+            apiKeyId: apiKey.id,
+            userId: apiKey.userId,
+            action: "post:bulk-delete",
+            status: "SUCCESS",
+            method: req.method,
+            path: req.path,
+            ipAddress: req.ip,
+            meta: { deletedCount: result.count },
+        }).catch((error) => console.warn("Failed to log user API activity", error));
+    }
     res.json({ success: true, data: { deletedCount: result.count, restoreDays: RESTORE_WINDOW_DAYS } });
 }));
 router.post("/bulk/update", (0, auth_1.requireApiKey)("posts:write"), (0, async_handler_1.asyncHandler)(async (req, res) => {
@@ -786,6 +859,18 @@ router.post("/bulk/update", (0, auth_1.requireApiKey)("posts:write"), (0, async_
                 data: { media: { ...currentMedia, ...data.mediaMerge } },
             });
         }));
+    }
+    if (apiKey.userId) {
+        void (0, user_access_service_1.logApiActivity)({
+            apiKeyId: apiKey.id,
+            userId: apiKey.userId,
+            action: "post:bulk-update",
+            status: "SUCCESS",
+            method: req.method,
+            path: req.path,
+            ipAddress: req.ip,
+            meta: { updatedCount: updateResult.count, requestedCount: postIds.length },
+        }).catch((error) => console.warn("Failed to log user API activity", error));
     }
     res.json({ success: true, data: { updatedCount: updateResult.count } });
 }));

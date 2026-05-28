@@ -1,4 +1,4 @@
-import { BarChart3, Files, Home, Settings, Globe2, Activity, KeyRound, SearchCheck, ScanSearch, Inbox, ShieldAlert, RotateCcw } from "lucide-react";
+import { BarChart3, Files, Home, Settings, Globe2, Activity, KeyRound, SearchCheck, ScanSearch, Inbox, ShieldAlert, RotateCcw, Users } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
 
@@ -8,6 +8,7 @@ const navItems = [
   { to: "/", label: "Dashboard", icon: Home },
   { to: "/sites", label: "Sites", icon: Globe2 },
   { to: "/tasks", label: "Tasks & APIs", icon: KeyRound },
+  { to: "/users", label: "Users & Access", icon: Users },
   { to: "/posts", label: "Posts", icon: Files },
   { to: "/post-safety", label: "Link Finder", icon: ShieldAlert },
   { to: "/delete-history", label: "Delete History", icon: RotateCcw },

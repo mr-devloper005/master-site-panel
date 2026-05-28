@@ -8,6 +8,7 @@ const api_error_1 = require("../../utils/api-error");
 const api_key_service_1 = require("../auth/api-key-service");
 const google_indexing_1 = require("../sites/google-indexing");
 const site_contract_1 = require("../sites/site-contract");
+const user_access_service_1 = require("../users/user-access-service");
 const category_constants_1 = require("./category-constants");
 const REVALIDATE_SECRET = process.env.REVALIDATE_SECRET || process.env.NEXT_REVALIDATE_SECRET || "";
 const REVALIDATE_ENABLED = process.env.NEXT_REVALIDATE_ENABLED !== "false";
@@ -157,11 +158,17 @@ const createPublishedPost = async ({ apiKey, siteCode, title, slug, summary, met
         throw new api_error_1.ApiError(400, `Task "${resolvedTask}" is not enabled for this site.`);
     }
     if (!apiKey.scopes.includes("*")) {
-        const canUseTask = apiKey.scopes.includes((0, api_key_service_1.getTaskScope)(resolvedTask));
+        const canUseTask = apiKey.userId || apiKey.scopes.includes((0, api_key_service_1.getTaskScope)(resolvedTask));
         if (!canUseTask) {
             throw new api_error_1.ApiError(403, `API key is not allowed to post ${resolvedTask} content.`);
         }
     }
+    await (0, user_access_service_1.enforceUserPostPolicy)({
+        apiKey,
+        siteId: site.id,
+        taskKey: resolvedTask,
+        action: "post",
+    });
     if (contentRecord && normalizedContentTask) {
         const normalizedContentType = normalizedContentTask === "social" && resolvedTask === "sbm"
             ? "sbm"
@@ -283,6 +290,18 @@ const createPublishedPost = async ({ apiKey, siteCode, title, slug, summary, met
             createdByApiKeyId: apiKey.id,
         },
     });
+    if (apiKey.userId) {
+        void (0, user_access_service_1.logApiActivity)({
+            apiKeyId: apiKey.id,
+            userId: apiKey.userId,
+            siteId: site.id,
+            postId: post.id,
+            taskKey: resolvedTask,
+            action: "post:create",
+            status: "SUCCESS",
+            meta: { slug: post.slug, title: post.title },
+        }).catch((error) => console.warn("Failed to log user API activity", error));
+    }
     const frontendBaseUrl = (0, site_contract_1.getSiteFrontendBaseUrl)(site.config);
     let liveUrl = (0, exports.buildPostLiveUrl)(frontendBaseUrl, post.slug, site.config, resolvedTask);
     if (resolvedTask === "comment" && commentTargetSlug) {

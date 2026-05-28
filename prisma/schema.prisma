@@ -66,6 +66,18 @@ enum IndexingInspectionStatus {
   ERROR
 }
 
+enum PanelUserStatus {
+  ACTIVE
+  SUSPENDED
+  DISABLED
+}
+
+enum ApiActivityStatus {
+  SUCCESS
+  FAILED
+  BLOCKED
+}
+
 model Site {
   id          String      @id @default(cuid())
   code        String      @unique
@@ -80,6 +92,8 @@ model Site {
   posts       Post[]
   indexingRecords SiteIndexingRecord[]
   permissions ApiKeySitePermission[]
+  userAccess UserSiteTaskAccess[]
+  apiActivityLogs ApiActivityLog[]
   runtimeStatuses SiteRuntimeStatus[]
   contactSubmissions ContactSubmission[]
 }
@@ -102,6 +116,7 @@ model Post {
   publishedAt       DateTime?
   createdByApiKeyId String?
   createdByApiKey   ApiKey?    @relation(fields: [createdByApiKeyId], references: [id], onDelete: SetNull)
+  apiActivityLogs    ApiActivityLog[]
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
   indexingRecord    SiteIndexingRecord?
@@ -178,13 +193,21 @@ model ApiKey {
   name        String
   keyHash     String                 @unique
   rawTokenCipher String?
+  userId      String?
+  user        PanelUser?             @relation(fields: [userId], references: [id], onDelete: SetNull)
   scopes      String[]
   isActive    Boolean                @default(true)
   lastUsedAt  DateTime?
+  lastUsedIp  String?
+  expiresAt   DateTime?
+  revokedAt   DateTime?
   createdAt   DateTime               @default(now())
   updatedAt   DateTime               @updatedAt
   posts       Post[]
   permissions ApiKeySitePermission[]
+  apiActivityLogs ApiActivityLog[]
+
+  @@index([userId, isActive])
 }
 
 model ApiKeySitePermission {
@@ -198,6 +221,77 @@ model ApiKeySitePermission {
   site   Site   @relation(fields: [siteId], references: [id], onDelete: Cascade)
 
   @@unique([apiKeyId, siteId])
+}
+
+model PanelUser {
+  id                 String                @id @default(cuid())
+  name               String
+  email              String                @unique
+  status             PanelUserStatus       @default(ACTIVE)
+  notes              String?
+  rateLimitPerMinute Int?
+  dailyPostLimit     Int?
+  totalPostLimit     Int?
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  apiKeys            ApiKey[]
+  accessRules        UserSiteTaskAccess[]
+  apiActivityLogs    ApiActivityLog[]
+
+  @@index([status, createdAt])
+  @@index([name])
+}
+
+model UserSiteTaskAccess {
+  id              String    @id @default(cuid())
+  userId          String
+  siteId          String
+  taskKey         String
+  canRead         Boolean   @default(true)
+  canPost         Boolean   @default(true)
+  canEdit         Boolean   @default(false)
+  canDelete       Boolean   @default(false)
+  perMinuteLimit  Int?
+  dailyLimit      Int?
+  totalLimit      Int?
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user PanelUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  site Site      @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, siteId, taskKey])
+  @@index([siteId, taskKey, isActive])
+  @@index([userId, isActive])
+}
+
+model ApiActivityLog {
+  id        String            @id @default(cuid())
+  userId    String?
+  apiKeyId  String?
+  siteId    String?
+  postId    String?
+  taskKey   String?
+  action    String
+  status    ApiActivityStatus
+  reason    String?
+  method    String?
+  path      String?
+  ipAddress String?
+  meta      Json?
+  createdAt DateTime          @default(now())
+
+  user   PanelUser? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  apiKey ApiKey?    @relation(fields: [apiKeyId], references: [id], onDelete: SetNull)
+  site   Site?      @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  post   Post?      @relation(fields: [postId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([apiKeyId, createdAt])
+  @@index([siteId, taskKey, createdAt])
+  @@index([status, createdAt])
+  @@index([postId])
 }
 
 model SiteRuntimeStatus {

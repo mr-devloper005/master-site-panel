@@ -7,6 +7,7 @@ import { ApiError } from "../../utils/api-error";
 import { asyncHandler } from "../../utils/async-handler";
 import { buildPostLiveUrl, createPublishedPost, triggerRevalidate } from "./post-service";
 import { getSiteFrontendBaseUrl, isSiteTask, type SiteTask } from "../sites/site-contract";
+import { logApiActivity } from "../users/user-access-service";
 
 const router = Router();
 
@@ -241,6 +242,8 @@ router.get("/", requireApiKey("posts:read"), asyncHandler(async (req, res) => {
     const status = mapStatus(req.query.status?.toString());
     const search = req.query.search?.toString().trim();
     const taskType = req.query.taskType?.toString().trim();
+    const userId = req.query.userId?.toString().trim();
+    const apiKeyId = req.query.apiKeyId?.toString().trim();
     const dateFrom = req.query.dateFrom?.toString();
     const dateTo = req.query.dateTo?.toString();
     const timeFrom = req.query.timeFrom?.toString();
@@ -262,6 +265,17 @@ router.get("/", requireApiKey("posts:read"), asyncHandler(async (req, res) => {
         ],
       };
       where.AND = Array.isArray(where.AND) ? [...where.AND, taskFilter] : [taskFilter];
+    }
+
+    if (apiKeyId) {
+      where.createdByApiKeyId = apiKeyId;
+    } else if (userId) {
+      const userKeys = await prisma.apiKey.findMany({
+        where: { userId },
+        select: { id: true },
+      });
+      const keyIds = userKeys.map((key) => key.id);
+      where.createdByApiKeyId = { in: keyIds.length ? keyIds : ["__no_match__"] };
     }
 
     const from = parseDateBoundary(dateFrom, timeFrom, false);
@@ -304,7 +318,16 @@ router.get("/", requireApiKey("posts:read"), asyncHandler(async (req, res) => {
     const [posts, total] = await Promise.all([
       prisma.post.findMany({
         where,
-        include: { site: { select: { id: true, name: true, code: true } } },
+        include: {
+          site: { select: { id: true, name: true, code: true } },
+          createdByApiKey: {
+            select: {
+              id: true,
+              name: true,
+              user: { select: { id: true, name: true, email: true, status: true } },
+            },
+          },
+        },
         orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
         skip: (page - 1) * limit,
         take: limit,
@@ -337,7 +360,16 @@ router.post("/links/lookup", requireApiKey("posts:read"), asyncHandler(async (re
   const posts = slugs.length
     ? await prisma.post.findMany({
         where: { slug: { in: slugs } },
-        include: { site: { select: { id: true, code: true, name: true, config: true } } },
+        include: {
+          site: { select: { id: true, code: true, name: true, config: true } },
+          createdByApiKey: {
+            select: {
+              id: true,
+              name: true,
+              user: { select: { id: true, name: true, email: true } },
+            },
+          },
+        },
       })
     : [];
 
@@ -373,6 +405,7 @@ router.post("/links/lookup", requireApiKey("posts:read"), asyncHandler(async (re
           publishedAt: post.publishedAt,
           createdAt: post.createdAt,
           liveUrl,
+          createdByApiKey: post.createdByApiKey,
           payload: {
             title: post.title,
             slug: post.slug,
@@ -649,6 +682,21 @@ router.patch("/:postId", requireApiKey("posts:write"), asyncHandler(async (req, 
     void triggerRevalidate(site.config, updated.slug, task);
   }
 
+  if (apiKey.userId) {
+    void logApiActivity({
+      apiKeyId: apiKey.id,
+      userId: apiKey.userId,
+      siteId: current.siteId,
+      postId,
+      taskKey: taskFromContent(updated.content),
+      action: "post:update",
+      status: "SUCCESS",
+      method: req.method,
+      path: req.path,
+      ipAddress: req.ip,
+    }).catch((error) => console.warn("Failed to log user API activity", error));
+  }
+
   res.json({ success: true, data: updated });
 }));
 
@@ -695,6 +743,21 @@ router.delete("/:postId", requireApiKey("posts:write"), asyncHandler(async (req,
         ? contentRecord.type
         : null;
     void triggerRevalidate(site.config, current.slug, task);
+  }
+
+  if (apiKey.userId) {
+    void logApiActivity({
+      apiKeyId: apiKey.id,
+      userId: apiKey.userId,
+      siteId: current.siteId,
+      postId,
+      taskKey: taskFromContent(current.content),
+      action: "post:delete",
+      status: "SUCCESS",
+      method: req.method,
+      path: req.path,
+      ipAddress: req.ip,
+    }).catch((error) => console.warn("Failed to log user API activity", error));
   }
 
   res.json({ success: true, message: "Post deleted. Restore available for 7 days." });
@@ -780,6 +843,19 @@ router.post("/bulk/delete", requireApiKey("posts:write"), asyncHandler(async (re
   const result = await prisma.post.deleteMany({
     where: { id: { in: posts.map((post) => post.id) } },
   });
+
+  if (apiKey.userId) {
+    void logApiActivity({
+      apiKeyId: apiKey.id,
+      userId: apiKey.userId,
+      action: "post:bulk-delete",
+      status: "SUCCESS",
+      method: req.method,
+      path: req.path,
+      ipAddress: req.ip,
+      meta: { deletedCount: result.count } as Prisma.InputJsonValue,
+    }).catch((error) => console.warn("Failed to log user API activity", error));
+  }
 
   res.json({ success: true, data: { deletedCount: result.count, restoreDays: RESTORE_WINDOW_DAYS } });
 }));
@@ -875,6 +951,19 @@ router.post("/bulk/update", requireApiKey("posts:write"), asyncHandler(async (re
         });
       })
     );
+  }
+
+  if (apiKey.userId) {
+    void logApiActivity({
+      apiKeyId: apiKey.id,
+      userId: apiKey.userId,
+      action: "post:bulk-update",
+      status: "SUCCESS",
+      method: req.method,
+      path: req.path,
+      ipAddress: req.ip,
+      meta: { updatedCount: updateResult.count, requestedCount: postIds.length } as Prisma.InputJsonValue,
+    }).catch((error) => console.warn("Failed to log user API activity", error));
   }
 
   res.json({ success: true, data: { updatedCount: updateResult.count } });

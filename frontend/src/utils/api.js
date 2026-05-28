@@ -174,6 +174,8 @@ const mapPost = (post) => ({
   views: deriveViews(post),
   likes: deriveLikes(post),
   raw: post,
+  createdByApiKey: post.createdByApiKey || null,
+  createdByUser: post.createdByApiKey?.user || null,
 });
 
 export const loginMock = async (email, password) => {
@@ -215,6 +217,8 @@ export const fetchPostsPage = async ({
   dateTo = "",
   timeFrom = "",
   timeTo = "",
+  userId = "",
+  apiKeyId = "",
 } = {}) => {
   const query = new URLSearchParams();
   query.set("page", String(page));
@@ -227,6 +231,8 @@ export const fetchPostsPage = async ({
   if (dateTo) query.set("dateTo", dateTo);
   if (timeFrom) query.set("timeFrom", timeFrom);
   if (timeTo) query.set("timeTo", timeTo);
+  if (userId) query.set("userId", userId);
+  if (apiKeyId) query.set("apiKeyId", apiKeyId);
 
   const response = await request(`/api/v1/posts?${query.toString()}`);
 
@@ -397,6 +403,102 @@ export const resetMockDb = async () => {
 export const fetchApiKeys = async () => {
   const response = await request("/api/v1/auth/keys");
   return response.data;
+};
+
+export const fetchPanelUsers = async ({ page = 1, limit = 25, search = "", status = "" } = {}) => {
+  const query = new URLSearchParams();
+  query.set("page", String(page));
+  query.set("limit", String(limit));
+  if (search.trim()) query.set("search", search.trim());
+  if (status && status !== "all") query.set("status", status);
+  const response = await request(`/api/v1/users?${query.toString()}`);
+  return {
+    users: Array.isArray(response.data) ? response.data : [],
+    meta: response.meta || { page, limit, total: 0, totalPages: 1 },
+  };
+};
+
+export const createPanelUser = async (payload) => {
+  const response = await request("/api/v1/users", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+  return response.data;
+};
+
+export const updatePanelUser = async (userId, payload) => {
+  const response = await request(`/api/v1/users/${userId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+  return response.data;
+};
+
+export const fetchPanelUserKeys = async (userId) => {
+  const response = await request(`/api/v1/users/${userId}/keys`);
+  return response.data;
+};
+
+export const issuePanelUserKey = async (userId, payload) => {
+  const response = await request(`/api/v1/users/${userId}/keys`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+  return response.data;
+};
+
+export const updatePanelUserKey = async (userId, keyId, payload) => {
+  const response = await request(`/api/v1/users/${userId}/keys/${keyId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+  return response.data;
+};
+
+export const fetchPanelUserAccess = async (userId, { page = 1, limit = 50, search = "" } = {}) => {
+  const query = new URLSearchParams();
+  query.set("page", String(page));
+  query.set("limit", String(limit));
+  if (search.trim()) query.set("search", search.trim());
+  const response = await request(`/api/v1/users/${userId}/access?${query.toString()}`);
+  return {
+    access: Array.isArray(response.data) ? response.data : [],
+    meta: response.meta || { page, limit, total: 0, totalPages: 1 },
+  };
+};
+
+export const updatePanelUserAccess = async (userId, rules) => {
+  const response = await request(`/api/v1/users/${userId}/access`, {
+    method: "PUT",
+    body: JSON.stringify({ rules }),
+  });
+  return response.data;
+};
+
+export const fetchPanelUserPosts = async (userId, { page = 1, limit = 30, search = "", siteId = "", taskKey = "" } = {}) => {
+  const query = new URLSearchParams();
+  query.set("page", String(page));
+  query.set("limit", String(limit));
+  if (search.trim()) query.set("search", search.trim());
+  if (siteId) query.set("siteId", siteId);
+  if (taskKey && taskKey !== "all") query.set("taskKey", taskKey);
+  const response = await request(`/api/v1/users/${userId}/posts?${query.toString()}`);
+  return {
+    posts: Array.isArray(response.data) ? response.data.map(mapPost) : [],
+    meta: response.meta || { page, limit, total: 0, totalPages: 1 },
+  };
+};
+
+export const fetchPanelUserActivity = async (userId, { page = 1, limit = 50, status = "" } = {}) => {
+  const query = new URLSearchParams();
+  query.set("page", String(page));
+  query.set("limit", String(limit));
+  if (status && status !== "all") query.set("status", status);
+  const response = await request(`/api/v1/users/${userId}/activity?${query.toString()}`);
+  return {
+    logs: Array.isArray(response.data) ? response.data : [],
+    meta: response.meta || { page, limit, total: 0, totalPages: 1 },
+  };
 };
 
 export const exportTaskTokens = async ({ rotateMissing = true, reissueAll = false, task = "", addedAfter = "" } = {}) => {

@@ -13,6 +13,7 @@ import settingsRoutes from "./modules/settings/settings.routes";
 import sitesRoutes from "./modules/sites/sites.routes";
 import { startIndexingScheduler } from "./modules/sites/indexing-scheduler";
 import tasksRoutes, { siteTaskRouter } from "./modules/tasks/tasks.routes";
+import usersRoutes from "./modules/users/users.routes";
 import { errorHandler, notFoundHandler } from "./middleware/error-handler";
 
 export const app = express();
@@ -36,6 +37,7 @@ app.use("/api/v1/contact-submissions", contactRoutes);
 app.use("/api/v1/settings", settingsRoutes);
 app.use("/api/v1/posts", postsRoutes);
 app.use("/api/v1/tasks", tasksRoutes);
+app.use("/api/v1/users", usersRoutes);
 app.use("/", siteTaskRouter);
 app.use("/api/v1/public", publicRoutes);
 app.use("/api/v1/runtime", runtimeRoutes);

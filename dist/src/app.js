@@ -51,6 +51,7 @@ const settings_routes_1 = __importDefault(require("./modules/settings/settings.r
 const sites_routes_1 = __importDefault(require("./modules/sites/sites.routes"));
 const indexing_scheduler_1 = require("./modules/sites/indexing-scheduler");
 const tasks_routes_1 = __importStar(require("./modules/tasks/tasks.routes"));
+const users_routes_1 = __importDefault(require("./modules/users/users.routes"));
 const error_handler_1 = require("./middleware/error-handler");
 exports.app = (0, express_1.default)();
 exports.app.use((0, helmet_1.default)());
@@ -70,6 +71,7 @@ exports.app.use("/api/v1/contact-submissions", contact_routes_1.default);
 exports.app.use("/api/v1/settings", settings_routes_1.default);
 exports.app.use("/api/v1/posts", posts_routes_1.default);
 exports.app.use("/api/v1/tasks", tasks_routes_1.default);
+exports.app.use("/api/v1/users", users_routes_1.default);
 exports.app.use("/", tasks_routes_1.siteTaskRouter);
 exports.app.use("/api/v1/public", public_routes_1.default);
 exports.app.use("/api/v1/runtime", runtime_routes_1.default);
