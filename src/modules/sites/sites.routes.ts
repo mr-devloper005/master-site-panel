@@ -568,6 +568,83 @@ router.get("/summary", requireApiKey("sites:read"), asyncHandler(async (_req, re
   });
 }));
 
+router.get("/lookup/search", requireApiKey("sites:read"), asyncHandler(async (req, res) => {
+  const search = firstQueryValue(req.query.search).trim();
+  const ids = firstQueryValue(req.query.ids)
+    .split(",")
+    .map((id) => id.trim())
+    .filter(Boolean);
+  const limit = Math.min(Math.max(Number(req.query.limit) || 25, 1), 50);
+
+  const where: Prisma.SiteWhereInput = {};
+  if (ids.length) {
+    where.id = { in: ids };
+  } else if (search) {
+    where.OR = [
+      { name: { contains: search, mode: "insensitive" } },
+      { code: { contains: search, mode: "insensitive" } },
+      {
+        config: {
+          path: ["domain"],
+          string_contains: search,
+        },
+      },
+      {
+        config: {
+          path: ["frontendUrl"],
+          string_contains: search,
+        },
+      },
+      {
+        config: {
+          path: ["liveUrl"],
+          string_contains: search,
+        },
+      },
+      {
+        config: {
+          path: ["siteUrl"],
+          string_contains: search,
+        },
+      },
+    ];
+  }
+
+  const sites = await prisma.site.findMany({
+    where,
+    orderBy: [{ isActive: "desc" }, { name: "asc" }],
+    take: ids.length ? Math.min(ids.length, 100) : limit,
+    select: {
+      id: true,
+      code: true,
+      name: true,
+      framework: true,
+      category: true,
+      theme: true,
+      config: true,
+      isActive: true,
+      createdAt: true,
+      updatedAt: true,
+      _count: {
+        select: { posts: true },
+      },
+    },
+  });
+
+  res.json({
+    success: true,
+    data: sites.map((site) => ({
+      ...site,
+      config: sanitizeSiteConfig(site.config),
+    })),
+    meta: {
+      limit,
+      total: sites.length,
+      search,
+    },
+  });
+}));
+
 router.get("/:siteId", requireApiKey("sites:read"), asyncHandler(async (req, res) => {
   const siteId = String(req.params.siteId);
   const site = await prisma.site.findUnique({

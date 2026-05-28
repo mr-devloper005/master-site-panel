@@ -18,8 +18,7 @@ import {
   X,
 } from "lucide-react";
 
-import SearchableSelect from "../components/ui/SearchableSelect";
-import { useAppData } from "../context/AppContext";
+import RemoteSiteSelect from "../components/ui/RemoteSiteSelect";
 import {
   createPanelUser,
   fetchPanelUserAccess,
@@ -97,7 +96,6 @@ function EmptyState({ title, description }) {
 }
 
 export default function Users() {
-  const { sites } = useAppData();
   const [users, setUsers] = useState([]);
   const [usersMeta, setUsersMeta] = useState({ page: 1, limit: 25, total: 0, totalPages: 1 });
   const [search, setSearch] = useState("");
@@ -112,7 +110,7 @@ export default function Users() {
   const [access, setAccess] = useState([]);
   const [posts, setPosts] = useState([]);
   const [activity, setActivity] = useState([]);
-  const [siteSearch, setSiteSearch] = useState("");
+  const [selectedAccessSite, setSelectedAccessSite] = useState(null);
   const [accessDraft, setAccessDraft] = useState({
     siteId: "",
     taskKey: "article",
@@ -125,20 +123,7 @@ export default function Users() {
   const suspendedUsers = users.filter((user) => user.status === "SUSPENDED").length;
   const totalKeys = users.reduce((sum, user) => sum + (user._count?.apiKeys || 0), 0);
 
-  const siteOptions = useMemo(
-    () =>
-      sites.map((site) => ({
-        value: site.id,
-        label: site.name,
-        meta: `${site.code} ${(site.supportedTasks || []).join(", ")}`,
-      })),
-    [sites]
-  );
-
-  const selectedSite = useMemo(
-    () => sites.find((site) => site.id === accessDraft.siteId),
-    [sites, accessDraft.siteId]
-  );
+  const selectedSite = selectedAccessSite;
 
   const selectedUserStats = useMemo(
     () => ({
@@ -559,15 +544,13 @@ export default function Users() {
                       Access is site + task scoped. Legacy site keys are not changed.
                     </p>
                     <div className="mt-4 space-y-3">
-                      <SearchableSelect
+                      <RemoteSiteSelect
                         label="Site"
                         value={accessDraft.siteId}
                         onChange={(value) => setAccessDraft({ ...accessDraft, siteId: value })}
-                        searchValue={siteSearch}
-                        onSearchChange={setSiteSearch}
-                        options={siteOptions}
+                        onSiteChange={setSelectedAccessSite}
                         placeholder="Choose site"
-                        searchPlaceholder="Search site"
+                        searchPlaceholder="Search by domain, name, or code"
                       />
                       <label className="block text-xs text-[var(--text-secondary)]">
                         <span className="mb-1 block font-semibold uppercase tracking-wide">Task</span>

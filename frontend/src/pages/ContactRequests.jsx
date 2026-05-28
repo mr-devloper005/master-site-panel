@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Mail, RefreshCw, Search, Send, UserRound } from "lucide-react";
 
 import { useAppData } from "../context/AppContext";
+import RemoteSiteSelect from "../components/ui/RemoteSiteSelect";
 import { fetchContactSubmissions, updateContactSubmission, updateSite } from "../utils/api";
 
 const statuses = ["NEW", "READ", "REPLIED", "ARCHIVED", "SPAM"];
@@ -28,19 +29,16 @@ const formatDate = (value) => {
 };
 
 export default function ContactRequests() {
-  const { sites, hydrate } = useAppData();
+  const { hydrate } = useAppData();
   const [items, setItems] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 50, total: 0, totalPages: 1 });
   const [filters, setFilters] = useState({ siteCode: "", status: "", search: "" });
+  const [filterSiteId, setFilterSiteId] = useState("all");
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState(null);
   const [settingsSiteId, setSettingsSiteId] = useState("");
+  const [selectedSettingsSite, setSelectedSettingsSite] = useState(null);
   const [notifyEmail, setNotifyEmail] = useState("");
-
-  const selectedSettingsSite = useMemo(
-    () => sites.find((site) => site.id === settingsSiteId),
-    [settingsSiteId, sites]
-  );
 
   const load = async (page = pagination.page) => {
     setLoading(true);
@@ -63,20 +61,6 @@ export default function ContactRequests() {
     load(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters.siteCode, filters.status]);
-
-  useEffect(() => {
-    if (!settingsSiteId && sites.length) {
-      const first = sites[0];
-      setSettingsSiteId(first.id);
-      setNotifyEmail(first.raw?.config?.contact?.notifyEmail || "");
-    }
-  }, [settingsSiteId, sites]);
-
-  useEffect(() => {
-    if (selectedSettingsSite) {
-      setNotifyEmail(selectedSettingsSite.raw?.config?.contact?.notifyEmail || "");
-    }
-  }, [selectedSettingsSite]);
 
   const saveNotificationSettings = async () => {
     if (!selectedSettingsSite) return;
@@ -134,17 +118,16 @@ export default function ContactRequests() {
       <section className="glass rounded-panel p-4">
         <h2 className="text-sm font-semibold">Notification Settings</h2>
         <div className="mt-3 grid gap-3 md:grid-cols-[1fr_1fr_auto]">
-          <select
-            className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
+          <RemoteSiteSelect
             value={settingsSiteId}
-            onChange={(e) => setSettingsSiteId(e.target.value)}
-          >
-            {sites.map((site) => (
-              <option key={site.id} value={site.id}>
-                {site.name} ({site.code})
-              </option>
-            ))}
-          </select>
+            onChange={setSettingsSiteId}
+            onSiteChange={(site) => {
+              setSelectedSettingsSite(site);
+              setNotifyEmail(site?.raw?.config?.contact?.notifyEmail || site?.config?.contact?.notifyEmail || "");
+            }}
+            placeholder="Search site for notification settings"
+            searchPlaceholder="Search by domain, name, or code"
+          />
           <input
             className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
             value={notifyEmail}
@@ -170,18 +153,16 @@ export default function ContactRequests() {
                 placeholder="Search name, email, message"
               />
             </label>
-            <select
-              className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
-              value={filters.siteCode}
-              onChange={(e) => setFilters((current) => ({ ...current, siteCode: e.target.value }))}
-            >
-              <option value="">All sites</option>
-              {sites.map((site) => (
-                <option key={site.id} value={site.code}>
-                  {site.name}
-                </option>
-              ))}
-            </select>
+            <RemoteSiteSelect
+              value={filterSiteId}
+              onChange={(value) => setFilterSiteId(value || "all")}
+              onSiteChange={(site) => setFilters((current) => ({ ...current, siteCode: site?.code || "" }))}
+              includeAllOption
+              allLabel="All sites"
+              placeholder="Search site"
+              searchPlaceholder="Search by domain, name, or code"
+              className="min-w-[260px]"
+            />
             <select
               className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
               value={filters.status}

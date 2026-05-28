@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { useAppData } from "../context/AppContext";
+import RemoteSiteSelect from "../components/ui/RemoteSiteSelect";
 import {
   fetchSiteBlueprint,
   fetchSmtpSettings,
@@ -17,7 +18,7 @@ import {
 export default function Settings() {
   const { user } = useAuth();
   const { theme, toggleTheme, highContrast, toggleContrast } = useTheme();
-  const { sites, hydrate } = useAppData();
+  const { hydrate } = useAppData();
   const integration = getIntegrationSettings();
 
   const [profile, setProfile] = useState({ name: user?.name || "", email: user?.email || "" });
@@ -296,18 +297,16 @@ export default function Settings() {
           <h2 className="text-sm font-semibold">Connector Blueprint</h2>
           <div className="mt-3">
             <label className="mb-1 block text-sm">Select site</label>
-            <select
-              className="w-full rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm"
+            <RemoteSiteSelect
               value={selectedBlueprintSiteId}
-              onChange={(e) => loadBlueprint(e.target.value)}
-            >
-              <option value="">Choose a site</option>
-              {sites.map((site) => (
-                <option key={site.id} value={site.id}>
-                  {site.name}
-                </option>
-              ))}
-            </select>
+              onChange={(value) => {
+                setSelectedBlueprintSiteId(value);
+                loadBlueprint(value);
+              }}
+              placeholder="Choose a site"
+              searchPlaceholder="Search by domain, name, or code"
+              className="w-full"
+            />
           </div>
           {blueprint ? (
             <div className="mt-3 space-y-3 text-sm">

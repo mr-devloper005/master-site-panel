@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 
 import PostTable from "../components/posts/PostTable";
 import PostEditorModal from "../components/posts/PostEditorModal";
-import SearchableSelect from "../components/ui/SearchableSelect";
+import RemoteSiteSelect from "../components/ui/RemoteSiteSelect";
 import { useAppData } from "../context/AppContext";
 import { fetchPostsPage } from "../utils/api";
 
@@ -30,7 +30,7 @@ const TASK_OPTIONS = Object.entries(TASK_LABELS)
   .sort((a, b) => a.label.localeCompare(b.label));
 
 export default function Posts() {
-  const { posts: recentPosts, sites, globalQuery, setGlobalQuery, runPostBulkAction, editPost } = useAppData();
+  const { posts: recentPosts, globalQuery, setGlobalQuery, runPostBulkAction, editPost } = useAppData();
   const [params] = useSearchParams();
   const initialSiteId = params.get("site") || "all";
   const initialSearch = params.get("search") || "";
@@ -40,7 +40,6 @@ export default function Posts() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [taskFilter, setTaskFilter] = useState("all");
   const [query, setQuery] = useState(initialSearch || globalQuery || "");
-  const [siteSearch, setSiteSearch] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [timeFrom, setTimeFrom] = useState("");
@@ -57,16 +56,6 @@ export default function Posts() {
     const raw = localStorage.getItem("site-master-saved-searches");
     return raw ? JSON.parse(raw) : [];
   });
-
-  const siteOptions = useMemo(
-    () =>
-      sites.map((site) => ({
-        value: site.id,
-        label: site.name,
-        meta: `${site.code} ${site.url || ""}`,
-      })),
-    [sites]
-  );
 
   const loadPosts = async (nextPage = page) => {
     setLoading(true);
@@ -165,15 +154,14 @@ export default function Posts() {
           <button className={`rounded-lg px-3 py-2 text-sm ${tab === "all" ? "bg-blue-600 text-white" : "border border-[var(--border-color)]"}`} onClick={() => { setTab("all"); setSiteFilter("all"); }}>All Posts</button>
           <button className={`rounded-lg px-3 py-2 text-sm ${tab === "site" ? "bg-blue-600 text-white" : "border border-[var(--border-color)]"}`} onClick={() => setTab("site")}>By Site</button>
           {tab === "site" && (
-            <SearchableSelect
-              value={siteFilter === "all" ? "" : siteFilter}
+            <RemoteSiteSelect
+              value={siteFilter}
               onChange={(value) => setSiteFilter(value || "all")}
-              searchValue={siteSearch}
-              onSearchChange={setSiteSearch}
-              options={siteOptions}
-              placeholder="All sites"
-              searchPlaceholder="Search site by name, code, or URL"
-              className="min-w-[260px]"
+              includeAllOption
+              allLabel="All Sites"
+              placeholder="Search site"
+              searchPlaceholder="Search by domain, name, or code"
+              className="min-w-[300px]"
             />
           )}
           <select className="rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm" value={taskFilter} onChange={(e) => setTaskFilter(e.target.value)}>

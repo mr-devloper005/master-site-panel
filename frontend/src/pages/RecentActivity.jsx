@@ -3,11 +3,12 @@ import { CalendarDays, CheckCircle2, Filter, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { useAppData } from "../context/AppContext";
+import RemoteSiteSelect from "../components/ui/RemoteSiteSelect";
 
 const dateLabel = (iso) => new Date(iso).toLocaleString();
 
 export default function RecentActivity() {
-  const { posts, sites } = useAppData();
+  const { posts } = useAppData();
   const [query, setQuery] = useState("");
   const [siteFilter, setSiteFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -61,12 +62,15 @@ export default function RecentActivity() {
             />
           </div>
 
-          <select className="min-h-11 rounded-lg border border-[var(--border-color)] px-3 text-sm" value={siteFilter} onChange={(e) => setSiteFilter(e.target.value)}>
-            <option value="all">All Sites</option>
-            {sites.map((site) => (
-              <option key={site.id} value={site.id}>{site.name}</option>
-            ))}
-          </select>
+          <RemoteSiteSelect
+            value={siteFilter}
+            onChange={(value) => setSiteFilter(value || "all")}
+            includeAllOption
+            allLabel="All Sites"
+            placeholder="Search site"
+            searchPlaceholder="Search by domain, name, or code"
+            className="min-w-[300px]"
+          />
 
           <select className="min-h-11 rounded-lg border border-[var(--border-color)] px-3 text-sm" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
             <option value="all">All Status</option>

@@ -256,6 +256,25 @@ export const fetchSitesPage = async ({ page = 1, limit = 50, search = "" } = {})
   };
 };
 
+export const searchSites = async ({ search = "", ids = [], limit = 25 } = {}) => {
+  const query = new URLSearchParams();
+  query.set("limit", String(limit));
+  if (search.trim()) query.set("search", search.trim());
+  if (ids.length) query.set("ids", ids.join(","));
+
+  const response = await request(`/api/v1/sites/lookup/search?${query.toString()}`);
+
+  return {
+    sites: Array.isArray(response.data) ? response.data.map(mapSite) : [],
+    meta: response.meta || { total: 0, limit },
+  };
+};
+
+export const fetchSite = async (siteId) => {
+  const response = await request(`/api/v1/sites/${siteId}`);
+  return mapSite(response.data);
+};
+
 export const addSite = async (payload) => {
   const response = await request("/api/v1/sites", {
     method: "POST",

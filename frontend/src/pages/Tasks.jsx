@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 
 import SiteProvisioningModal from "../components/sites/SiteProvisioningModal";
 import SiteTaskModal from "../components/sites/SiteTaskModal";
-import SearchableSelect from "../components/ui/SearchableSelect";
+import RemoteSiteSelect from "../components/ui/RemoteSiteSelect";
 import { useAppData } from "../context/AppContext";
 import { exportTaskTokens, fetchApiKeys, issueSiteTaskToken } from "../utils/api";
 
@@ -38,13 +38,13 @@ const saveTokenCache = (cache) => {
 };
 
 export default function Tasks() {
-  const { sites, addTaskToSite, removeTaskFromSite } = useAppData();
+  const { addTaskToSite, removeTaskFromSite } = useAppData();
   const [selectedSiteId, setSelectedSiteId] = useState("");
+  const [selectedSite, setSelectedSite] = useState(null);
   const [taskSite, setTaskSite] = useState(null);
   const [packageData, setPackageData] = useState(null);
   const [keys, setKeys] = useState([]);
   const [tokenCache, setTokenCache] = useState(() => loadTokenCache());
-  const [siteSearch, setSiteSearch] = useState("");
   const [exporting, setExporting] = useState(false);
   const [exportPayload, setExportPayload] = useState(null);
   const [exportTaskFilter, setExportTaskFilter] = useState("");
@@ -63,11 +63,6 @@ export default function Tasks() {
 
     loadKeys();
   }, []);
-
-  const selectedSite = useMemo(
-    () => sites.find((site) => site.id === selectedSiteId) || null,
-    [sites, selectedSiteId]
-  );
 
   const siteKeys = useMemo(() => {
     if (!selectedSite) return [];
@@ -99,16 +94,6 @@ export default function Tasks() {
       };
     });
   }, [enabledTasks, siteKeys, selectedSite, selectedSiteCode, tokenCache, taskCatalog]);
-
-  const siteOptions = useMemo(
-    () =>
-      sites.map((site) => ({
-        value: site.id,
-        label: site.name,
-        meta: `${site.code} ${site.url || ""}`,
-      })),
-    [sites]
-  );
 
   const exportJson = useMemo(
     () => (exportPayload?.rows?.length ? JSON.stringify(exportPayload.rows, null, 2) : ""),
@@ -168,16 +153,14 @@ export default function Tasks() {
 
       <div className="rounded-panel border border-[var(--border-color)] bg-[var(--bg-secondary)] p-4">
         <div className="flex flex-wrap items-center gap-3">
-          <SearchableSelect
+          <RemoteSiteSelect
             label="Select Site"
             value={selectedSiteId}
             onChange={setSelectedSiteId}
-            searchValue={siteSearch}
-            onSearchChange={setSiteSearch}
-            options={siteOptions}
+            onSiteChange={setSelectedSite}
             placeholder="Choose a site"
-            searchPlaceholder="Search site by name, code, or URL"
-            className="w-full md:w-[360px]"
+            searchPlaceholder="Search by domain, name, or code"
+            className="w-full md:w-[380px]"
           />
           <button
             type="button"

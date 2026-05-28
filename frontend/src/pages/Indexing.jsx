@@ -22,7 +22,7 @@ import {
   Link2,
 } from "lucide-react";
 
-import { useAppData } from "../context/AppContext";
+import RemoteSiteSelect from "../components/ui/RemoteSiteSelect";
 import {
   fetchSiteIndexingStatus,
   fetchSiteIndexNowConfig,
@@ -61,9 +61,9 @@ const statusPill = (status) => {
 };
 
 export default function Indexing() {
-  const { sites } = useAppData();
 
   const [selectedSiteId, setSelectedSiteId] = useState("");
+  const [selectedSite, setSelectedSite] = useState(null);
   const [sitemapStatus, setSitemapStatus] = useState(null);
   const [seoStatus, setSeoStatus] = useState(null);
   const [indexingStatus, setIndexingStatus] = useState(null);
@@ -86,17 +86,6 @@ export default function Indexing() {
     saveIndexNow: false,
     submitIndexNow: false,
   });
-
-  const selectedSite = useMemo(
-    () => sites.find((site) => site.id === selectedSiteId) || null,
-    [sites, selectedSiteId]
-  );
-
-  useEffect(() => {
-    if (!selectedSiteId && sites.length) {
-      setSelectedSiteId(sites[0].id);
-    }
-  }, [selectedSiteId, sites]);
 
   const loadIndexingData = async (siteId, options = {}) => {
     if (!siteId) return;
@@ -340,18 +329,14 @@ export default function Indexing() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <select
-            className="min-h-10 rounded-lg border border-[var(--border-color)] px-3 text-sm"
+          <RemoteSiteSelect
             value={selectedSiteId}
-            onChange={(event) => setSelectedSiteId(event.target.value)}
-          >
-            <option value="">Select site</option>
-            {sites.map((site) => (
-              <option key={site.id} value={site.id}>
-                {site.name}
-              </option>
-            ))}
-          </select>
+            onChange={setSelectedSiteId}
+            onSiteChange={setSelectedSite}
+            placeholder="Select site"
+            searchPlaceholder="Search by domain, name, or code"
+            className="min-w-[320px]"
+          />
           <button
             className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-[var(--border-color)] px-3 text-sm"
             onClick={() => selectedSiteId && loadIndexingData(selectedSiteId, { runDue: true })}

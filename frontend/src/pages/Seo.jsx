@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { AlertTriangle, CheckCircle2, Loader2, RefreshCw, Save, SearchCheck } from "lucide-react";
 
-import { useAppData } from "../context/AppContext";
+import RemoteSiteSelect from "../components/ui/RemoteSiteSelect";
 import {
   fetchSiteIndexingStatus,
   fetchSiteSeoConfig,
@@ -142,8 +142,8 @@ const missingLabel = (key) => {
 };
 
 export default function Seo() {
-  const { sites } = useAppData();
   const [selectedSiteId, setSelectedSiteId] = useState("");
+  const [selectedSite, setSelectedSite] = useState(null);
   const [seoStatus, setSeoStatus] = useState(null);
   const [indexingStatus, setIndexingStatus] = useState(null);
   const [seoDefaults, setSeoDefaults] = useState(EMPTY_DEFAULTS);
@@ -156,17 +156,6 @@ export default function Seo() {
     fetch: false,
     save: false,
   });
-
-  const selectedSite = useMemo(
-    () => sites.find((site) => site.id === selectedSiteId) || null,
-    [sites, selectedSiteId]
-  );
-
-  useEffect(() => {
-    if (!selectedSiteId && sites.length) {
-      setSelectedSiteId(sites[0].id);
-    }
-  }, [selectedSiteId, sites]);
 
   const loadSeoData = async (siteId) => {
     if (!siteId) return;
@@ -352,18 +341,14 @@ export default function Seo() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <select
-            className="min-h-10 rounded-lg border border-[var(--border-color)] px-3 text-sm"
+          <RemoteSiteSelect
             value={selectedSiteId}
-            onChange={(event) => setSelectedSiteId(event.target.value)}
-          >
-            <option value="">Select site</option>
-            {sites.map((site) => (
-              <option key={site.id} value={site.id}>
-                {site.name}
-              </option>
-            ))}
-          </select>
+            onChange={setSelectedSiteId}
+            onSiteChange={setSelectedSite}
+            placeholder="Select site"
+            searchPlaceholder="Search by domain, name, or code"
+            className="min-w-[320px]"
+          />
 
           <button
             className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-[var(--border-color)] px-3 text-sm"

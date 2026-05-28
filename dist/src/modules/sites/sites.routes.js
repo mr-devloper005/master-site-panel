@@ -460,6 +460,80 @@ router.get("/summary", (0, auth_1.requireApiKey)("sites:read"), (0, async_handle
         },
     });
 }));
+router.get("/lookup/search", (0, auth_1.requireApiKey)("sites:read"), (0, async_handler_1.asyncHandler)(async (req, res) => {
+    const search = firstQueryValue(req.query.search).trim();
+    const ids = firstQueryValue(req.query.ids)
+        .split(",")
+        .map((id) => id.trim())
+        .filter(Boolean);
+    const limit = Math.min(Math.max(Number(req.query.limit) || 25, 1), 50);
+    const where = {};
+    if (ids.length) {
+        where.id = { in: ids };
+    }
+    else if (search) {
+        where.OR = [
+            { name: { contains: search, mode: "insensitive" } },
+            { code: { contains: search, mode: "insensitive" } },
+            {
+                config: {
+                    path: ["domain"],
+                    string_contains: search,
+                },
+            },
+            {
+                config: {
+                    path: ["frontendUrl"],
+                    string_contains: search,
+                },
+            },
+            {
+                config: {
+                    path: ["liveUrl"],
+                    string_contains: search,
+                },
+            },
+            {
+                config: {
+                    path: ["siteUrl"],
+                    string_contains: search,
+                },
+            },
+        ];
+    }
+    const sites = await db_1.prisma.site.findMany({
+        where,
+        orderBy: [{ isActive: "desc" }, { name: "asc" }],
+        take: ids.length ? Math.min(ids.length, 100) : limit,
+        select: {
+            id: true,
+            code: true,
+            name: true,
+            framework: true,
+            category: true,
+            theme: true,
+            config: true,
+            isActive: true,
+            createdAt: true,
+            updatedAt: true,
+            _count: {
+                select: { posts: true },
+            },
+        },
+    });
+    res.json({
+        success: true,
+        data: sites.map((site) => ({
+            ...site,
+            config: (0, site_contract_1.sanitizeSiteConfig)(site.config),
+        })),
+        meta: {
+            limit,
+            total: sites.length,
+            search,
+        },
+    });
+}));
 router.get("/:siteId", (0, auth_1.requireApiKey)("sites:read"), (0, async_handler_1.asyncHandler)(async (req, res) => {
     const siteId = String(req.params.siteId);
     const site = await db_1.prisma.site.findUnique({

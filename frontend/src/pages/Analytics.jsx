@@ -16,6 +16,7 @@ import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
 
 import { useAppData } from "../context/AppContext";
+import RemoteSiteSelect from "../components/ui/RemoteSiteSelect";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Tooltip, Legend, Filler);
 
@@ -220,12 +221,15 @@ export default function Analytics() {
           <button className={`rounded-lg px-3 py-2 text-sm ${scope === "site" ? "bg-blue-600 text-white" : "border border-[var(--border-color)]"}`} onClick={() => setScope("site")}>By Site</button>
 
           {scope === "site" && (
-            <select className="min-h-10 rounded-lg border border-[var(--border-color)] px-3 text-sm" value={siteId} onChange={(e) => setSiteId(e.target.value)}>
-              <option value="all">All Sites</option>
-              {sites.map((site) => (
-                <option key={site.id} value={site.id}>{site.name}</option>
-              ))}
-            </select>
+            <RemoteSiteSelect
+              value={siteId}
+              onChange={(value) => setSiteId(value || "all")}
+              includeAllOption
+              allLabel="All Sites"
+              placeholder="Search site"
+              searchPlaceholder="Search by domain, name, or code"
+              className="min-w-[300px]"
+            />
           )}
 
           <select className="min-h-10 rounded-lg border border-[var(--border-color)] px-3 text-sm" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
