@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.normalizeCategory = exports.isValidCategory = exports.CATEGORY_OPTIONS = void 0;
 exports.CATEGORY_OPTIONS = [
+    { name: "Uncategorised", slug: "uncategorised" },
     { name: "Business", slug: "business" },
     { name: "Health", slug: "health" },
     { name: "Technology", slug: "technology" },

@@ -1,4 +1,5 @@
 export const CATEGORY_OPTIONS: Array<{ name: string; slug: string }> = [
+  { name: "Uncategorised", slug: "uncategorised" },
   { name: "Business", slug: "business" },
   { name: "Health", slug: "health" },
   { name: "Technology", slug: "technology" },

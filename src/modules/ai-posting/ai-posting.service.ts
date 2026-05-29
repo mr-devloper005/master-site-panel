@@ -303,7 +303,7 @@ const buildGeneratedPostPayload = ({
   summary: generated.summary,
   content: {
     type: taskKey,
-    category: "general",
+    category: "uncategorised",
     brandName: brandName || null,
     sourceUrl: targetUrl,
     description: generated.html,
@@ -334,7 +334,7 @@ const buildFallbackGeneratedPayload = ({
     summary: extracted.metaDescription || `Learn more about ${brandName || fallbackTitle}.`,
     content: {
       type: taskKey,
-      category: "general",
+      category: "uncategorised",
       brandName: brandName || null,
       sourceUrl: targetUrl,
       description: html,
