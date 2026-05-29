@@ -356,7 +356,22 @@ const sanitizeSiteConfig = (value) => {
 exports.sanitizeSiteConfig = sanitizeSiteConfig;
 const getSiteFrontendBaseUrl = (siteConfig) => {
     const config = (0, exports.sanitizeSiteConfig)(siteConfig);
-    return config.frontendUrl || config.liveUrl || config.siteUrl || null;
+    if (config.frontendUrl || config.liveUrl || config.siteUrl) {
+        return config.frontendUrl || config.liveUrl || config.siteUrl || null;
+    }
+    const source = siteConfig && typeof siteConfig === "object" && !Array.isArray(siteConfig)
+        ? siteConfig
+        : {};
+    const rawUrl = typeof source.url === "string" ? (0, exports.normalizeBaseUrl)(source.url) : null;
+    if (rawUrl)
+        return rawUrl;
+    const rawDomain = typeof source.domain === "string" ? source.domain.trim() : "";
+    if (rawDomain) {
+        const cleaned = rawDomain.replace(/^https?:\/\//i, "").replace(/\/+$/, "");
+        if (cleaned)
+            return `https://${cleaned}`;
+    }
+    return null;
 };
 exports.getSiteFrontendBaseUrl = getSiteFrontendBaseUrl;
 const buildSiteBlueprint = (siteCode, siteConfig, options) => {

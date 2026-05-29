@@ -541,7 +541,25 @@ export const sanitizeSiteConfig = (value: unknown): SiteConnectorConfig => {
 
 export const getSiteFrontendBaseUrl = (siteConfig: unknown): string | null => {
   const config = sanitizeSiteConfig(siteConfig);
-  return config.frontendUrl || config.liveUrl || config.siteUrl || null;
+  if (config.frontendUrl || config.liveUrl || config.siteUrl) {
+    return config.frontendUrl || config.liveUrl || config.siteUrl || null;
+  }
+
+  const source =
+    siteConfig && typeof siteConfig === "object" && !Array.isArray(siteConfig)
+      ? (siteConfig as Record<string, unknown>)
+      : {};
+
+  const rawUrl = typeof source.url === "string" ? normalizeBaseUrl(source.url) : null;
+  if (rawUrl) return rawUrl;
+
+  const rawDomain = typeof source.domain === "string" ? source.domain.trim() : "";
+  if (rawDomain) {
+    const cleaned = rawDomain.replace(/^https?:\/\//i, "").replace(/\/+$/, "");
+    if (cleaned) return `https://${cleaned}`;
+  }
+
+  return null;
 };
 
 export const buildSiteBlueprint = (
