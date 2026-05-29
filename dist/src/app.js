@@ -42,6 +42,7 @@ const express_1 = __importDefault(require("express"));
 const helmet_1 = __importDefault(require("helmet"));
 const morgan_1 = __importDefault(require("morgan"));
 const auth_routes_1 = __importDefault(require("./modules/auth/auth.routes"));
+const ai_posting_routes_1 = __importDefault(require("./modules/ai-posting/ai-posting.routes"));
 const contact_email_queue_1 = require("./modules/contact/contact-email-queue");
 const contact_routes_1 = __importDefault(require("./modules/contact/contact.routes"));
 const posts_routes_1 = __importDefault(require("./modules/posts/posts.routes"));
@@ -66,6 +67,7 @@ exports.app.get("/health", (_req, res) => {
     });
 });
 exports.app.use("/api/v1/auth", auth_routes_1.default);
+exports.app.use("/api/v1/ai-posting", ai_posting_routes_1.default);
 exports.app.use("/api/v1/sites", sites_routes_1.default);
 exports.app.use("/api/v1/contact-submissions", contact_routes_1.default);
 exports.app.use("/api/v1/settings", settings_routes_1.default);

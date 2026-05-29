@@ -78,6 +78,21 @@ enum ApiActivityStatus {
   BLOCKED
 }
 
+enum AiPostingJobStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  PARTIAL
+  FAILED
+}
+
+enum AiPostingRunStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
 model Site {
   id          String      @id @default(cuid())
   code        String      @unique
@@ -96,6 +111,7 @@ model Site {
   apiActivityLogs ApiActivityLog[]
   runtimeStatuses SiteRuntimeStatus[]
   contactSubmissions ContactSubmission[]
+  aiPostingRuns AiPostingRun[]
 }
 
 model Post {
@@ -206,6 +222,7 @@ model ApiKey {
   posts       Post[]
   permissions ApiKeySitePermission[]
   apiActivityLogs ApiActivityLog[]
+  aiPostingJobs AiPostingJob[]
 
   @@index([userId, isActive])
 }
@@ -237,9 +254,61 @@ model PanelUser {
   apiKeys            ApiKey[]
   accessRules        UserSiteTaskAccess[]
   apiActivityLogs    ApiActivityLog[]
+  aiPostingJobs      AiPostingJob[]
 
   @@index([status, createdAt])
   @@index([name])
+}
+
+model AiPostingJob {
+  id             String             @id @default(cuid())
+  apiKeyId       String?
+  apiKey         ApiKey?            @relation(fields: [apiKeyId], references: [id], onDelete: SetNull)
+  userId         String?
+  user           PanelUser?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  status         AiPostingJobStatus @default(QUEUED)
+  targetUrl      String
+  finalUrl       String?
+  brandName      String?
+  model          String
+  language       String             @default("en")
+  wordCount      Int                @default(600)
+  crawlAttempts  Int                @default(0)
+  httpStatus     Int?
+  fallbackUsed   Boolean            @default(false)
+  extractedData  Json?
+  errorMessage   String?
+  metadata       Json?
+  startedAt      DateTime?
+  finishedAt     DateTime?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  runs           AiPostingRun[]
+
+  @@index([apiKeyId, createdAt])
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+}
+
+model AiPostingRun {
+  id              String            @id @default(cuid())
+  jobId           String
+  job             AiPostingJob      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  siteId          String
+  site            Site              @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  taskKey         String
+  status          AiPostingRunStatus @default(PENDING)
+  postId          String?
+  liveUrl         String?
+  errorMessage    String?
+  generatedPost   Json?
+  startedAt       DateTime?
+  finishedAt      DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([jobId, status])
+  @@index([siteId, createdAt])
 }
 
 model UserSiteTaskAccess {

@@ -4,6 +4,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 
 import authRoutes from "./modules/auth/auth.routes";
+import aiPostingRoutes from "./modules/ai-posting/ai-posting.routes";
 import { startContactEmailQueueWorker } from "./modules/contact/contact-email-queue";
 import contactRoutes from "./modules/contact/contact.routes";
 import postsRoutes from "./modules/posts/posts.routes";
@@ -32,6 +33,7 @@ app.get("/health", (_req, res) => {
 });
 
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/ai-posting", aiPostingRoutes);
 app.use("/api/v1/sites", sitesRoutes);
 app.use("/api/v1/contact-submissions", contactRoutes);
 app.use("/api/v1/settings", settingsRoutes);
