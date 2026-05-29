@@ -41,7 +41,7 @@ export default function Header({ onMenuToggle }) {
 
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--border-color)] bg-[var(--bg-secondary)]/95 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-[1800px] items-center gap-3 px-3 sm:px-6">
+      <div className="mx-auto flex h-14 max-w-[1800px] items-center gap-3 px-3 sm:px-6">
         <button aria-label="Toggle sidebar" className="rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden" onClick={onMenuToggle}>
           <Menu size={20} />
         </button>
@@ -51,7 +51,7 @@ export default function Header({ onMenuToggle }) {
           <span className="text-sm font-semibold">SiteMaster Pro</span>
         </div>
 
-        <div className="relative ml-auto w-full max-w-xl">
+        <div className="relative ml-auto w-full max-w-lg">
           <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
           <input
             aria-label="Global search"

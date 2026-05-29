@@ -92,6 +92,31 @@ const resolvePostType = (content: unknown, tags: string[]): string => {
   return firstTag ? firstTag.trim().toLowerCase() : "";
 };
 
+const normalizePublicMedia = (value: unknown) => {
+  if (Array.isArray(value)) return value;
+  if (!value || typeof value !== "object") return [];
+
+  const record = value as Record<string, unknown>;
+  const numericKeys = Object.keys(record)
+    .filter((key) => /^\d+$/.test(key))
+    .sort((a, b) => Number(a) - Number(b));
+
+  if (numericKeys.length > 0) {
+    return numericKeys.map((key) => record[key]).filter(Boolean);
+  }
+
+  if (typeof record.url === "string" && record.url.trim()) {
+    return [record];
+  }
+
+  return [];
+};
+
+const normalizePublicPost = <T extends typeof publicPostSelect extends infer _X ? Record<string, unknown> : Record<string, unknown>>(post: T) => ({
+  ...post,
+  media: normalizePublicMedia(post.media),
+});
+
 type PublicSitePayload = {
   site: { id: string; code: string; config: unknown; isActive: boolean };
   sanitizedSite: Record<string, unknown>;
@@ -221,7 +246,7 @@ router.get("/:siteCode/feed", asyncHandler(async (req, res) => {
     data: {
       site: sitePayload.sanitizedSite,
       blueprint: sitePayload.blueprint,
-      posts,
+      posts: posts.map((post) => normalizePublicPost(post)),
       pagination: {
         page,
         limit,
@@ -315,7 +340,7 @@ router.get("/:siteCode/post/:slug", asyncHandler(async (req, res) => {
     data: {
       site: sitePayload.sanitizedSite,
       blueprint: sitePayload.blueprint,
-      post: legacyPost,
+      post: normalizePublicPost(legacyPost),
     },
   });
 }));

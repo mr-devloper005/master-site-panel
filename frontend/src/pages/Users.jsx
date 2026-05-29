@@ -365,51 +365,51 @@ export default function Users() {
     catalogRows.length > 0 && catalogRows.every((row) => selectedSiteIds.includes(row.site.id));
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-5 overflow-hidden">
-      <div className="rounded-3xl border border-[var(--border-color)] bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 p-5 text-white shadow-xl">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+    <div className="flex h-full min-h-0 flex-col gap-4 overflow-hidden">
+      <div className="rounded-3xl border border-[var(--border-color)] bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 p-4 text-white shadow-xl">
+        <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blue-100">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-blue-100">
               <ShieldCheck size={14} /> User API Control
             </div>
-            <h1 className="mt-3 text-2xl font-bold">Users & Access</h1>
-            <p className="mt-1 max-w-3xl text-sm text-slate-300">
+            <h1 className="mt-2 text-xl font-bold">Users & Access</h1>
+            <p className="mt-1 max-w-3xl text-xs text-slate-300 sm:text-sm">
               Manage users, give site access in bulk, track who created posts, and revoke safely without breaking legacy site tokens.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-white px-4 text-sm font-semibold text-slate-950"
+              className="inline-flex min-h-9 items-center gap-2 rounded-xl bg-white px-4 text-sm font-semibold text-slate-950"
               onClick={() => setShowCreateUser((current) => !current)}
             >
               <UserPlus size={16} /> {showCreateUser ? "Close Add User" : "Add User"}
             </button>
             <button
               type="button"
-              className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 text-sm font-semibold text-white hover:bg-white/15"
+              className="inline-flex min-h-9 items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 text-sm font-semibold text-white hover:bg-white/15"
               onClick={() => loadUsers(usersMeta.page)}
             >
               <RefreshCw size={16} className={loadingUsers ? "animate-spin" : ""} /> Refresh
             </button>
           </div>
         </div>
-        <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="rounded-2xl border border-white/10 bg-white/10 p-3">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">Total Users</p>
-            <p className="mt-2 text-2xl font-bold">{usersMeta.total}</p>
+            <p className="mt-1.5 text-2xl font-bold">{usersMeta.total}</p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
+          <div className="rounded-2xl border border-white/10 bg-white/10 p-3">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">Active</p>
-            <p className="mt-2 text-2xl font-bold">{activeUsers}</p>
+            <p className="mt-1.5 text-2xl font-bold">{activeUsers}</p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
+          <div className="rounded-2xl border border-white/10 bg-white/10 p-3">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">Suspended</p>
-            <p className="mt-2 text-2xl font-bold">{suspendedUsers}</p>
+            <p className="mt-1.5 text-2xl font-bold">{suspendedUsers}</p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
+          <div className="rounded-2xl border border-white/10 bg-white/10 p-3">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">API Keys</p>
-            <p className="mt-2 text-2xl font-bold">{totalKeys}</p>
+            <p className="mt-1.5 text-2xl font-bold">{totalKeys}</p>
           </div>
         </div>
       </div>

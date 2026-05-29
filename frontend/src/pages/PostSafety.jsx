@@ -17,6 +17,8 @@ const emptyDraft = {
   tagsText: "",
   contentRows: [],
   mediaRows: [],
+  contentRootType: "object",
+  mediaRootType: "object",
 };
 
 const valueToText = (value) => {
@@ -38,18 +40,64 @@ const textToValue = (value) => {
   return value;
 };
 
-const rowsFromObject = (value) => {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return [];
-  return Object.entries(value).map(([key, rowValue]) => ({ key, value: valueToText(rowValue), enabled: false, locked: true }));
+const detectRootType = (value) => (Array.isArray(value) ? "array" : "object");
+
+const flattenValue = (value, prefix = "") => {
+  if (Array.isArray(value)) {
+    return value.flatMap((item, index) => flattenValue(item, prefix ? `${prefix}.${index}` : String(index)));
+  }
+  if (value && typeof value === "object") {
+    return Object.entries(value).flatMap(([key, nestedValue]) =>
+      flattenValue(nestedValue, prefix ? `${prefix}.${key}` : key)
+    );
+  }
+
+  return prefix
+    ? [{ key: prefix, value: valueToText(value), enabled: false, locked: true }]
+    : [];
 };
 
-const rowsToObject = (rows, { enabledOnly = false } = {}) => {
-  const output = {};
+const rowsFromValue = (value) => {
+  if (value === null || value === undefined) return [];
+  return flattenValue(value);
+};
+
+const assignNestedValue = (target, path, value) => {
+  let cursor = target;
+  path.forEach((segment, index) => {
+    const isLeaf = index === path.length - 1;
+    const nextSegment = path[index + 1];
+    const numericSegment = Number(segment);
+    const useArrayIndex = Number.isInteger(numericSegment) && String(numericSegment) === segment;
+    const nextIsArray = Number.isInteger(Number(nextSegment)) && String(Number(nextSegment)) === nextSegment;
+
+    if (isLeaf) {
+      if (useArrayIndex && Array.isArray(cursor)) {
+        cursor[numericSegment] = value;
+      } else {
+        cursor[segment] = value;
+      }
+      return;
+    }
+
+    if (useArrayIndex && Array.isArray(cursor)) {
+      if (cursor[numericSegment] === undefined) cursor[numericSegment] = nextIsArray ? [] : {};
+      cursor = cursor[numericSegment];
+      return;
+    }
+
+    if (cursor[segment] === undefined) cursor[segment] = nextIsArray ? [] : {};
+    cursor = cursor[segment];
+  });
+};
+
+const rowsToStructuredValue = (rows, { enabledOnly = false, rootType = "object" } = {}) => {
+  const output = rootType === "array" ? [] : {};
   rows.forEach((row) => {
     const key = String(row.key || "").trim();
     if (!key) return;
     if (enabledOnly && !row.enabled) return;
-    output[key] = textToValue(row.value);
+    assignNestedValue(output, key.split(".").filter(Boolean), textToValue(row.value));
   });
   return output;
 };
@@ -67,8 +115,10 @@ const draftFromPost = (post) => {
     publishedAt: payload.publishedAt ? String(payload.publishedAt).slice(0, 16) : "",
     externalPostId: payload.externalPostId || "",
     tagsText: Array.isArray(payload.tags) ? payload.tags.join(", ") : "",
-    contentRows: rowsFromObject(payload.content),
-    mediaRows: rowsFromObject(payload.media),
+    contentRows: rowsFromValue(payload.content),
+    mediaRows: rowsFromValue(payload.media),
+    contentRootType: detectRootType(payload.content),
+    mediaRootType: detectRootType(payload.media),
   };
 };
 
@@ -158,8 +208,8 @@ export default function PostSafety() {
   };
 
   const buildSingleUpdate = () => {
-    const content = rowsToObject(draft.contentRows);
-    const media = rowsToObject(draft.mediaRows);
+    const content = rowsToStructuredValue(draft.contentRows, { rootType: draft.contentRootType });
+    const media = rowsToStructuredValue(draft.mediaRows, { rootType: draft.mediaRootType });
     return {
       title: draft.title.trim(),
       slug: draft.slug.trim(),
@@ -185,8 +235,8 @@ export default function PostSafety() {
     if (bulkFields.appendTags && appendTagsText.trim()) {
       data.appendTags = appendTagsText.split(",").map((tag) => tag.trim()).filter(Boolean);
     }
-    const contentMerge = rowsToObject(draft.contentRows, { enabledOnly: true });
-    const mediaMerge = rowsToObject(draft.mediaRows, { enabledOnly: true });
+    const contentMerge = rowsToStructuredValue(draft.contentRows, { enabledOnly: true, rootType: draft.contentRootType });
+    const mediaMerge = rowsToStructuredValue(draft.mediaRows, { enabledOnly: true, rootType: draft.mediaRootType });
     if (Object.keys(contentMerge).length) data.contentMerge = contentMerge;
     if (Object.keys(mediaMerge).length) data.mediaMerge = mediaMerge;
     return data;

@@ -43,6 +43,26 @@ const taskFromContent = (content: unknown): SiteTask | null => {
   return value && isSiteTask(value) ? value : null;
 };
 
+const isPlainRecord = (value: unknown): value is Record<string, unknown> =>
+  Boolean(value) && typeof value === "object" && !Array.isArray(value);
+
+const normalizeJsonValue = (value: unknown, fieldName: string): Prisma.InputJsonValue => {
+  if (value === null || value === undefined) return Prisma.JsonNull as unknown as Prisma.InputJsonValue;
+  if (Array.isArray(value)) return value as Prisma.InputJsonValue;
+  if (isPlainRecord(value)) return value as Prisma.InputJsonValue;
+  throw new ApiError(400, `${fieldName} must be an object, array, or null.`);
+};
+
+const mergeStructuredValue = (currentValue: unknown, mergeValue: unknown): Prisma.InputJsonValue => {
+  if (Array.isArray(currentValue) && Array.isArray(mergeValue)) {
+    return mergeValue as Prisma.InputJsonValue;
+  }
+  if (isPlainRecord(currentValue) && isPlainRecord(mergeValue)) {
+    return { ...currentValue, ...mergeValue } as Prisma.InputJsonValue;
+  }
+  return normalizeJsonValue(mergeValue, "merge payload");
+};
+
 const hostFromUrl = (value?: string | null): string => {
   if (!value) return "";
   try {
@@ -647,8 +667,8 @@ router.patch("/:postId", requireApiKey("posts:write"), asyncHandler(async (req, 
   if (summary !== undefined) updateData.summary = summary;
   if (metaTitle !== undefined) updateData.metaTitle = metaTitle ? String(metaTitle).trim() : null;
   if (metaDescription !== undefined) updateData.metaDescription = metaDescription ? String(metaDescription).trim() : null;
-  if (content !== undefined) updateData.content = content;
-  if (media !== undefined) updateData.media = media;
+  if (content !== undefined) updateData.content = normalizeJsonValue(content, "content");
+  if (media !== undefined) updateData.media = normalizeJsonValue(media, "media");
   if (authorName !== undefined) updateData.authorName = authorName;
   if (tags !== undefined) {
     if (!Array.isArray(tags)) throw new ApiError(400, "tags must be array.");
@@ -894,8 +914,8 @@ router.post("/bulk/update", requireApiKey("posts:write"), asyncHandler(async (re
   if (data.summary !== undefined) patch.summary = data.summary;
   if (data.metaTitle !== undefined) patch.metaTitle = data.metaTitle ? String(data.metaTitle).trim() : null;
   if (data.metaDescription !== undefined) patch.metaDescription = data.metaDescription ? String(data.metaDescription).trim() : null;
-  if (data.content !== undefined && posts.length === 1) patch.content = data.content as Prisma.InputJsonValue;
-  if (data.media !== undefined && posts.length === 1) patch.media = (data.media ?? Prisma.JsonNull) as Prisma.InputJsonValue;
+  if (data.content !== undefined && posts.length === 1) patch.content = normalizeJsonValue(data.content, "content");
+  if (data.media !== undefined && posts.length === 1) patch.media = normalizeJsonValue(data.media, "media");
   if (Array.isArray(data.tags) && posts.length === 1) patch.tags = data.tags.map((tag: unknown) => String(tag));
   if (data.publishedAt !== undefined) {
     patch.publishedAt = data.publishedAt ? new Date(data.publishedAt) : null;
@@ -923,31 +943,25 @@ router.post("/bulk/update", requireApiKey("posts:write"), asyncHandler(async (re
     );
   }
 
-  if (data.contentMerge && typeof data.contentMerge === "object" && !Array.isArray(data.contentMerge)) {
+  if (data.contentMerge && typeof data.contentMerge === "object") {
     await Promise.all(
       posts.map(async (post) => {
         const current = await prisma.post.findUnique({ where: { id: post.id }, select: { content: true } });
-        const currentContent = current?.content && typeof current.content === "object" && !Array.isArray(current.content)
-          ? current.content as Record<string, unknown>
-          : {};
         await prisma.post.update({
           where: { id: post.id },
-          data: { content: { ...currentContent, ...data.contentMerge } as Prisma.InputJsonValue },
+          data: { content: mergeStructuredValue(current?.content, data.contentMerge) },
         });
       })
     );
   }
 
-  if (data.mediaMerge && typeof data.mediaMerge === "object" && !Array.isArray(data.mediaMerge)) {
+  if (data.mediaMerge && typeof data.mediaMerge === "object") {
     await Promise.all(
       posts.map(async (post) => {
         const current = await prisma.post.findUnique({ where: { id: post.id }, select: { media: true } });
-        const currentMedia = current?.media && typeof current.media === "object" && !Array.isArray(current.media)
-          ? current.media as Record<string, unknown>
-          : {};
         await prisma.post.update({
           where: { id: post.id },
-          data: { media: { ...currentMedia, ...data.mediaMerge } as Prisma.InputJsonValue },
+          data: { media: mergeStructuredValue(current?.media, data.mediaMerge) },
         });
       })
     );
