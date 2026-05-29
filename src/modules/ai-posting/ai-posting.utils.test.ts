@@ -81,7 +81,19 @@ test("buildFallbackArticleHtml includes hyperlink and conclusion", () => {
   });
 
   assert.match(html, /<a href="https:\/\/example\.com\/page"/);
-  assert.match(html, /<h2>What Aidteck Offers<\/h2>/);
-  assert.match(html, /<h2>Why This Page Is Useful<\/h2>/);
+  assert.match(html, /<h2>What This Page Covers<\/h2>/);
+  assert.match(html, /<h2>Why It May Be Helpful<\/h2>/);
   assert.match(html, /Conclusion:/);
+});
+
+test("buildFallbackArticleHtml prefers source title when brand looks generic", () => {
+  const html = buildFallbackArticleHtml({
+    brandName: "ABC Services",
+    targetUrl: "https://in.pinterest.com/",
+    title: "Pinterest - India",
+  });
+
+  assert.match(html, /Pinterest - India/);
+  assert.doesNotMatch(html, /ABC Services/);
+  assert.match(html, /<h2>What This Page Covers<\/h2>/);
 });

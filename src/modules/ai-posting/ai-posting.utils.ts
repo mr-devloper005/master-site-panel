@@ -32,6 +32,29 @@ export type ExtractedPageData = {
 
 const collapseWhitespace = (value: string) => value.replace(/\s+/g, " ").trim();
 
+const GENERIC_BRAND_PATTERNS = [
+  /^abc(?:\s+[\w-]+)?$/i,
+  /^abc services$/i,
+  /^example brand$/i,
+  /^sample (brand|company|business)$/i,
+  /^test (brand|company|business)$/i,
+  /^demo (brand|company|business)$/i,
+  /^generic (brand|company|business)$/i,
+];
+
+const looksGenericBrandName = (value: string | null | undefined) =>
+  typeof value === "string" &&
+  GENERIC_BRAND_PATTERNS.some((pattern) => pattern.test(value.trim()));
+
+const resolveFallbackLabel = (brandName: string | null, title: string) => {
+  const safeTitle = collapseWhitespace(title || "");
+  const safeBrand = collapseWhitespace(brandName || "");
+  if (safeTitle && (!safeBrand || looksGenericBrandName(safeBrand))) return safeTitle;
+  if (safeBrand) return safeBrand;
+  if (safeTitle) return safeTitle;
+  return "this page";
+};
+
 export const inferTaskForSite = (site: Pick<Site, "category" | "config">): SiteTask | null => {
   const config = sanitizeSiteConfig(site.config);
   if (config.supportedTasks?.length === 1) return config.supportedTasks[0];
@@ -156,15 +179,15 @@ export const buildFallbackArticleHtml = ({
   targetUrl: string;
   title: string;
 }) => {
-  const label = brandName || title || "this business";
+  const label = resolveFallbackLabel(brandName, title);
   return [
-    `<p>${label} presents a clear overview for visitors who want to understand the brand, its services, and the value it offers in a practical way.</p>`,
-    `<h2>What ${label} Offers</h2>`,
-    `<p>This page gives readers a simple introduction to the business and helps highlight the main services, focus areas, or solutions that matter most.</p>`,
-    `<h2>Why This Page Is Useful</h2>`,
-    `<p>Even when source details are limited, the page still acts as a direct entry point for people who want to review the offer, understand the positioning, and learn more about the business.</p>`,
+    `<p>${label} gives visitors a direct overview of the page, its purpose, and the kind of information someone can expect to find.</p>`,
+    `<h2>What This Page Covers</h2>`,
+    `<p>This page helps introduce the topic in a simple way and can guide readers toward the main ideas, offers, or updates connected with the source.</p>`,
+    `<h2>Why It May Be Helpful</h2>`,
+    `<p>Even when detailed source content is limited, the page still works as a useful reference point for people who want a quick understanding before exploring more.</p>`,
     `<h2>Where To Learn More</h2>`,
     `<p>Readers who want full details can visit <a href="${targetUrl}" target="_blank" rel="noopener noreferrer">${targetUrl}</a> to explore the original source directly.</p>`,
-    `<p><strong>Conclusion:</strong> ${label} provides a direct way to discover more information, review the original content, and take the next step with confidence.</p>`,
+    `<p><strong>Conclusion:</strong> ${label} offers a straightforward starting point for readers who want to review the original source and continue exploring the topic in more detail.</p>`,
   ].join("");
 };
