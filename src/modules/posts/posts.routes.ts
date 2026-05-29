@@ -65,9 +65,11 @@ const mergeStructuredValue = (currentValue: unknown, mergeValue: unknown): Prism
 
 const extractPreferredImageUrl = (content: unknown): string | null => {
   if (!isPlainRecord(content)) return null;
-  const featuredImage = typeof content.featuredImage === "string" ? content.featuredImage.trim() : "";
+  const normalizedEntries = Object.entries(content).map(([key, value]) => [key.toLowerCase(), value] as const);
+  const record = Object.fromEntries(normalizedEntries) as Record<string, unknown>;
+  const featuredImage = typeof record.featuredimage === "string" ? record.featuredimage.trim() : "";
   if (featuredImage) return featuredImage;
-  const image = typeof content.image === "string" ? content.image.trim() : "";
+  const image = typeof record.image === "string" ? record.image.trim() : "";
   if (image) return image;
   return null;
 };

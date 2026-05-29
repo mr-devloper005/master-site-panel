@@ -114,8 +114,9 @@ const normalizePublicMedia = (value: unknown) => {
 
 const deriveMediaFromContent = (content: unknown) => {
   if (!content || typeof content !== "object" || Array.isArray(content)) return [];
-  const record = content as Record<string, unknown>;
-  const candidates = [record.featuredImage, record.image]
+  const normalizedEntries = Object.entries(content as Record<string, unknown>).map(([key, value]) => [key.toLowerCase(), value] as const);
+  const record = Object.fromEntries(normalizedEntries) as Record<string, unknown>;
+  const candidates = [record.featuredimage, record.image]
     .filter((value): value is string => typeof value === "string" && value.trim().length > 0)
     .map((url) => ({ url }));
   return candidates;
