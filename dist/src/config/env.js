@@ -23,6 +23,11 @@ exports.env = {
     contactEmailQueueEnabled: process.env.CONTACT_EMAIL_QUEUE_ENABLED !== "false",
     contactEmailQueueIntervalMs: toNumber(process.env.CONTACT_EMAIL_QUEUE_INTERVAL_MS, 15000),
     contactEmailQueueBatchSize: toNumber(process.env.CONTACT_EMAIL_QUEUE_BATCH_SIZE, 10),
+    openAiApiKey: process.env.OPENAI_API_KEY ?? "",
+    aiPostingOpenAiModel: process.env.AI_POSTING_OPENAI_MODEL ?? "gpt-5.1-nano",
+    openAiApiUrl: process.env.OPENAI_API_URL ?? "https://api.openai.com/v1/responses",
+    aiPostingHttpTimeoutMs: toNumber(process.env.AI_POSTING_HTTP_TIMEOUT_MS, 12000),
+    aiPostingUserAgent: process.env.AI_POSTING_USER_AGENT ?? "MasterPanel-AI-Posting/1.0",
 };
 if (!exports.env.databaseUrl) {
     throw new Error("DATABASE_URL is required in environment variables.");

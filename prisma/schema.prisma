@@ -448,3 +448,19 @@ model SmtpSettings {
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 }
+
+model AiPostingSettings {
+  id                String   @id @default("default")
+  model             String   @default("gpt-5.1-nano")
+  apiKeyCipher      String?
+  openAiApiUrl      String?
+  defaultWordCount  Int      @default(600)
+  retryOn404        Boolean  @default(true)
+  requestTimeoutMs  Int      @default(12000)
+  isEnabled         Boolean  @default(true)
+  lastTestAt        DateTime?
+  lastTestStatus    String?
+  lastTestError     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}

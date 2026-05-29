@@ -54,6 +54,7 @@ test("POST /jobs returns queued batch response", async () => {
         { taskId: "run_2", siteId: "site_2", taskKey: "listing", status: "PENDING" as const },
       ],
     }),
+    listJobs: async () => ({ data: [], meta: { page: 1, limit: 20, total: 0, totalPages: 1 } }),
     getStatus: async () => { throw new Error("not used"); },
   });
 
@@ -81,6 +82,7 @@ test("GET /jobs/:jobId returns progress and live links", async () => {
     requireWrite: authStub,
     requireRead: authStub,
     createJob: async () => { throw new Error("not used"); },
+    listJobs: async () => ({ data: [], meta: { page: 1, limit: 20, total: 0, totalPages: 1 } }),
     getStatus: async () => ({
       success: true,
       jobId: "job_123",

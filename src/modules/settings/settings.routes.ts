@@ -11,6 +11,12 @@ import {
   updateSmtpTestStatus,
   upsertSmtpSettings,
 } from "./smtp-settings-service";
+import {
+  getPublicAiPostingSettings,
+  getResolvedAiPostingSettings,
+  updateAiPostingTestStatus,
+  upsertAiPostingSettings,
+} from "./ai-posting-settings-service";
 
 const router = Router();
 
@@ -62,6 +68,101 @@ router.put(
     res.json({
       success: true,
       data: await getPublicSmtpSettings(),
+    });
+  })
+);
+
+router.post(
+  "/ai-posting/test",
+  requireApiKey("sites:write"),
+  asyncHandler(async (_req, res) => {
+    try {
+      const settings = await getResolvedAiPostingSettings();
+      if (!settings?.apiKey) {
+        throw new ApiError(400, "AI posting OpenAI key is not configured.");
+      }
+
+      const response = await fetch(settings.openAiApiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${settings.apiKey}`,
+        },
+        body: JSON.stringify({
+          model: settings.model,
+          input: "Return a JSON object with {\"ok\":true}.",
+          text: { format: { type: "json_object" } },
+          reasoning: { effort: "none" },
+        }),
+      });
+
+      if (!response.ok) {
+        const body = await response.text();
+        throw new ApiError(502, `OpenAI test failed: ${body.slice(0, 300)}`);
+      }
+
+      await updateAiPostingTestStatus("SUCCESS");
+      res.json({ success: true, data: await getPublicAiPostingSettings() });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "AI posting test failed.";
+      await updateAiPostingTestStatus("ERROR", message);
+      throw new ApiError(502, message);
+    }
+  })
+);
+
+router.get(
+  "/ai-posting",
+  requireApiKey("sites:read"),
+  asyncHandler(async (_req, res) => {
+    res.json({
+      success: true,
+      data: await getPublicAiPostingSettings(),
+    });
+  })
+);
+
+router.put(
+  "/ai-posting",
+  requireApiKey("sites:write"),
+  asyncHandler(async (req, res) => {
+    const model = String(req.body?.model || "").trim();
+    const apiKey = typeof req.body?.apiKey === "string" ? req.body.apiKey : "";
+    const openAiApiUrl = String(req.body?.openAiApiUrl || "").trim();
+    const defaultWordCount = Number(req.body?.defaultWordCount || 600);
+    const retryOn404 = req.body?.retryOn404 !== false;
+    const requestTimeoutMs = Number(req.body?.requestTimeoutMs || 12000);
+    const isEnabled = req.body?.isEnabled !== false;
+
+    if (!model) throw new ApiError(400, "AI posting model is required.");
+    if (!Number.isFinite(defaultWordCount) || defaultWordCount < 300 || defaultWordCount > 1200) {
+      throw new ApiError(400, "Default word count must be between 300 and 1200.");
+    }
+    if (!Number.isFinite(requestTimeoutMs) || requestTimeoutMs < 3000 || requestTimeoutMs > 60000) {
+      throw new ApiError(400, "Request timeout must be between 3000 and 60000 ms.");
+    }
+    if (openAiApiUrl) {
+      try {
+        const parsed = new URL(openAiApiUrl);
+        if (!/^https?:$/i.test(parsed.protocol)) throw new Error("invalid");
+      } catch {
+        throw new ApiError(400, "Valid OpenAI API URL is required.");
+      }
+    }
+
+    await upsertAiPostingSettings({
+      model,
+      apiKey,
+      openAiApiUrl,
+      defaultWordCount,
+      retryOn404,
+      requestTimeoutMs,
+      isEnabled,
+    });
+
+    res.json({
+      success: true,
+      data: await getPublicAiPostingSettings(),
     });
   })
 );

@@ -1,10 +1,13 @@
 import { ApiActivityStatus, AiPostingJobStatus, AiPostingRunStatus, Prisma } from "@prisma/client";
 
 import { prisma } from "../../config/db";
+import { env } from "../../config/env";
 import { ensureSiteAccess } from "../../middleware/auth";
 import { ApiError } from "../../utils/api-error";
 import { createPublishedPost } from "../posts/post-service";
+import type { SiteTask } from "../sites/site-contract";
 import { enforceUserPostPolicy, logApiActivity } from "../users/user-access-service";
+import { getResolvedAiPostingSettings } from "../settings/ai-posting-settings-service";
 import {
   AI_POSTING_DEFAULT_WORD_COUNT,
   buildFallbackArticleHtml,
@@ -35,11 +38,7 @@ type ResolvedTarget = {
   taskKey: string;
 };
 
-const AI_POSTING_MODEL = process.env.AI_POSTING_OPENAI_MODEL?.trim() || "gpt-5.1-nano";
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY?.trim() || "";
-const OPENAI_API_URL = process.env.OPENAI_API_URL?.trim() || "https://api.openai.com/v1/responses";
-const AI_POSTING_HTTP_TIMEOUT_MS = Math.max(3000, Number(process.env.AI_POSTING_HTTP_TIMEOUT_MS || 12000));
-const AI_POSTING_USER_AGENT = process.env.AI_POSTING_USER_AGENT?.trim() || "MasterPanel-AI-Posting/1.0";
+const AI_POSTING_USER_AGENT = env.aiPostingUserAgent;
 
 const summarizeRuns = (runs: Array<{ status: AiPostingRunStatus }>) => {
   const summary = { total: runs.length, completed: 0, pending: 0, failed: 0, processing: 0 };
@@ -60,9 +59,9 @@ const mapJobStatusFromRuns = (runs: Array<{ status: AiPostingRunStatus }>): AiPo
   return AiPostingJobStatus.PROCESSING;
 };
 
-const fetchWithTimeout = async (url: string): Promise<Response> => {
+const fetchWithTimeout = async (url: string, timeoutMs: number): Promise<Response> => {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), AI_POSTING_HTTP_TIMEOUT_MS);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
     return await fetch(url, {
       headers: {
@@ -77,26 +76,35 @@ const fetchWithTimeout = async (url: string): Promise<Response> => {
   }
 };
 
-const crawlTargetUrl = async (targetUrl: string): Promise<CrawlResult> => {
+const crawlTargetUrl = async ({
+  targetUrl,
+  retryOn404,
+  timeoutMs,
+}: {
+  targetUrl: string;
+  retryOn404: boolean;
+  timeoutMs: number;
+}): Promise<CrawlResult> => {
   let lastStatus: number | undefined;
   let lastError = "";
   let finalUrl = targetUrl;
+  const maxAttempts = retryOn404 ? 2 : 1;
 
-  for (let attempt = 1; attempt <= 2; attempt += 1) {
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     try {
-      const response = await fetchWithTimeout(targetUrl);
+      const response = await fetchWithTimeout(targetUrl, timeoutMs);
       lastStatus = response.status;
       finalUrl = response.url || targetUrl;
 
       if (response.status === 404) {
         lastError = "Given URL returned 404 and could not be reached after retry.";
-        if (attempt === 1) continue;
+        if (attempt === 1 && retryOn404) continue;
         return { ok: false, finalUrl, httpStatus: 404, errorMessage: lastError, attempts: attempt };
       }
 
       if (!response.ok) {
         lastError = `Given URL not reached. HTTP ${response.status}.`;
-        if (attempt === 1 && response.status >= 500) continue;
+        if (attempt === 1 && retryOn404 && response.status >= 500) continue;
         return { ok: false, finalUrl, httpStatus: response.status, errorMessage: lastError, attempts: attempt };
       }
 
@@ -104,7 +112,7 @@ const crawlTargetUrl = async (targetUrl: string): Promise<CrawlResult> => {
       return { ok: true, finalUrl, httpStatus: response.status, html, attempts: attempt };
     } catch (error) {
       lastError = "Given URL not reached.";
-      if (attempt === 2) {
+      if (attempt === maxAttempts) {
         return {
           ok: false,
           finalUrl,
@@ -116,11 +124,8 @@ const crawlTargetUrl = async (targetUrl: string): Promise<CrawlResult> => {
     }
   }
 
-  return { ok: false, finalUrl, httpStatus: lastStatus, errorMessage: lastError || "Given URL not reached.", attempts: 2 };
+  return { ok: false, finalUrl, httpStatus: lastStatus, errorMessage: lastError || "Given URL not reached.", attempts: maxAttempts };
 };
-
-const escapeHtml = (value: string) =>
-  value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 const buildGenerationPrompt = ({
   brandName,
@@ -163,26 +168,32 @@ const callOpenAiForContent = async ({
   extracted,
   taskKey,
   siteName,
+  model,
+  apiKey,
+  openAiApiUrl,
 }: {
   brandName: string | null;
   targetUrl: string;
   extracted: ReturnType<typeof extractPageData>;
   taskKey: string;
   siteName: string;
+  model: string;
+  apiKey: string;
+  openAiApiUrl: string;
 }) => {
-  if (!OPENAI_API_KEY) {
+  if (!apiKey) {
     throw new ApiError(500, "OPENAI_API_KEY is not configured.");
   }
 
   const prompt = buildGenerationPrompt({ brandName, targetUrl, extracted, taskKey, siteName });
-  const response = await fetch(OPENAI_API_URL, {
+  const response = await fetch(openAiApiUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${OPENAI_API_KEY}`,
+      Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: AI_POSTING_MODEL,
+      model,
       input: prompt,
       text: { format: { type: "json_object" } },
       reasoning: { effort: "none" },
@@ -359,6 +370,14 @@ export const createAiPostingJob = async ({
     throw new ApiError(400, validated.message);
   }
 
+  const settings = await getResolvedAiPostingSettings();
+  if (!settings?.isEnabled) {
+    throw new ApiError(400, "AI posting is disabled.");
+  }
+  if (!settings.apiKey) {
+    throw new ApiError(400, "AI posting OpenAI key is not configured.");
+  }
+
   const resolvedTargets = await resolveTargets({ apiKey, targets: validated.value.targets });
   const job = await prisma.aiPostingJob.create({
     data: {
@@ -366,11 +385,14 @@ export const createAiPostingJob = async ({
       userId: apiKey.userId || null,
       targetUrl: validated.value.targetUrl,
       brandName: validated.value.brandName,
-      model: AI_POSTING_MODEL,
+      model: settings.model,
       language: "en",
-      wordCount: AI_POSTING_DEFAULT_WORD_COUNT,
+      wordCount: settings.defaultWordCount || AI_POSTING_DEFAULT_WORD_COUNT,
       metadata: {
         requestMeta: requestMeta || {},
+        source: settings.source,
+        retryOn404: settings.retryOn404,
+        requestTimeoutMs: settings.requestTimeoutMs,
       } as Prisma.InputJsonValue,
       runs: {
         create: resolvedTargets.map((target) => ({
@@ -469,6 +491,92 @@ export const getAiPostingJobStatus = async ({
   };
 };
 
+export const listAiPostingJobs = async ({
+  apiKey,
+  page = 1,
+  limit = 20,
+  status,
+  search,
+}: {
+  apiKey: ApiKeyContext;
+  page?: number;
+  limit?: number;
+  status?: string;
+  search?: string;
+}) => {
+  const safePage = Math.max(1, Number(page || 1));
+  const safeLimit = Math.min(100, Math.max(1, Number(limit || 20)));
+  const where: Prisma.AiPostingJobWhereInput = {};
+
+  if (!apiKey.scopes.includes("*")) {
+    where.apiKeyId = apiKey.id;
+  }
+
+  if (status && Object.values(AiPostingJobStatus).includes(status as AiPostingJobStatus)) {
+    where.status = status as AiPostingJobStatus;
+  }
+
+  const trimmedSearch = String(search || "").trim();
+  if (trimmedSearch) {
+    where.OR = [
+      { targetUrl: { contains: trimmedSearch, mode: "insensitive" } },
+      { brandName: { contains: trimmedSearch, mode: "insensitive" } },
+      { runs: { some: { site: { OR: [{ name: { contains: trimmedSearch, mode: "insensitive" } }, { code: { contains: trimmedSearch, mode: "insensitive" } }] } } } },
+    ];
+  }
+
+  const [total, jobs] = await Promise.all([
+    prisma.aiPostingJob.count({ where }),
+    prisma.aiPostingJob.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip: (safePage - 1) * safeLimit,
+      take: safeLimit,
+      include: {
+        runs: {
+          include: {
+            site: { select: { id: true, code: true, name: true } },
+          },
+          orderBy: { createdAt: "asc" },
+        },
+      },
+    }),
+  ]);
+
+  return {
+    data: jobs.map((job) => ({
+      jobId: job.id,
+      status: job.status,
+      targetUrl: job.targetUrl,
+      finalUrl: job.finalUrl,
+      brandName: job.brandName,
+      model: job.model,
+      fallbackUsed: job.fallbackUsed,
+      createdAt: job.createdAt,
+      startedAt: job.startedAt,
+      finishedAt: job.finishedAt,
+      message: job.errorMessage || null,
+      summary: summarizeRuns(job.runs),
+      runs: job.runs.map((run) => ({
+        taskId: run.id,
+        siteId: run.siteId,
+        siteCode: run.site.code,
+        siteName: run.site.name,
+        taskKey: run.taskKey,
+        status: run.status,
+        liveUrl: run.liveUrl,
+        message: run.errorMessage || null,
+      })),
+    })),
+    meta: {
+      page: safePage,
+      limit: safeLimit,
+      total,
+      totalPages: Math.max(1, Math.ceil(total / safeLimit)),
+    },
+  };
+};
+
 export const processAiPostingJob = async (jobId: string) => {
   const job = await prisma.aiPostingJob.findUnique({
     where: { id: jobId },
@@ -487,6 +595,28 @@ export const processAiPostingJob = async (jobId: string) => {
     return;
   }
 
+  const settings = await getResolvedAiPostingSettings();
+  if (!settings?.apiKey) {
+    await prisma.aiPostingJob.update({
+      where: { id: jobId },
+      data: {
+        status: AiPostingJobStatus.FAILED,
+        errorMessage: "OPENAI_API_KEY is not configured.",
+        finishedAt: new Date(),
+      },
+    });
+
+    await prisma.aiPostingRun.updateMany({
+      where: { jobId },
+      data: {
+        status: AiPostingRunStatus.FAILED,
+        errorMessage: "OPENAI_API_KEY is not configured.",
+        finishedAt: new Date(),
+      },
+    });
+    return;
+  }
+
   await prisma.aiPostingJob.update({
     where: { id: jobId },
     data: {
@@ -495,7 +625,11 @@ export const processAiPostingJob = async (jobId: string) => {
     },
   });
 
-  const crawl = await crawlTargetUrl(job.targetUrl);
+  const crawl = await crawlTargetUrl({
+    targetUrl: job.targetUrl,
+    retryOn404: settings.retryOn404,
+    timeoutMs: settings.requestTimeoutMs,
+  });
 
   if (!crawl.ok || !crawl.html) {
     await prisma.aiPostingJob.update({
@@ -559,9 +693,12 @@ export const processAiPostingJob = async (jobId: string) => {
               brandName: job.brandName,
               targetUrl: crawl.finalUrl || job.targetUrl,
               extracted,
-              taskKey: run.taskKey,
-              siteName: run.site.name,
-            }),
+            taskKey: run.taskKey,
+            siteName: run.site.name,
+            model: job.model || settings.model,
+            apiKey: settings.apiKey,
+            openAiApiUrl: settings.openAiApiUrl,
+          }),
             targetUrl: crawl.finalUrl || job.targetUrl,
             brandName: job.brandName,
           });
@@ -579,7 +716,7 @@ export const processAiPostingJob = async (jobId: string) => {
         media: generated.media,
         tags: generated.tags,
         authorName: job.brandName || run.site.name,
-        requestedTask: run.taskKey as never,
+        requestedTask: run.taskKey as SiteTask,
       });
 
       await prisma.aiPostingRun.update({
@@ -621,4 +758,3 @@ export const processAiPostingJob = async (jobId: string) => {
     },
   });
 };
-

@@ -21,6 +21,7 @@ const Analytics = lazy(() => import("./pages/Analytics"));
 const Seo = lazy(() => import("./pages/Seo"));
 const Indexing = lazy(() => import("./pages/Indexing"));
 const Settings = lazy(() => import("./pages/Settings"));
+const AiPosting = lazy(() => import("./pages/AiPosting"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const ProtectedRoutes = () => {
@@ -61,6 +62,7 @@ export default function App() {
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/seo" element={<Seo />} />
             <Route path="/indexing" element={<Indexing />} />
+            <Route path="/ai-posting" element={<AiPosting />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
           <Route path="*" element={<NotFound />} />

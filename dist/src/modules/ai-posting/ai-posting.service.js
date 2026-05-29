@@ -1,18 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.processAiPostingJob = exports.getAiPostingJobStatus = exports.createAiPostingJob = void 0;
+exports.processAiPostingJob = exports.listAiPostingJobs = exports.getAiPostingJobStatus = exports.createAiPostingJob = void 0;
 const client_1 = require("@prisma/client");
 const db_1 = require("../../config/db");
+const env_1 = require("../../config/env");
 const auth_1 = require("../../middleware/auth");
 const api_error_1 = require("../../utils/api-error");
 const post_service_1 = require("../posts/post-service");
 const user_access_service_1 = require("../users/user-access-service");
+const ai_posting_settings_service_1 = require("../settings/ai-posting-settings-service");
 const ai_posting_utils_1 = require("./ai-posting.utils");
-const AI_POSTING_MODEL = process.env.AI_POSTING_OPENAI_MODEL?.trim() || "gpt-5.1-nano";
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY?.trim() || "";
-const OPENAI_API_URL = process.env.OPENAI_API_URL?.trim() || "https://api.openai.com/v1/responses";
-const AI_POSTING_HTTP_TIMEOUT_MS = Math.max(3000, Number(process.env.AI_POSTING_HTTP_TIMEOUT_MS || 12000));
-const AI_POSTING_USER_AGENT = process.env.AI_POSTING_USER_AGENT?.trim() || "MasterPanel-AI-Posting/1.0";
+const AI_POSTING_USER_AGENT = env_1.env.aiPostingUserAgent;
 const summarizeRuns = (runs) => {
     const summary = { total: runs.length, completed: 0, pending: 0, failed: 0, processing: 0 };
     for (const run of runs) {
@@ -37,9 +35,9 @@ const mapJobStatusFromRuns = (runs) => {
         return client_1.AiPostingJobStatus.PARTIAL;
     return client_1.AiPostingJobStatus.PROCESSING;
 };
-const fetchWithTimeout = async (url) => {
+const fetchWithTimeout = async (url, timeoutMs) => {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), AI_POSTING_HTTP_TIMEOUT_MS);
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
     try {
         return await fetch(url, {
             headers: {
@@ -54,24 +52,25 @@ const fetchWithTimeout = async (url) => {
         clearTimeout(timeout);
     }
 };
-const crawlTargetUrl = async (targetUrl) => {
+const crawlTargetUrl = async ({ targetUrl, retryOn404, timeoutMs, }) => {
     let lastStatus;
     let lastError = "";
     let finalUrl = targetUrl;
-    for (let attempt = 1; attempt <= 2; attempt += 1) {
+    const maxAttempts = retryOn404 ? 2 : 1;
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
         try {
-            const response = await fetchWithTimeout(targetUrl);
+            const response = await fetchWithTimeout(targetUrl, timeoutMs);
             lastStatus = response.status;
             finalUrl = response.url || targetUrl;
             if (response.status === 404) {
                 lastError = "Given URL returned 404 and could not be reached after retry.";
-                if (attempt === 1)
+                if (attempt === 1 && retryOn404)
                     continue;
                 return { ok: false, finalUrl, httpStatus: 404, errorMessage: lastError, attempts: attempt };
             }
             if (!response.ok) {
                 lastError = `Given URL not reached. HTTP ${response.status}.`;
-                if (attempt === 1 && response.status >= 500)
+                if (attempt === 1 && retryOn404 && response.status >= 500)
                     continue;
                 return { ok: false, finalUrl, httpStatus: response.status, errorMessage: lastError, attempts: attempt };
             }
@@ -80,7 +79,7 @@ const crawlTargetUrl = async (targetUrl) => {
         }
         catch (error) {
             lastError = "Given URL not reached.";
-            if (attempt === 2) {
+            if (attempt === maxAttempts) {
                 return {
                     ok: false,
                     finalUrl,
@@ -91,9 +90,8 @@ const crawlTargetUrl = async (targetUrl) => {
             }
         }
     }
-    return { ok: false, finalUrl, httpStatus: lastStatus, errorMessage: lastError || "Given URL not reached.", attempts: 2 };
+    return { ok: false, finalUrl, httpStatus: lastStatus, errorMessage: lastError || "Given URL not reached.", attempts: maxAttempts };
 };
-const escapeHtml = (value) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const buildGenerationPrompt = ({ brandName, targetUrl, extracted, taskKey, siteName, }) => {
     const brand = brandName || extracted.h1 || extracted.title || siteName;
     return [
@@ -116,19 +114,19 @@ const buildGenerationPrompt = ({ brandName, targetUrl, extracted, taskKey, siteN
         `Extracted content: ${extracted.contentText.slice(0, 6000) || "Limited source content available."}`,
     ].join("\n");
 };
-const callOpenAiForContent = async ({ brandName, targetUrl, extracted, taskKey, siteName, }) => {
-    if (!OPENAI_API_KEY) {
+const callOpenAiForContent = async ({ brandName, targetUrl, extracted, taskKey, siteName, model, apiKey, openAiApiUrl, }) => {
+    if (!apiKey) {
         throw new api_error_1.ApiError(500, "OPENAI_API_KEY is not configured.");
     }
     const prompt = buildGenerationPrompt({ brandName, targetUrl, extracted, taskKey, siteName });
-    const response = await fetch(OPENAI_API_URL, {
+    const response = await fetch(openAiApiUrl, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${OPENAI_API_KEY}`,
+            Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-            model: AI_POSTING_MODEL,
+            model,
             input: prompt,
             text: { format: { type: "json_object" } },
             reasoning: { effort: "none" },
@@ -254,6 +252,13 @@ const createAiPostingJob = async ({ apiKey, payload, requestMeta, }) => {
     if (!validated.ok) {
         throw new api_error_1.ApiError(400, validated.message);
     }
+    const settings = await (0, ai_posting_settings_service_1.getResolvedAiPostingSettings)();
+    if (!settings?.isEnabled) {
+        throw new api_error_1.ApiError(400, "AI posting is disabled.");
+    }
+    if (!settings.apiKey) {
+        throw new api_error_1.ApiError(400, "AI posting OpenAI key is not configured.");
+    }
     const resolvedTargets = await resolveTargets({ apiKey, targets: validated.value.targets });
     const job = await db_1.prisma.aiPostingJob.create({
         data: {
@@ -261,11 +266,14 @@ const createAiPostingJob = async ({ apiKey, payload, requestMeta, }) => {
             userId: apiKey.userId || null,
             targetUrl: validated.value.targetUrl,
             brandName: validated.value.brandName,
-            model: AI_POSTING_MODEL,
+            model: settings.model,
             language: "en",
-            wordCount: ai_posting_utils_1.AI_POSTING_DEFAULT_WORD_COUNT,
+            wordCount: settings.defaultWordCount || ai_posting_utils_1.AI_POSTING_DEFAULT_WORD_COUNT,
             metadata: {
                 requestMeta: requestMeta || {},
+                source: settings.source,
+                retryOn404: settings.retryOn404,
+                requestTimeoutMs: settings.requestTimeoutMs,
             },
             runs: {
                 create: resolvedTargets.map((target) => ({
@@ -352,6 +360,75 @@ const getAiPostingJobStatus = async ({ jobId, apiKey, }) => {
     };
 };
 exports.getAiPostingJobStatus = getAiPostingJobStatus;
+const listAiPostingJobs = async ({ apiKey, page = 1, limit = 20, status, search, }) => {
+    const safePage = Math.max(1, Number(page || 1));
+    const safeLimit = Math.min(100, Math.max(1, Number(limit || 20)));
+    const where = {};
+    if (!apiKey.scopes.includes("*")) {
+        where.apiKeyId = apiKey.id;
+    }
+    if (status && Object.values(client_1.AiPostingJobStatus).includes(status)) {
+        where.status = status;
+    }
+    const trimmedSearch = String(search || "").trim();
+    if (trimmedSearch) {
+        where.OR = [
+            { targetUrl: { contains: trimmedSearch, mode: "insensitive" } },
+            { brandName: { contains: trimmedSearch, mode: "insensitive" } },
+            { runs: { some: { site: { OR: [{ name: { contains: trimmedSearch, mode: "insensitive" } }, { code: { contains: trimmedSearch, mode: "insensitive" } }] } } } },
+        ];
+    }
+    const [total, jobs] = await Promise.all([
+        db_1.prisma.aiPostingJob.count({ where }),
+        db_1.prisma.aiPostingJob.findMany({
+            where,
+            orderBy: { createdAt: "desc" },
+            skip: (safePage - 1) * safeLimit,
+            take: safeLimit,
+            include: {
+                runs: {
+                    include: {
+                        site: { select: { id: true, code: true, name: true } },
+                    },
+                    orderBy: { createdAt: "asc" },
+                },
+            },
+        }),
+    ]);
+    return {
+        data: jobs.map((job) => ({
+            jobId: job.id,
+            status: job.status,
+            targetUrl: job.targetUrl,
+            finalUrl: job.finalUrl,
+            brandName: job.brandName,
+            model: job.model,
+            fallbackUsed: job.fallbackUsed,
+            createdAt: job.createdAt,
+            startedAt: job.startedAt,
+            finishedAt: job.finishedAt,
+            message: job.errorMessage || null,
+            summary: summarizeRuns(job.runs),
+            runs: job.runs.map((run) => ({
+                taskId: run.id,
+                siteId: run.siteId,
+                siteCode: run.site.code,
+                siteName: run.site.name,
+                taskKey: run.taskKey,
+                status: run.status,
+                liveUrl: run.liveUrl,
+                message: run.errorMessage || null,
+            })),
+        })),
+        meta: {
+            page: safePage,
+            limit: safeLimit,
+            total,
+            totalPages: Math.max(1, Math.ceil(total / safeLimit)),
+        },
+    };
+};
+exports.listAiPostingJobs = listAiPostingJobs;
 const processAiPostingJob = async (jobId) => {
     const job = await db_1.prisma.aiPostingJob.findUnique({
         where: { id: jobId },
@@ -368,6 +445,26 @@ const processAiPostingJob = async (jobId) => {
     if (!job || !job.apiKey) {
         return;
     }
+    const settings = await (0, ai_posting_settings_service_1.getResolvedAiPostingSettings)();
+    if (!settings?.apiKey) {
+        await db_1.prisma.aiPostingJob.update({
+            where: { id: jobId },
+            data: {
+                status: client_1.AiPostingJobStatus.FAILED,
+                errorMessage: "OPENAI_API_KEY is not configured.",
+                finishedAt: new Date(),
+            },
+        });
+        await db_1.prisma.aiPostingRun.updateMany({
+            where: { jobId },
+            data: {
+                status: client_1.AiPostingRunStatus.FAILED,
+                errorMessage: "OPENAI_API_KEY is not configured.",
+                finishedAt: new Date(),
+            },
+        });
+        return;
+    }
     await db_1.prisma.aiPostingJob.update({
         where: { id: jobId },
         data: {
@@ -375,7 +472,11 @@ const processAiPostingJob = async (jobId) => {
             startedAt: new Date(),
         },
     });
-    const crawl = await crawlTargetUrl(job.targetUrl);
+    const crawl = await crawlTargetUrl({
+        targetUrl: job.targetUrl,
+        retryOn404: settings.retryOn404,
+        timeoutMs: settings.requestTimeoutMs,
+    });
     if (!crawl.ok || !crawl.html) {
         await db_1.prisma.aiPostingJob.update({
             where: { id: jobId },
@@ -435,6 +536,9 @@ const processAiPostingJob = async (jobId) => {
                         extracted,
                         taskKey: run.taskKey,
                         siteName: run.site.name,
+                        model: job.model || settings.model,
+                        apiKey: settings.apiKey,
+                        openAiApiUrl: settings.openAiApiUrl,
                     }),
                     targetUrl: crawl.finalUrl || job.targetUrl,
                     brandName: job.brandName,

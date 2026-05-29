@@ -55,6 +55,7 @@ const authStub = (req, _res, next) => {
                 { taskId: "run_2", siteId: "site_2", taskKey: "listing", status: "PENDING" },
             ],
         }),
+        listJobs: async () => ({ data: [], meta: { page: 1, limit: 20, total: 0, totalPages: 1 } }),
         getStatus: async () => { throw new Error("not used"); },
     });
     try {
@@ -81,6 +82,7 @@ const authStub = (req, _res, next) => {
         requireWrite: authStub,
         requireRead: authStub,
         createJob: async () => { throw new Error("not used"); },
+        listJobs: async () => ({ data: [], meta: { page: 1, limit: 20, total: 0, totalPages: 1 } }),
         getStatus: async () => ({
             success: true,
             jobId: "job_123",

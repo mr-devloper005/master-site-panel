@@ -720,6 +720,47 @@ export const testSmtpSettings = async (toEmail) => {
   return response.data;
 };
 
+export const fetchAiPostingSettings = async () => {
+  const response = await request("/api/v1/settings/ai-posting");
+  return response.data;
+};
+
+export const updateAiPostingSettings = async (payload) => {
+  const response = await request("/api/v1/settings/ai-posting", {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+  return response.data;
+};
+
+export const testAiPostingSettings = async () => {
+  const response = await request("/api/v1/settings/ai-posting/test", {
+    method: "POST",
+    body: JSON.stringify({}),
+  });
+  return response.data;
+};
+
+export const createAiPostingJob = async (payload) => {
+  return request("/api/v1/ai-posting/jobs", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+};
+
+export const fetchAiPostingJobStatus = async (jobId) => {
+  return request(`/api/v1/ai-posting/jobs/${jobId}`);
+};
+
+export const fetchAiPostingJobs = async (options = {}) => {
+  const query = new URLSearchParams();
+  query.set("page", String(options.page || 1));
+  query.set("limit", String(options.limit || 20));
+  if (options.status) query.set("status", options.status);
+  if (options.search) query.set("search", options.search);
+  return request(`/api/v1/ai-posting/jobs?${query.toString()}`);
+};
+
 export const runSiteIndexingInspections = async (siteId, limit = 20) => {
   const response = await request(`/api/v1/sites/${siteId}/indexing/run-inspections`, {
     method: "POST",

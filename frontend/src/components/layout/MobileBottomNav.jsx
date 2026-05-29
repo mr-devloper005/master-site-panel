@@ -1,4 +1,4 @@
-import { BarChart3, Files, Globe2, Home, ScanSearch, KeyRound, SearchCheck, Settings } from "lucide-react";
+import { BarChart3, Files, Globe2, Home, ScanSearch, KeyRound, SearchCheck, Settings, Bot } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 const tabs = [
@@ -9,13 +9,14 @@ const tabs = [
   { to: "/analytics", label: "Charts", icon: BarChart3 },
   { to: "/seo", label: "SEO", icon: ScanSearch },
   { to: "/indexing", label: "Index", icon: SearchCheck },
+  { to: "/ai-posting", label: "AI", icon: Bot },
   { to: "/settings", label: "Settings", icon: Settings }
 ];
 
 export default function MobileBottomNav() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-[var(--border-color)] bg-[var(--bg-secondary)] lg:hidden">
-      <ul className="grid grid-cols-7">
+      <ul className="grid grid-cols-8">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           return (

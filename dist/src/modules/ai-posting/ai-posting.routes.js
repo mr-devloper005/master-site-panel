@@ -10,6 +10,7 @@ const defaultDeps = {
     requireRead: (0, auth_1.requireApiKey)("posts:read"),
     createJob: ai_posting_service_1.createAiPostingJob,
     getStatus: ai_posting_service_1.getAiPostingJobStatus,
+    listJobs: ai_posting_service_1.listAiPostingJobs,
 };
 const createAiPostingRouter = (deps = defaultDeps) => {
     const router = (0, express_1.Router)();
@@ -38,6 +39,22 @@ const createAiPostingRouter = (deps = defaultDeps) => {
             runs: result.runs,
             message: "AI posting job created successfully.",
         });
+    }));
+    router.get("/jobs", deps.requireRead, (0, async_handler_1.asyncHandler)(async (req, res) => {
+        const apiKey = req.apiKey;
+        const result = await deps.listJobs({
+            apiKey: {
+                id: apiKey.id,
+                scopes: apiKey.scopes,
+                userId: apiKey.userId,
+                name: apiKey.name,
+            },
+            page: Number(req.query.page || 1),
+            limit: Number(req.query.limit || 20),
+            status: typeof req.query.status === "string" ? req.query.status : "",
+            search: typeof req.query.search === "string" ? req.query.search : "",
+        });
+        res.json({ success: true, ...result });
     }));
     router.get("/jobs/:jobId", deps.requireRead, (0, async_handler_1.asyncHandler)(async (req, res) => {
         const apiKey = req.apiKey;
