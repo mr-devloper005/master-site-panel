@@ -122,10 +122,52 @@ const deriveMediaFromContent = (content: unknown) => {
   return candidates;
 };
 
+const normalizePublicContent = (content: unknown, media: Array<{ url?: unknown }> = [], summary?: unknown) => {
+  if (!content || typeof content !== "object" || Array.isArray(content)) return content;
+
+  const record = { ...(content as Record<string, unknown>) };
+  const firstMediaUrl = media.find((item) => typeof item?.url === "string" && item.url.trim())?.url as string | undefined;
+
+  const featuredImage = typeof record.featuredImage === "string" && record.featuredImage.trim()
+    ? record.featuredImage.trim()
+    : typeof record.featuredimage === "string" && record.featuredimage.trim()
+      ? record.featuredimage.trim()
+      : undefined;
+  const image = typeof record.image === "string" && record.image.trim()
+    ? record.image.trim()
+    : undefined;
+
+  const resolvedImage = featuredImage || image || firstMediaUrl;
+
+  if (resolvedImage) {
+    record.featuredImage = resolvedImage;
+    record.image = resolvedImage;
+    if (!Array.isArray(record.images) || !record.images.length) {
+      record.images = [resolvedImage];
+    }
+  } else {
+    delete record.featuredImage;
+    delete record.featuredimage;
+    delete record.image;
+  }
+
+  if ((record.brandName == null || record.brandName === "") && (record.brandname == null || record.brandname === "")) {
+    delete record.brandName;
+    delete record.brandname;
+  }
+
+  if ((record.excerpt == null || record.excerpt === "") && typeof summary === "string" && summary.trim()) {
+    record.excerpt = summary.trim();
+  }
+
+  return record;
+};
+
 const normalizePublicPost = <T extends typeof publicPostSelect extends infer _X ? Record<string, unknown> : Record<string, unknown>>(post: T) => {
   const normalizedMedia = normalizePublicMedia(post.media);
   return {
     ...post,
+    content: normalizePublicContent(post.content, normalizedMedia as Array<{ url?: unknown }>, post.summary),
     media: normalizedMedia.length ? normalizedMedia : deriveMediaFromContent(post.content),
   };
 };

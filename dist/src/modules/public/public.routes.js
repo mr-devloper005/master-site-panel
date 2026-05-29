@@ -86,6 +86,76 @@ const resolvePostType = (content, tags) => {
     const firstTag = tags.find((tag) => typeof tag === "string" && tag.trim());
     return firstTag ? firstTag.trim().toLowerCase() : "";
 };
+const normalizePublicMedia = (value) => {
+    if (Array.isArray(value))
+        return value;
+    if (!value || typeof value !== "object")
+        return [];
+    const record = value;
+    const numericKeys = Object.keys(record)
+        .filter((key) => /^\d+$/.test(key))
+        .sort((a, b) => Number(a) - Number(b));
+    if (numericKeys.length > 0) {
+        return numericKeys.map((key) => record[key]).filter(Boolean);
+    }
+    if (typeof record.url === "string" && record.url.trim()) {
+        return [record];
+    }
+    return [];
+};
+const deriveMediaFromContent = (content) => {
+    if (!content || typeof content !== "object" || Array.isArray(content))
+        return [];
+    const normalizedEntries = Object.entries(content).map(([key, value]) => [key.toLowerCase(), value]);
+    const record = Object.fromEntries(normalizedEntries);
+    const candidates = [record.featuredimage, record.image]
+        .filter((value) => typeof value === "string" && value.trim().length > 0)
+        .map((url) => ({ url }));
+    return candidates;
+};
+const normalizePublicContent = (content, media = [], summary) => {
+    if (!content || typeof content !== "object" || Array.isArray(content))
+        return content;
+    const record = { ...content };
+    const firstMediaUrl = media.find((item) => typeof item?.url === "string" && item.url.trim())?.url;
+    const featuredImage = typeof record.featuredImage === "string" && record.featuredImage.trim()
+        ? record.featuredImage.trim()
+        : typeof record.featuredimage === "string" && record.featuredimage.trim()
+            ? record.featuredimage.trim()
+            : undefined;
+    const image = typeof record.image === "string" && record.image.trim()
+        ? record.image.trim()
+        : undefined;
+    const resolvedImage = featuredImage || image || firstMediaUrl;
+    if (resolvedImage) {
+        record.featuredImage = resolvedImage;
+        record.image = resolvedImage;
+        if (!Array.isArray(record.images) || !record.images.length) {
+            record.images = [resolvedImage];
+        }
+    }
+    else {
+        delete record.featuredImage;
+        delete record.featuredimage;
+        delete record.image;
+    }
+    if ((record.brandName == null || record.brandName === "") && (record.brandname == null || record.brandname === "")) {
+        delete record.brandName;
+        delete record.brandname;
+    }
+    if ((record.excerpt == null || record.excerpt === "") && typeof summary === "string" && summary.trim()) {
+        record.excerpt = summary.trim();
+    }
+    return record;
+};
+const normalizePublicPost = (post) => {
+    const normalizedMedia = normalizePublicMedia(post.media);
+    return {
+        ...post,
+        content: normalizePublicContent(post.content, normalizedMedia, post.summary),
+        media: normalizedMedia.length ? normalizedMedia : deriveMediaFromContent(post.content),
+    };
+};
 const getPublicSite = async (siteCode) => {
     const key = `site:${siteCode}`;
     const cached = cacheGet(key);
@@ -200,7 +270,7 @@ router.get("/:siteCode/feed", (0, async_handler_1.asyncHandler)(async (req, res)
         data: {
             site: sitePayload.sanitizedSite,
             blueprint: sitePayload.blueprint,
-            posts,
+            posts: posts.map((post) => normalizePublicPost(post)),
             pagination: {
                 page,
                 limit,
@@ -286,7 +356,7 @@ router.get("/:siteCode/post/:slug", (0, async_handler_1.asyncHandler)(async (req
         data: {
             site: sitePayload.sanitizedSite,
             blueprint: sitePayload.blueprint,
-            post: legacyPost,
+            post: normalizePublicPost(legacyPost),
         },
     });
 }));
