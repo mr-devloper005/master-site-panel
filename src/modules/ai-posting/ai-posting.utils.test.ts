@@ -81,6 +81,7 @@ test("buildFallbackArticleHtml includes hyperlink and conclusion", () => {
   });
 
   assert.match(html, /<a href="https:\/\/example\.com\/page"/);
+  assert.match(html, /<h2>What Aidteck Offers<\/h2>/);
+  assert.match(html, /<h2>Why This Page Is Useful<\/h2>/);
   assert.match(html, /Conclusion:/);
 });
-
