@@ -162,6 +162,34 @@ const buildGenerationPrompt = ({
   ].join("\n");
 };
 
+const extractResponseText = (payload: Record<string, unknown>): string => {
+  const direct = typeof payload.output_text === "string" ? payload.output_text.trim() : "";
+  if (direct) return direct;
+
+  const output = Array.isArray(payload.output) ? payload.output : [];
+  const chunks: string[] = [];
+
+  for (const item of output) {
+    if (!item || typeof item !== "object") continue;
+    const content = Array.isArray((item as { content?: unknown }).content)
+      ? (item as { content: Array<Record<string, unknown>> }).content
+      : [];
+
+    for (const entry of content) {
+      if (!entry || typeof entry !== "object") continue;
+      if (typeof entry.text === "string" && entry.text.trim()) {
+        chunks.push(entry.text.trim());
+      }
+      const nestedText = (entry as { output_text?: string }).output_text;
+      if (typeof nestedText === "string" && nestedText.trim()) {
+        chunks.push(nestedText.trim());
+      }
+    }
+  }
+
+  return chunks.join("\n").trim();
+};
+
 const callOpenAiForContent = async ({
   brandName,
   targetUrl,
@@ -195,7 +223,30 @@ const callOpenAiForContent = async ({
     body: JSON.stringify({
       model,
       input: prompt,
-      text: { format: { type: "json_object" } },
+      text: {
+        format: {
+          type: "json_schema",
+          name: "ai_posting_payload",
+          strict: true,
+          schema: {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+              title: { type: "string" },
+              summary: { type: "string" },
+              html: { type: "string" },
+              tags: {
+                type: "array",
+                items: { type: "string" },
+              },
+              featuredImage: {
+                anyOf: [{ type: "string" }, { type: "null" }],
+              },
+            },
+            required: ["title", "summary", "html", "tags", "featuredImage"],
+          },
+        },
+      },
       reasoning: { effort: "none" },
     }),
   });
@@ -205,8 +256,8 @@ const callOpenAiForContent = async ({
     throw new ApiError(502, `OpenAI generation failed: ${body.slice(0, 400)}`);
   }
 
-  const payload = await response.json() as { output_text?: string };
-  const raw = String(payload.output_text || "").trim();
+  const payload = await response.json() as Record<string, unknown>;
+  const raw = extractResponseText(payload);
   if (!raw) {
     throw new ApiError(502, "OpenAI generation returned empty output.");
   }
