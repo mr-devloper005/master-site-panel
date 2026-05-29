@@ -13,7 +13,7 @@ import {
 } from "../utils/api";
 
 const emptySettings = {
-  model: "gpt-5.1-nano",
+  model: "gpt-5-nano",
   openAiApiUrl: "https://api.openai.com/v1/responses",
   apiKey: "",
   defaultWordCount: 600,

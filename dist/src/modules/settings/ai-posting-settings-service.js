@@ -9,6 +9,15 @@ const env_1 = require("../../config/env");
 const db_1 = require("../../config/db");
 const CIPHER_ALGORITHM = "aes-256-gcm";
 const AI_POSTING_SETTINGS_ID = "default";
+const normalizeModel = (value) => {
+    const raw = String(value || "").trim();
+    if (!raw)
+        return env_1.env.aiPostingOpenAiModel;
+    const lower = raw.toLowerCase();
+    if (lower === "gpt-5.1-nano")
+        return "gpt-5-nano";
+    return raw;
+};
 const getCipherSecret = () => {
     const secret = process.env.AI_POSTING_SETTINGS_SECRET ||
         process.env.SMTP_SETTINGS_SECRET ||
@@ -56,7 +65,7 @@ const getResolvedAiPostingSettings = async () => {
             return {
                 source: "database",
                 isEnabled: dbSettings.isEnabled,
-                model: dbSettings.model || env_1.env.aiPostingOpenAiModel,
+                model: normalizeModel(dbSettings.model),
                 apiKey,
                 openAiApiUrl: normalizeApiUrl(dbSettings.openAiApiUrl),
                 defaultWordCount: Math.max(300, Math.min(1200, dbSettings.defaultWordCount || 600)),
@@ -69,7 +78,7 @@ const getResolvedAiPostingSettings = async () => {
         return {
             source: "environment",
             isEnabled: true,
-            model: env_1.env.aiPostingOpenAiModel,
+            model: normalizeModel(env_1.env.aiPostingOpenAiModel),
             apiKey: env_1.env.openAiApiKey,
             openAiApiUrl: env_1.env.openAiApiUrl,
             defaultWordCount: 600,
@@ -88,7 +97,7 @@ const getPublicAiPostingSettings = async () => {
             source: resolved?.source || "environment",
             configured: Boolean(resolved?.apiKey),
             isEnabled: resolved?.isEnabled ?? true,
-            model: resolved?.model || env_1.env.aiPostingOpenAiModel,
+            model: normalizeModel(resolved?.model || env_1.env.aiPostingOpenAiModel),
             openAiApiUrl: resolved?.openAiApiUrl || env_1.env.openAiApiUrl,
             defaultWordCount: resolved?.defaultWordCount || 600,
             retryOn404: resolved?.retryOn404 ?? true,
@@ -104,7 +113,7 @@ const getPublicAiPostingSettings = async () => {
         source: "database",
         configured: Boolean(resolved?.apiKey),
         isEnabled: dbSettings.isEnabled,
-        model: dbSettings.model,
+        model: normalizeModel(dbSettings.model),
         openAiApiUrl: normalizeApiUrl(dbSettings.openAiApiUrl),
         defaultWordCount: dbSettings.defaultWordCount,
         retryOn404: dbSettings.retryOn404,
@@ -126,7 +135,7 @@ const upsertAiPostingSettings = async (input) => {
         where: { id: AI_POSTING_SETTINGS_ID },
         create: {
             id: AI_POSTING_SETTINGS_ID,
-            model: input.model.trim() || env_1.env.aiPostingOpenAiModel,
+            model: normalizeModel(input.model),
             apiKeyCipher,
             openAiApiUrl: normalizeApiUrl(input.openAiApiUrl),
             defaultWordCount: Math.max(300, Math.min(1200, Number(input.defaultWordCount || 600))),
@@ -135,7 +144,7 @@ const upsertAiPostingSettings = async (input) => {
             isEnabled: input.isEnabled !== false,
         },
         update: {
-            model: input.model.trim() || env_1.env.aiPostingOpenAiModel,
+            model: normalizeModel(input.model),
             apiKeyCipher,
             openAiApiUrl: normalizeApiUrl(input.openAiApiUrl),
             defaultWordCount: Math.max(300, Math.min(1200, Number(input.defaultWordCount || 600))),
