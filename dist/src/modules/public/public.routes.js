@@ -113,11 +113,16 @@ const deriveMediaFromContent = (content) => {
         .map((url) => ({ url }));
     return candidates;
 };
-const normalizePublicContent = (content, media = [], summary) => {
+const normalizePublicContent = (content, media = [], summary, fallbackType) => {
     if (!content || typeof content !== "object" || Array.isArray(content))
         return content;
     const record = { ...content };
     const firstMediaUrl = media.find((item) => typeof item?.url === "string" && item.url.trim())?.url;
+    const summaryText = typeof summary === "string" && summary.trim() ? summary.trim() : undefined;
+    const currentType = typeof record.type === "string" && record.type.trim() ? record.type.trim() : undefined;
+    if (!currentType && fallbackType) {
+        record.type = fallbackType;
+    }
     const featuredImage = typeof record.featuredImage === "string" && record.featuredImage.trim()
         ? record.featuredImage.trim()
         : typeof record.featuredimage === "string" && record.featuredimage.trim()
@@ -138,21 +143,46 @@ const normalizePublicContent = (content, media = [], summary) => {
         delete record.featuredImage;
         delete record.featuredimage;
         delete record.image;
+        if (!Array.isArray(record.images)) {
+            record.images = [];
+        }
+    }
+    if (!Array.isArray(record.images)) {
+        record.images = [];
+    }
+    if (!Array.isArray(record.highlights)) {
+        record.highlights = [];
+    }
+    const description = typeof record.description === "string" && record.description.trim() ? record.description.trim() : undefined;
+    const body = typeof record.body === "string" && record.body.trim() ? record.body.trim() : undefined;
+    const excerpt = typeof record.excerpt === "string" && record.excerpt.trim() ? record.excerpt.trim() : undefined;
+    if (!description && body) {
+        record.description = body;
+    }
+    else if (!description && summaryText) {
+        record.description = summaryText;
+    }
+    if (!body && typeof record.description === "string" && record.description.trim()) {
+        record.body = record.description.trim();
     }
     if ((record.brandName == null || record.brandName === "") && (record.brandname == null || record.brandname === "")) {
         delete record.brandName;
         delete record.brandname;
     }
-    if ((record.excerpt == null || record.excerpt === "") && typeof summary === "string" && summary.trim()) {
-        record.excerpt = summary.trim();
+    if ((record.excerpt == null || record.excerpt === "") && summaryText) {
+        record.excerpt = summaryText;
+    }
+    if ((record.category == null || record.category === "") && fallbackType) {
+        record.category = "uncategorised";
     }
     return record;
 };
 const normalizePublicPost = (post) => {
     const normalizedMedia = normalizePublicMedia(post.media);
+    const fallbackType = resolvePostType(post.content, Array.isArray(post.tags) ? post.tags : []);
     return {
         ...post,
-        content: normalizePublicContent(post.content, normalizedMedia, post.summary),
+        content: normalizePublicContent(post.content, normalizedMedia, post.summary, fallbackType),
         media: normalizedMedia.length ? normalizedMedia : deriveMediaFromContent(post.content),
     };
 };
