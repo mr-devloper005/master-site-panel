@@ -213,37 +213,56 @@ const callOpenAiForContent = async ({ brandName, targetUrl, extracted, taskKey, 
         featuredImage,
     };
 };
-const buildGeneratedPostPayload = ({ taskKey, generated, targetUrl, brandName, }) => ({
-    title: generated.title,
-    summary: generated.summary,
-    content: {
+const buildGeneratedPostPayload = ({ taskKey, generated, targetUrl, brandName, }) => {
+    const content = {
         type: taskKey,
         category: "uncategorised",
-        brandName: brandName || null,
         sourceUrl: targetUrl,
         description: generated.html,
-        featuredImage: generated.featuredImage,
-        image: generated.featuredImage,
-    },
-    media: generated.featuredImage ? [{ url: generated.featuredImage }] : [],
-    tags: generated.tags,
-});
+        excerpt: generated.summary,
+    };
+    if (brandName) {
+        content.brandName = brandName;
+    }
+    if (generated.featuredImage) {
+        content.featuredImage = generated.featuredImage;
+        content.image = generated.featuredImage;
+        content.images = [generated.featuredImage];
+    }
+    return {
+        title: generated.title,
+        summary: generated.summary,
+        content,
+        media: generated.featuredImage
+            ? [{ url: generated.featuredImage, type: "IMAGE" }]
+            : [],
+        tags: generated.tags,
+    };
+};
 const buildFallbackGeneratedPayload = ({ taskKey, title, targetUrl, brandName, extracted, }) => {
     const fallbackTitle = title || extracted.h1 || extracted.title || brandName || "Website Overview";
     const html = (0, ai_posting_utils_1.buildFallbackArticleHtml)({ brandName, targetUrl, title: fallbackTitle });
+    const summary = extracted.metaDescription || `Learn more about ${brandName || fallbackTitle}.`;
+    const content = {
+        type: taskKey,
+        category: "uncategorised",
+        sourceUrl: targetUrl,
+        description: html,
+        excerpt: summary,
+    };
+    if (brandName) {
+        content.brandName = brandName;
+    }
+    if (extracted.logoUrl) {
+        content.featuredImage = extracted.logoUrl;
+        content.image = extracted.logoUrl;
+        content.images = [extracted.logoUrl];
+    }
     return {
         title: fallbackTitle,
-        summary: extracted.metaDescription || `Learn more about ${brandName || fallbackTitle}.`,
-        content: {
-            type: taskKey,
-            category: "uncategorised",
-            brandName: brandName || null,
-            sourceUrl: targetUrl,
-            description: html,
-            featuredImage: extracted.logoUrl,
-            image: extracted.logoUrl,
-        },
-        media: extracted.logoUrl ? [{ url: extracted.logoUrl }] : [],
+        summary,
+        content,
+        media: extracted.logoUrl ? [{ url: extracted.logoUrl, type: "IMAGE" }] : [],
         tags: [brandName || fallbackTitle].filter(Boolean),
     };
 };
