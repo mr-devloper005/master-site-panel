@@ -112,10 +112,22 @@ const normalizePublicMedia = (value: unknown) => {
   return [];
 };
 
-const normalizePublicPost = <T extends typeof publicPostSelect extends infer _X ? Record<string, unknown> : Record<string, unknown>>(post: T) => ({
-  ...post,
-  media: normalizePublicMedia(post.media),
-});
+const deriveMediaFromContent = (content: unknown) => {
+  if (!content || typeof content !== "object" || Array.isArray(content)) return [];
+  const record = content as Record<string, unknown>;
+  const candidates = [record.featuredImage, record.image]
+    .filter((value): value is string => typeof value === "string" && value.trim().length > 0)
+    .map((url) => ({ url }));
+  return candidates;
+};
+
+const normalizePublicPost = <T extends typeof publicPostSelect extends infer _X ? Record<string, unknown> : Record<string, unknown>>(post: T) => {
+  const normalizedMedia = normalizePublicMedia(post.media);
+  return {
+    ...post,
+    media: normalizedMedia.length ? normalizedMedia : deriveMediaFromContent(post.content),
+  };
+};
 
 type PublicSitePayload = {
   site: { id: string; code: string; config: unknown; isActive: boolean };

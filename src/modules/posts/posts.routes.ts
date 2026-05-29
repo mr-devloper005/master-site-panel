@@ -63,6 +63,35 @@ const mergeStructuredValue = (currentValue: unknown, mergeValue: unknown): Prism
   return normalizeJsonValue(mergeValue, "merge payload");
 };
 
+const extractPreferredImageUrl = (content: unknown): string | null => {
+  if (!isPlainRecord(content)) return null;
+  const featuredImage = typeof content.featuredImage === "string" ? content.featuredImage.trim() : "";
+  if (featuredImage) return featuredImage;
+  const image = typeof content.image === "string" ? content.image.trim() : "";
+  if (image) return image;
+  return null;
+};
+
+const syncPrimaryMediaFromContent = (currentMedia: unknown, content: unknown): Prisma.InputJsonValue | undefined => {
+  const preferredImageUrl = extractPreferredImageUrl(content);
+  if (!preferredImageUrl) return undefined;
+
+  const mediaArray = Array.isArray(currentMedia) ? [...currentMedia] : [];
+  const firstItem = mediaArray[0];
+
+  if (firstItem && isPlainRecord(firstItem)) {
+    mediaArray[0] = { ...firstItem, url: preferredImageUrl };
+    return mediaArray as Prisma.InputJsonValue;
+  }
+
+  if (firstItem && typeof firstItem === "string") {
+    mediaArray[0] = { url: preferredImageUrl };
+    return mediaArray as Prisma.InputJsonValue;
+  }
+
+  return [{ url: preferredImageUrl }] as Prisma.InputJsonValue;
+};
+
 const hostFromUrl = (value?: string | null): string => {
   if (!value) return "";
   try {
@@ -647,7 +676,7 @@ router.patch("/:postId", requireApiKey("posts:write"), asyncHandler(async (req, 
 
   const current = await prisma.post.findUnique({
     where: { id: postId },
-    select: { siteId: true, slug: true, content: true },
+    select: { siteId: true, slug: true, content: true, media: true },
   });
   if (!current) {
     throw new ApiError(404, "Post not found.");
@@ -679,6 +708,13 @@ router.patch("/:postId", requireApiKey("posts:write"), asyncHandler(async (req, 
   }
   if (publishedAt !== undefined) {
     updateData.publishedAt = publishedAt ? new Date(publishedAt) : null;
+  }
+
+  if (content !== undefined && media === undefined) {
+    const syncedMedia = syncPrimaryMediaFromContent(current.media, content);
+    if (syncedMedia !== undefined) {
+      updateData.media = syncedMedia;
+    }
   }
 
   const updated = await prisma.post.update({
@@ -895,7 +931,7 @@ router.post("/bulk/update", requireApiKey("posts:write"), asyncHandler(async (re
 
   const posts = await prisma.post.findMany({
     where: { id: { in: postIds } },
-    select: { id: true, siteId: true, tags: true },
+    select: { id: true, siteId: true, tags: true, media: true, content: true },
   });
   if (!canBypassSitePermissions(apiKey.scopes)) {
     const allowedSiteIds = await getAllowedSiteIds(apiKey.id, "post");
@@ -919,6 +955,13 @@ router.post("/bulk/update", requireApiKey("posts:write"), asyncHandler(async (re
   if (Array.isArray(data.tags) && posts.length === 1) patch.tags = data.tags.map((tag: unknown) => String(tag));
   if (data.publishedAt !== undefined) {
     patch.publishedAt = data.publishedAt ? new Date(data.publishedAt) : null;
+  }
+
+  if (posts.length === 1 && data.content !== undefined && data.media === undefined) {
+    const syncedMedia = syncPrimaryMediaFromContent(posts[0].media, data.content);
+    if (syncedMedia !== undefined) {
+      patch.media = syncedMedia;
+    }
   }
 
   const updateResult =
@@ -947,9 +990,18 @@ router.post("/bulk/update", requireApiKey("posts:write"), asyncHandler(async (re
     await Promise.all(
       posts.map(async (post) => {
         const current = await prisma.post.findUnique({ where: { id: post.id }, select: { content: true } });
+        const mergedContent = mergeStructuredValue(current?.content, data.contentMerge);
         await prisma.post.update({
           where: { id: post.id },
-          data: { content: mergeStructuredValue(current?.content, data.contentMerge) },
+          data: {
+            content: mergedContent,
+            ...(data.mediaMerge === undefined
+              ? (() => {
+                  const syncedMedia = syncPrimaryMediaFromContent(post.media, mergedContent);
+                  return syncedMedia !== undefined ? { media: syncedMedia } : {};
+                })()
+              : {}),
+          },
         });
       })
     );
