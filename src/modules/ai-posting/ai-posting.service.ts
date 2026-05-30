@@ -120,6 +120,7 @@ const syncUserSiteAccessToInferredTask = async ({
 const AI_POSTING_USER_AGENT = env.aiPostingUserAgent;
 const AI_POSTING_MAX_SOURCE_CHARS = 3000;
 const AI_POSTING_MAX_OUTPUT_TOKENS = 1400;
+const AI_POSTING_RUN_CONCURRENCY = 5;
 
 const resolveReasoningEffort = (_model: string) => {
   return "none";
@@ -134,6 +135,14 @@ const summarizeRuns = (runs: Array<{ status: AiPostingRunStatus }>) => {
     else summary.pending += 1;
   }
   return summary;
+};
+
+const chunkRuns = <T>(items: T[], size: number) => {
+  const chunks: T[][] = [];
+  for (let index = 0; index < items.length; index += size) {
+    chunks.push(items.slice(index, index + size));
+  }
+  return chunks;
 };
 
 const mapJobStatusFromRuns = (runs: Array<{ status: AiPostingRunStatus }>): AiPostingJobStatus => {
@@ -788,6 +797,8 @@ export const processAiPostingJob = async (jobId: string) => {
     return;
   }
 
+  const resolvedApiKey = job.apiKey;
+
   const settings = await getResolvedAiPostingSettings();
   if (!settings?.apiKey) {
     await prisma.aiPostingJob.update({
@@ -862,7 +873,7 @@ export const processAiPostingJob = async (jobId: string) => {
     },
   });
 
-  for (const run of job.runs) {
+  const processRun = async (run: (typeof job.runs)[number]) => {
     await prisma.aiPostingRun.update({
       where: { id: run.id },
       data: {
@@ -898,9 +909,9 @@ export const processAiPostingJob = async (jobId: string) => {
 
       const created = await createPublishedPost({
         apiKey: {
-          id: job.apiKey.id,
-          scopes: job.apiKey.scopes,
-          userId: job.apiKey.userId,
+          id: resolvedApiKey.id,
+          scopes: resolvedApiKey.scopes,
+          userId: resolvedApiKey.userId,
         },
         siteCode: run.site.code,
         title: generated.title,
@@ -932,6 +943,10 @@ export const processAiPostingJob = async (jobId: string) => {
         },
       });
     }
+  };
+
+  for (const runBatch of chunkRuns(job.runs, AI_POSTING_RUN_CONCURRENCY)) {
+    await Promise.all(runBatch.map((run) => processRun(run)));
   }
 
   const refreshedRuns = await prisma.aiPostingRun.findMany({
