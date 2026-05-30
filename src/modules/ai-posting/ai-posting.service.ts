@@ -122,6 +122,27 @@ const AI_POSTING_MAX_SOURCE_CHARS = 3000;
 const AI_POSTING_MAX_OUTPUT_TOKENS = 1400;
 const AI_POSTING_RUN_CONCURRENCY = 20;
 const AI_POSTING_OPENAI_TIMEOUT_MS = 20000;
+const AI_POSTING_RUN_RETRIES = 1;
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const isRetryableRunError = (error: unknown) => {
+  if (error instanceof ApiError) {
+    if ([429, 500, 502, 503, 504].includes(error.statusCode)) return true;
+  }
+  if (error instanceof Error) {
+    const message = error.message.toLowerCase();
+    return (
+      message.includes("timed out") ||
+      message.includes("timeout") ||
+      message.includes("temporar") ||
+      message.includes("fetch failed") ||
+      message.includes("rate limit") ||
+      message.includes("connection")
+    );
+  }
+  return false;
+};
 
 const resolveReasoningEffort = (_model: string) => {
   return "none";
@@ -893,67 +914,79 @@ export const processAiPostingJob = async (jobId: string) => {
       },
     });
 
-    try {
-      const generated = fallbackUsed
-        ? buildFallbackGeneratedPayload({
-            taskKey: run.taskKey,
-            title: extracted.h1 || extracted.title || job.brandName || run.site.name,
-            targetUrl: crawl.finalUrl || job.targetUrl,
-            brandName: job.brandName,
-            extracted,
-          })
-        : buildGeneratedPostPayload({
-            taskKey: run.taskKey,
-            generated: await callOpenAiForContent({
-              brandName: job.brandName,
+    let lastError: unknown = null;
+    for (let attempt = 0; attempt <= AI_POSTING_RUN_RETRIES; attempt += 1) {
+      try {
+        const generated = fallbackUsed
+          ? buildFallbackGeneratedPayload({
+              taskKey: run.taskKey,
+              title: extracted.h1 || extracted.title || job.brandName || run.site.name,
               targetUrl: crawl.finalUrl || job.targetUrl,
+              brandName: job.brandName,
               extracted,
-            taskKey: run.taskKey,
-            siteName: run.site.name,
-            model: job.model || settings.model,
-            apiKey: settings.apiKey,
-            openAiApiUrl: settings.openAiApiUrl,
-          }),
-            targetUrl: crawl.finalUrl || job.targetUrl,
-            brandName: job.brandName,
-          });
+            })
+          : buildGeneratedPostPayload({
+              taskKey: run.taskKey,
+              generated: await callOpenAiForContent({
+                brandName: job.brandName,
+                targetUrl: crawl.finalUrl || job.targetUrl,
+                extracted,
+                taskKey: run.taskKey,
+                siteName: run.site.name,
+                model: job.model || settings.model,
+                apiKey: settings.apiKey,
+                openAiApiUrl: settings.openAiApiUrl,
+              }),
+              targetUrl: crawl.finalUrl || job.targetUrl,
+              brandName: job.brandName,
+            });
 
-      const created = await createPublishedPost({
-        apiKey: {
-          id: resolvedApiKey.id,
-          scopes: resolvedApiKey.scopes,
-          userId: resolvedApiKey.userId,
-        },
-        siteCode: run.site.code,
-        title: generated.title,
-        summary: generated.summary,
-        content: generated.content,
-        media: generated.media,
-        tags: generated.tags,
-        authorName: job.brandName || run.site.name,
-        requestedTask: run.taskKey as SiteTask,
-      });
+        const created = await createPublishedPost({
+          apiKey: {
+            id: resolvedApiKey.id,
+            scopes: resolvedApiKey.scopes,
+            userId: resolvedApiKey.userId,
+          },
+          siteCode: run.site.code,
+          title: generated.title,
+          summary: generated.summary,
+          content: generated.content,
+          media: generated.media,
+          tags: generated.tags,
+          authorName: job.brandName || run.site.name,
+          requestedTask: run.taskKey as SiteTask,
+        });
 
-      await prisma.aiPostingRun.update({
-        where: { id: run.id },
-        data: {
-          status: AiPostingRunStatus.COMPLETED,
-          postId: created.post.id,
-          liveUrl: created.liveUrl,
-          generatedPost: generated as Prisma.InputJsonValue,
-          finishedAt: new Date(),
-        },
-      });
-    } catch (error) {
-      await prisma.aiPostingRun.update({
-        where: { id: run.id },
-        data: {
-          status: AiPostingRunStatus.FAILED,
-          errorMessage: error instanceof Error ? error.message : "Run failed",
-          finishedAt: new Date(),
-        },
-      });
+        await prisma.aiPostingRun.update({
+          where: { id: run.id },
+          data: {
+            status: AiPostingRunStatus.COMPLETED,
+            postId: created.post.id,
+            liveUrl: created.liveUrl,
+            generatedPost: generated as Prisma.InputJsonValue,
+            finishedAt: new Date(),
+            errorMessage: null,
+          },
+        });
+        return;
+      } catch (error) {
+        lastError = error;
+        const shouldRetry = attempt < AI_POSTING_RUN_RETRIES && isRetryableRunError(error);
+        if (shouldRetry) {
+          await sleep(500 * (attempt + 1));
+          continue;
+        }
+      }
     }
+
+    await prisma.aiPostingRun.update({
+      where: { id: run.id },
+      data: {
+        status: AiPostingRunStatus.FAILED,
+        errorMessage: lastError instanceof Error ? lastError.message : "Run failed",
+        finishedAt: new Date(),
+      },
+    });
   };
 
   for (const runBatch of chunkRuns(job.runs, AI_POSTING_RUN_CONCURRENCY)) {
