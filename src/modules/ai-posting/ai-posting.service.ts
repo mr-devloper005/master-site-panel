@@ -38,6 +38,85 @@ type ResolvedTarget = {
   taskKey: string;
 };
 
+const syncUserSiteAccessToInferredTask = async ({
+  apiKey,
+  siteId,
+  taskKey,
+}: {
+  apiKey: ApiKeyContext;
+  siteId: string;
+  taskKey: string;
+}) => {
+  if (!apiKey.userId) return false;
+
+  const exact = await prisma.userSiteTaskAccess.findUnique({
+    where: {
+      userId_siteId_taskKey: {
+        userId: apiKey.userId,
+        siteId,
+        taskKey,
+      },
+    },
+  });
+
+  if (exact?.isActive) {
+    return true;
+  }
+
+  const fallback = await prisma.userSiteTaskAccess.findFirst({
+    where: {
+      userId: apiKey.userId,
+      siteId,
+      isActive: true,
+      canPost: true,
+    },
+    orderBy: [
+      { canDelete: "desc" },
+      { canEdit: "desc" },
+      { updatedAt: "desc" },
+    ],
+  });
+
+  if (!fallback) {
+    return false;
+  }
+
+  await prisma.userSiteTaskAccess.upsert({
+    where: {
+      userId_siteId_taskKey: {
+        userId: apiKey.userId,
+        siteId,
+        taskKey,
+      },
+    },
+    create: {
+      userId: apiKey.userId,
+      siteId,
+      taskKey,
+      canRead: fallback.canRead,
+      canPost: fallback.canPost,
+      canEdit: fallback.canEdit,
+      canDelete: fallback.canDelete,
+      perMinuteLimit: fallback.perMinuteLimit,
+      dailyLimit: fallback.dailyLimit,
+      totalLimit: fallback.totalLimit,
+      isActive: true,
+    },
+    update: {
+      canRead: fallback.canRead,
+      canPost: fallback.canPost,
+      canEdit: fallback.canEdit,
+      canDelete: fallback.canDelete,
+      perMinuteLimit: fallback.perMinuteLimit,
+      dailyLimit: fallback.dailyLimit,
+      totalLimit: fallback.totalLimit,
+      isActive: true,
+    },
+  });
+
+  return true;
+};
+
 const AI_POSTING_USER_AGENT = env.aiPostingUserAgent;
 
 const summarizeRuns = (runs: Array<{ status: AiPostingRunStatus }>) => {
@@ -429,9 +508,25 @@ const resolveTargets = async ({
       });
     } catch (error) {
       if (error instanceof ApiError && error.statusCode === 403) {
-        throw new ApiError(403, `API key is not allowed for site "${site.name}" (${site.code}) with inferred task "${taskKey}".`);
+        const synced = await syncUserSiteAccessToInferredTask({
+          apiKey,
+          siteId: site.id,
+          taskKey,
+        });
+
+        if (synced) {
+          await enforceUserPostPolicy({
+            apiKey,
+            siteId: site.id,
+            taskKey,
+            action: "post",
+          });
+        } else {
+          throw new ApiError(403, `API key is not allowed for site "${site.name}" (${site.code}) with inferred task "${taskKey}".`);
+        }
+      } else {
+        throw error;
       }
-      throw error;
     }
 
     resolved.push({
