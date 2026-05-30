@@ -120,7 +120,7 @@ const syncUserSiteAccessToInferredTask = async ({
 const AI_POSTING_USER_AGENT = env.aiPostingUserAgent;
 const AI_POSTING_MAX_SOURCE_CHARS = 3000;
 const AI_POSTING_MAX_OUTPUT_TOKENS = 1400;
-const AI_POSTING_RUN_CONCURRENCY = 5;
+const AI_POSTING_RUN_CONCURRENCY = 20;
 
 const resolveReasoningEffort = (_model: string) => {
   return "none";
@@ -242,7 +242,7 @@ const buildGenerationPrompt = ({
     `Source URL: ${targetUrl}`,
     `Site name: ${siteName}`,
     "Requirements:",
-    "- Write 500 to 600 words.",
+    "- Write 450 to 550 words.",
     "- Respond quickly and directly. Do not overthink or add extra analysis.",
     "- Use clear, natural English.",
     "- Use the real brand/business/page name from the source. Never invent placeholder names like ABC Services, Example Brand, Sample Company, or generic initials.",
