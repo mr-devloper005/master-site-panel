@@ -121,6 +121,7 @@ const AI_POSTING_USER_AGENT = env.aiPostingUserAgent;
 const AI_POSTING_MAX_SOURCE_CHARS = 3000;
 const AI_POSTING_MAX_OUTPUT_TOKENS = 1400;
 const AI_POSTING_RUN_CONCURRENCY = 20;
+const AI_POSTING_OPENAI_TIMEOUT_MS = 20000;
 
 const resolveReasoningEffort = (_model: string) => {
   return "none";
@@ -315,6 +316,8 @@ const callOpenAiForContent = async ({
 
   const prompt = buildGenerationPrompt({ brandName, targetUrl, extracted, taskKey, siteName });
   const reasoningEffort = resolveReasoningEffort(model);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), AI_POSTING_OPENAI_TIMEOUT_MS);
   const response = await fetch(openAiApiUrl, {
     method: "POST",
     headers: {
@@ -352,6 +355,14 @@ const callOpenAiForContent = async ({
       },
       reasoning: { effort: reasoningEffort },
     }),
+    signal: controller.signal,
+  }).catch((error) => {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new ApiError(504, "OpenAI generation timed out.");
+    }
+    throw error;
+  }).finally(() => {
+    clearTimeout(timeout);
   });
 
   if (!response.ok) {
