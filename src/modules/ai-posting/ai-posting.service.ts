@@ -118,6 +118,14 @@ const syncUserSiteAccessToInferredTask = async ({
 };
 
 const AI_POSTING_USER_AGENT = env.aiPostingUserAgent;
+const AI_POSTING_MAX_SOURCE_CHARS = 3000;
+const AI_POSTING_MAX_OUTPUT_TOKENS = 1400;
+
+const resolveReasoningEffort = (model: string) => {
+  const normalized = model.trim().toLowerCase();
+  if (normalized.startsWith("gpt-5.1")) return "none";
+  return "minimal";
+};
 
 const summarizeRuns = (runs: Array<{ status: AiPostingRunStatus }>) => {
   const summary = { total: runs.length, completed: 0, pending: 0, failed: 0, processing: 0 };
@@ -221,13 +229,14 @@ const buildGenerationPrompt = ({
 }) => {
   const brand = brandName || extracted.h1 || extracted.title || siteName;
   return [
-    "Generate a unique publishing-ready post in HTML.",
+    "Generate a fast publishing-ready post in HTML.",
     `Task type: ${taskKey}`,
     `Target brand: ${brand}`,
     `Source URL: ${targetUrl}`,
     `Site name: ${siteName}`,
     "Requirements:",
     "- Write 500 to 600 words.",
+    "- Respond quickly and directly. Do not overthink or add extra analysis.",
     "- Use clear, natural English.",
     "- Use the real brand/business/page name from the source. Never invent placeholder names like ABC Services, Example Brand, Sample Company, or generic initials.",
     "- Include exactly one hyperlink to the source URL inside the body.",
@@ -242,7 +251,7 @@ const buildGenerationPrompt = ({
     `Page title: ${extracted.title || "N/A"}`,
     `Page H1: ${extracted.h1 || "N/A"}`,
     `Meta description: ${extracted.metaDescription || "N/A"}`,
-    `Extracted content: ${extracted.contentText.slice(0, 6000) || "Limited source content available."}`,
+    `Extracted content: ${extracted.contentText.slice(0, AI_POSTING_MAX_SOURCE_CHARS) || "Limited source content available."}`,
   ].join("\n");
 };
 
@@ -298,6 +307,7 @@ const callOpenAiForContent = async ({
   }
 
   const prompt = buildGenerationPrompt({ brandName, targetUrl, extracted, taskKey, siteName });
+  const reasoningEffort = resolveReasoningEffort(model);
   const response = await fetch(openAiApiUrl, {
     method: "POST",
     headers: {
@@ -307,7 +317,9 @@ const callOpenAiForContent = async ({
     body: JSON.stringify({
       model,
       input: prompt,
+      max_output_tokens: AI_POSTING_MAX_OUTPUT_TOKENS,
       text: {
+        verbosity: "low",
         format: {
           type: "json_schema",
           name: "ai_posting_payload",
@@ -331,7 +343,7 @@ const callOpenAiForContent = async ({
           },
         },
       },
-      reasoning: { effort: "none" },
+      reasoning: { effort: reasoningEffort },
     }),
   });
 
