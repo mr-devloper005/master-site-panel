@@ -35,20 +35,6 @@ import {
   updatePanelUserKey,
 } from "../utils/api";
 
-const TASK_OPTIONS = [
-  "article",
-  "sbm",
-  "pdf",
-  "classified",
-  "listing",
-  "image",
-  "profile",
-  "mediaDistribution",
-  "comment",
-  "social",
-  "org",
-];
-
 const TABS = [
   { id: "overview", label: "Overview", icon: Activity },
   { id: "keys", label: "API Keys", icon: KeyRound },
@@ -77,6 +63,38 @@ const formatDate = (value) => (value ? new Date(value).toLocaleString() : "Never
 const metricValue = (value, fallback = "Unlimited") => {
   if (value === null || value === undefined || value === "") return fallback;
   return value;
+};
+
+const PRIMARY_TASK_BY_CATEGORY = {
+  ARTICLE: "article",
+  SBM: "sbm",
+  PDF: "pdf",
+  CLASSIFIED: "classified",
+  LOCAL_LISTING: "listing",
+  IMAGE_SHARING: "image",
+  PROFILE: "profile",
+  MEDIA_DISTRIBUTION: "mediaDistribution",
+  SOCIAL: "social",
+  ORG: "org",
+};
+
+const prettyTaskLabel = (task) => {
+  if (!task) return "task";
+  if (task === "mediaDistribution") return "Media Distribution";
+  return task.charAt(0).toUpperCase() + task.slice(1);
+};
+
+const getSupportedTasks = (site) => {
+  const tasks = Array.isArray(site?.supportedTasks) ? site.supportedTasks.filter(Boolean) : [];
+  return Array.from(new Set(tasks));
+};
+
+const inferPrimaryTaskForSite = (site) => {
+  const tasks = getSupportedTasks(site);
+  if (tasks.length === 1) return tasks[0];
+  const byCategory = PRIMARY_TASK_BY_CATEGORY[site?.category];
+  if (byCategory && tasks.includes(byCategory)) return byCategory;
+  return tasks[0] || byCategory || "article";
 };
 
 function StatCard({ label, value, tone = "default" }) {
@@ -120,7 +138,6 @@ export default function Users() {
   const [access, setAccess] = useState([]);
   const [posts, setPosts] = useState([]);
   const [activity, setActivity] = useState([]);
-  const [selectedTaskKey, setSelectedTaskKey] = useState("article");
   const [accessLimits, setAccessLimits] = useState(emptyAccessLimits);
   const [accessSearch, setAccessSearch] = useState("");
   const [accessSearchValue, setAccessSearchValue] = useState("");
@@ -130,6 +147,7 @@ export default function Users() {
   const [catalogMeta, setCatalogMeta] = useState({ page: 1, limit: 24, total: 0, totalPages: 1 });
   const [catalogLoading, setCatalogLoading] = useState(false);
   const [selectedSiteIds, setSelectedSiteIds] = useState([]);
+  const [selectedTaskBySite, setSelectedTaskBySite] = useState({});
 
   const activeUsers = users.filter((user) => user.status === "ACTIVE").length;
   const suspendedUsers = users.filter((user) => user.status === "SUSPENDED").length;
@@ -139,6 +157,14 @@ export default function Users() {
     () => new Map(access.map((rule) => [`${rule.site?.id}:${rule.taskKey}`, rule])),
     [access]
   );
+
+  const getEffectiveTaskKey = (site) => {
+    const supportedTasks = getSupportedTasks(site);
+    const primaryTask = inferPrimaryTaskForSite(site);
+    const chosenTask = selectedTaskBySite[site.id];
+    if (chosenTask && supportedTasks.includes(chosenTask)) return chosenTask;
+    return primaryTask;
+  };
 
   const selectedUserStats = useMemo(
     () => ({
@@ -152,10 +178,13 @@ export default function Users() {
 
   const catalogRows = useMemo(() => {
     const rows = catalogSites.map((site) => {
-      const rule = accessKeyMap.get(`${site.id}:${selectedTaskKey}`) || null;
+      const effectiveTaskKey = getEffectiveTaskKey(site);
+      const rule = accessKeyMap.get(`${site.id}:${effectiveTaskKey}`) || null;
       const isAdded = Boolean(rule?.isActive);
       return {
         site,
+        effectiveTaskKey,
+        supportedTasks: getSupportedTasks(site),
         rule,
         isAdded,
       };
@@ -164,7 +193,19 @@ export default function Users() {
     if (accessFilter === "added") return rows.filter((row) => row.isAdded);
     if (accessFilter === "not-added") return rows.filter((row) => !row.isAdded);
     return rows;
-  }, [accessFilter, accessKeyMap, catalogSites, selectedTaskKey]);
+  }, [accessFilter, accessKeyMap, catalogSites, selectedTaskBySite]);
+
+  const copyableAssignedSiteCodes = useMemo(() => {
+    const seen = new Set();
+    return access
+      .filter((rule) => rule.isActive && rule.site?.code)
+      .map((rule) => rule.site.code)
+      .filter((code) => {
+        if (seen.has(code)) return false;
+        seen.add(code);
+        return true;
+      });
+  }, [access]);
 
   const loadUsers = async (page = usersMeta.page) => {
     setLoadingUsers(true);
@@ -225,13 +266,14 @@ export default function Users() {
     setNewToken("");
     setKeyName(`${selectedUser.name} API`);
     setSelectedSiteIds([]);
+    setSelectedTaskBySite({});
     loadUserDetail(selectedUser);
   }, [selectedUser?.id]);
 
   useEffect(() => {
     if (activeTab !== "access") return;
     loadCatalogSites();
-  }, [activeTab, selectedUser?.id, accessSearch, accessPage, selectedTaskKey]);
+  }, [activeTab, selectedUser?.id, accessSearch, accessPage]);
 
   const handleCreateUser = async (event) => {
     event.preventDefault();
@@ -317,9 +359,12 @@ export default function Users() {
       return;
     }
 
-    const rules = siteIds.map((siteId) => ({
+    const rules = siteIds.map((siteId) => {
+      const site = catalogSites.find((item) => item.id === siteId) || access.find((rule) => rule.site?.id === siteId)?.site;
+      const taskKey = site ? getEffectiveTaskKey(site) : "article";
+      return {
       siteId,
-      taskKey: selectedTaskKey,
+      taskKey,
       canRead: true,
       canPost: true,
       canEdit: true,
@@ -328,13 +373,14 @@ export default function Users() {
       perMinuteLimit: accessLimits.perMinuteLimit || undefined,
       dailyLimit: accessLimits.dailyLimit || undefined,
       totalLimit: accessLimits.totalLimit || undefined,
-    }));
+      };
+    });
 
     try {
       await updatePanelUserAccess(selectedUser.id, rules);
       await loadUserDetail(selectedUser);
       setSelectedSiteIds([]);
-      toast.success(isActive ? "Site access assigned" : "Site access removed");
+      toast.success(isActive ? "Site access assigned with auto task mapping" : "Site access removed");
     } catch (error) {
       toast.error(error.message || "Failed to update user access");
     }
@@ -363,6 +409,26 @@ export default function Users() {
 
   const allVisibleSelected =
     catalogRows.length > 0 && catalogRows.every((row) => selectedSiteIds.includes(row.site.id));
+
+  const handleTaskChoiceChange = (site, nextTask) => {
+    const supportedTasks = getSupportedTasks(site);
+    const safeTask = supportedTasks.includes(nextTask) ? nextTask : inferPrimaryTaskForSite(site);
+    setSelectedTaskBySite((current) => ({ ...current, [site.id]: safeTask }));
+  };
+
+  const handleCopyAllSiteCodes = async () => {
+    if (!copyableAssignedSiteCodes.length) {
+      toast.error("No active site codes available to copy");
+      return;
+    }
+    const payload = JSON.stringify(
+      copyableAssignedSiteCodes.map((siteCode) => ({ siteCode })),
+      null,
+      2
+    );
+    await navigator.clipboard.writeText(payload);
+    toast.success("Active site codes copied");
+  };
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-4 overflow-hidden">
@@ -795,7 +861,7 @@ export default function Users() {
                       <div>
                         <h3 className="font-bold">Site Assignment Workspace</h3>
                         <p className="mt-1 text-sm text-[var(--text-secondary)]">
-                          Browse all sites, filter `added` / `not added`, search by domain, and bulk assign or remove access for the selected task.
+                          Browse all sites, filter `added` / `not added`, search by domain, and bulk assign or remove access. The system auto-selects each site's main task. If a site supports multiple tasks, you can switch it from that row only.
                         </p>
                       </div>
                       <div className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800 dark:bg-blue-950 dark:text-blue-200">
@@ -803,7 +869,7 @@ export default function Users() {
                       </div>
                     </div>
 
-                    <div className="mt-4 grid gap-3 xl:grid-cols-[1.1fr_220px_180px_auto]">
+                    <div className="mt-4 grid gap-3 xl:grid-cols-[1.1fr_180px_auto]">
                       <label className="text-xs text-[var(--text-secondary)]">
                         <span className="mb-1 block font-semibold uppercase tracking-wide">Search Sites</span>
                         <div className="flex gap-2">
@@ -832,23 +898,6 @@ export default function Users() {
                             Apply
                           </button>
                         </div>
-                      </label>
-                      <label className="text-xs text-[var(--text-secondary)]">
-                        <span className="mb-1 block font-semibold uppercase tracking-wide">Task</span>
-                        <select
-                          className="min-h-11 w-full rounded-2xl border border-[var(--border-color)] bg-[var(--bg-primary)] px-3 text-sm"
-                          value={selectedTaskKey}
-                          onChange={(event) => {
-                            setSelectedTaskKey(event.target.value);
-                            setSelectedSiteIds([]);
-                          }}
-                        >
-                          {TASK_OPTIONS.map((task) => (
-                            <option key={task} value={task}>
-                              {task}
-                            </option>
-                          ))}
-                        </select>
                       </label>
                       <label className="text-xs text-[var(--text-secondary)]">
                         <span className="mb-1 block font-semibold uppercase tracking-wide">Filter</span>
@@ -921,7 +970,10 @@ export default function Users() {
                       <div className="grid gap-3 lg:grid-cols-2">
                         {catalogRows.map((row) => {
                           const checked = selectedSiteIds.includes(row.site.id);
-                          const taskList = Array.isArray(row.site.supportedTasks) ? row.site.supportedTasks : [];
+                          const taskList = row.supportedTasks;
+                          const primaryTask = inferPrimaryTaskForSite(row.site);
+                          const effectiveTask = row.effectiveTaskKey;
+                          const hasMultipleTasks = taskList.length > 1;
                           return (
                             <div
                               key={row.site.id}
@@ -967,12 +1019,38 @@ export default function Users() {
                                 ) : null}
                               </div>
 
+                              <div className="mt-4 grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
+                                <label className="text-xs text-[var(--text-secondary)]">
+                                  <span className="mb-1 block font-semibold uppercase tracking-wide">Auto Task</span>
+                                  {hasMultipleTasks ? (
+                                    <select
+                                      className="min-h-10 w-full rounded-xl border border-[var(--border-color)] bg-[var(--bg-primary)] px-3 text-sm"
+                                      value={effectiveTask}
+                                      onChange={(event) => handleTaskChoiceChange(row.site, event.target.value)}
+                                    >
+                                      {taskList.map((task) => (
+                                        <option key={task} value={task}>
+                                          {prettyTaskLabel(task)}{task === primaryTask ? " (Default)" : ""}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  ) : (
+                                    <div className="min-h-10 rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] px-3 py-2 text-sm font-semibold">
+                                      {prettyTaskLabel(effectiveTask)}
+                                    </div>
+                                  )}
+                                </label>
+                                <div className="text-xs text-[var(--text-secondary)]">
+                                  {hasMultipleTasks ? "Default task auto-selected. Change only if needed." : "Task selected automatically from site config."}
+                                </div>
+                              </div>
+
                               <div className="mt-4 flex flex-wrap gap-2">
                                 <button
                                   className="rounded-xl bg-blue-600 px-3 py-2 text-sm font-semibold text-white"
                                   onClick={() => applyAccessRules([row.site.id], true)}
                                 >
-                                  Add {selectedTaskKey}
+                                  Add {prettyTaskLabel(effectiveTask)}
                                 </button>
                                 <button
                                   className="rounded-xl border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 dark:border-red-900 dark:text-red-300"
@@ -1015,7 +1093,20 @@ export default function Users() {
                   </div>
 
                   <div className="rounded-3xl border border-[var(--border-color)] bg-[var(--bg-primary)] p-5">
-                    <h3 className="font-bold">Assigned Access Rules</h3>
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div>
+                        <h3 className="font-bold">Assigned Access Rules</h3>
+                        <p className="mt-1 text-sm text-[var(--text-secondary)]">
+                          Copy all active site codes in ready-to-paste JSON format for AI posting payloads.
+                        </p>
+                      </div>
+                      <button
+                        className="inline-flex min-h-10 items-center gap-2 rounded-2xl border border-[var(--border-color)] px-4 text-sm font-semibold"
+                        onClick={handleCopyAllSiteCodes}
+                      >
+                        <Copy size={16} /> Copy All Site Codes
+                      </button>
+                    </div>
                     <div className="mt-4 overflow-hidden rounded-2xl border border-[var(--border-color)]">
                       {access.length ? (
                         access.map((rule) => (
