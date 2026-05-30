@@ -121,10 +121,8 @@ const AI_POSTING_USER_AGENT = env.aiPostingUserAgent;
 const AI_POSTING_MAX_SOURCE_CHARS = 3000;
 const AI_POSTING_MAX_OUTPUT_TOKENS = 1400;
 
-const resolveReasoningEffort = (model: string) => {
-  const normalized = model.trim().toLowerCase();
-  if (normalized.startsWith("gpt-5.1")) return "none";
-  return "minimal";
+const resolveReasoningEffort = (_model: string) => {
+  return "none";
 };
 
 const summarizeRuns = (runs: Array<{ status: AiPostingRunStatus }>) => {
