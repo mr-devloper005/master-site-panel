@@ -412,7 +412,7 @@ const resolveTargets = async ({
 
     const allowed = await ensureSiteAccess(apiKey.id, site.id, "post");
     if (!allowed && !apiKey.scopes.includes("*")) {
-      throw new ApiError(403, `API key is not allowed to post on site "${site.name}".`);
+      throw new ApiError(403, `API key is not allowed to post on site "${site.name}" (${site.code}).`);
     }
 
     const taskKey = inferTaskForSite(site);
@@ -420,12 +420,19 @@ const resolveTargets = async ({
       throw new ApiError(400, `Could not infer task for site "${site.name}".`);
     }
 
-    await enforceUserPostPolicy({
-      apiKey,
-      siteId: site.id,
-      taskKey,
-      action: "post",
-    });
+    try {
+      await enforceUserPostPolicy({
+        apiKey,
+        siteId: site.id,
+        taskKey,
+        action: "post",
+      });
+    } catch (error) {
+      if (error instanceof ApiError && error.statusCode === 403) {
+        throw new ApiError(403, `API key is not allowed for site "${site.name}" (${site.code}) with inferred task "${taskKey}".`);
+      }
+      throw error;
+    }
 
     resolved.push({
       siteId: site.id,

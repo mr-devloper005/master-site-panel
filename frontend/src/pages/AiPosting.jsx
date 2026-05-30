@@ -8,6 +8,8 @@ import {
   fetchAiPostingJobs,
   fetchAiPostingSettings,
   fetchAiPostingJobStatus,
+  fetchPanelUserAccess,
+  fetchPanelUsers,
   testAiPostingSettings,
   updateAiPostingSettings,
 } from "../utils/api";
@@ -47,6 +49,11 @@ export default function AiPosting() {
   const [jobsLoading, setJobsLoading] = useState(false);
   const [jobsSearch, setJobsSearch] = useState("");
   const [jobsStatus, setJobsStatus] = useState("");
+  const [panelUsers, setPanelUsers] = useState([]);
+  const [selectedAccessUserId, setSelectedAccessUserId] = useState("");
+  const [selectedAccessUserRules, setSelectedAccessUserRules] = useState([]);
+  const [accessUsersLoading, setAccessUsersLoading] = useState(false);
+  const [accessRulesLoading, setAccessRulesLoading] = useState(false);
 
   const stats = useMemo(() => {
     return jobs.reduce(
@@ -61,6 +68,35 @@ export default function AiPosting() {
       { total: 0, completed: 0, failed: 0, partial: 0, processing: 0 }
     );
   }, [jobs]);
+
+  const selectedAccessUser = useMemo(
+    () => panelUsers.find((user) => user.id === selectedAccessUserId) || null,
+    [panelUsers, selectedAccessUserId]
+  );
+
+  const allowedSiteCodePayload = useMemo(() => {
+    const seen = new Set();
+    return selectedAccessUserRules
+      .filter((rule) => rule.isActive && rule.site?.code)
+      .map((rule) => rule.site.code)
+      .filter((code) => {
+        if (seen.has(code)) return false;
+        seen.add(code);
+        return true;
+      })
+      .map((siteCode) => ({ siteCode }));
+  }, [selectedAccessUserRules]);
+
+  const allowedSiteTaskRows = useMemo(() => {
+    return selectedAccessUserRules
+      .filter((rule) => rule.isActive && rule.site)
+      .map((rule) => ({
+        siteId: rule.site.id,
+        siteCode: rule.site.code,
+        siteName: rule.site.name,
+        taskKey: rule.taskKey,
+      }));
+  }, [selectedAccessUserRules]);
 
   const loadSettings = async () => {
     setSettingsLoading(true);
@@ -92,10 +128,47 @@ export default function AiPosting() {
     }
   };
 
+  const loadAccessUsers = async () => {
+    setAccessUsersLoading(true);
+    try {
+      const result = await fetchPanelUsers({ page: 1, limit: 100, status: "ACTIVE" });
+      setPanelUsers(result.users || []);
+      if (!selectedAccessUserId && result.users?.[0]?.id) {
+        setSelectedAccessUserId(result.users[0].id);
+      }
+    } catch (error) {
+      toast.error(error.message || "Failed to load users");
+    } finally {
+      setAccessUsersLoading(false);
+    }
+  };
+
+  const loadSelectedUserAccess = async (userId) => {
+    if (!userId) {
+      setSelectedAccessUserRules([]);
+      return;
+    }
+    setAccessRulesLoading(true);
+    try {
+      const result = await fetchPanelUserAccess(userId, { page: 1, limit: 500 });
+      setSelectedAccessUserRules(result.access || []);
+    } catch (error) {
+      toast.error(error.message || "Failed to load allowed sites");
+    } finally {
+      setAccessRulesLoading(false);
+    }
+  };
+
   useEffect(() => {
     loadSettings();
     loadJobs(1);
+    loadAccessUsers();
   }, []);
+
+  useEffect(() => {
+    if (!selectedAccessUserId) return;
+    loadSelectedUserAccess(selectedAccessUserId);
+  }, [selectedAccessUserId]);
 
   const saveSettings = async () => {
     setSettingsSaving(true);
@@ -183,6 +256,24 @@ export default function AiPosting() {
     }
   };
 
+  const handleCopyAllowedSiteCodes = async () => {
+    if (!allowedSiteCodePayload.length) {
+      toast.error("No allowed site codes available to copy");
+      return;
+    }
+    await navigator.clipboard.writeText(JSON.stringify(allowedSiteCodePayload, null, 2));
+    toast.success("Allowed site codes copied");
+  };
+
+  const handleCopyAllowedSiteTaskMap = async () => {
+    if (!allowedSiteTaskRows.length) {
+      toast.error("No allowed site/task rows available to copy");
+      return;
+    }
+    await navigator.clipboard.writeText(JSON.stringify(allowedSiteTaskRows, null, 2));
+    toast.success("Allowed site/task mapping copied");
+  };
+
   return (
     <div className="flex h-full min-h-0 flex-col gap-4 overflow-hidden">
       <div className="flex items-start justify-between gap-4 rounded-[28px] border border-[var(--border-color)] bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.14),transparent_32%),linear-gradient(180deg,var(--bg-secondary),rgba(15,23,42,0.92))] p-5 text-[var(--text-primary)] shadow-sm">
@@ -263,6 +354,81 @@ export default function AiPosting() {
                 {settings.lastTestError ? ` - ${settings.lastTestError}` : ""}
               </p>
             ) : null}
+          </section>
+
+          <section className="rounded-[28px] border border-[var(--border-color)] bg-[var(--bg-secondary)] p-5 shadow-sm">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-lg font-semibold">Allowed Sites Export</h2>
+                <p className="mt-1 text-sm text-[var(--text-secondary)]">
+                  Pick a user, then copy the exact active site codes or site-task mapping in ready-to-paste JSON format.
+                </p>
+              </div>
+              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                {allowedSiteCodePayload.length} active sites
+              </span>
+            </div>
+
+            <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-[1fr_auto_auto]">
+              <label>
+                <span className="mb-1 block text-sm font-medium">Access User</span>
+                <select
+                  className="w-full rounded-2xl border border-[var(--border-color)] bg-[var(--bg-primary)] px-3 py-2"
+                  value={selectedAccessUserId}
+                  onChange={(e) => setSelectedAccessUserId(e.target.value)}
+                  disabled={accessUsersLoading}
+                >
+                  <option value="">{accessUsersLoading ? "Loading users..." : "Select user"}</option>
+                  {panelUsers.map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.name} {user.email ? `(${user.email})` : ""}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button className="rounded-2xl border border-[var(--border-color)] px-4 py-2 text-sm font-medium self-end" onClick={handleCopyAllowedSiteCodes}>
+                Copy Site Codes
+              </button>
+              <button className="rounded-2xl border border-[var(--border-color)] px-4 py-2 text-sm font-medium self-end" onClick={handleCopyAllowedSiteTaskMap}>
+                Copy Site + Task Map
+              </button>
+            </div>
+
+            {selectedAccessUser ? (
+              <p className="mt-3 text-xs text-[var(--text-secondary)]">
+                Showing active site access for <span className="font-semibold">{selectedAccessUser.name}</span>.
+              </p>
+            ) : null}
+
+            <div className="mt-4 grid gap-3 lg:grid-cols-2">
+              <div className="rounded-3xl border border-[var(--border-color)] bg-[var(--bg-primary)] p-4">
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="font-medium">Copy-ready site codes</h3>
+                </div>
+                <pre className="mt-3 max-h-72 overflow-auto rounded-2xl bg-slate-950 p-4 text-xs text-slate-100">
+{JSON.stringify(allowedSiteCodePayload, null, 2)}
+                </pre>
+              </div>
+
+              <div className="rounded-3xl border border-[var(--border-color)] bg-[var(--bg-primary)] p-4">
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="font-medium">Active site/task mapping</h3>
+                  {accessRulesLoading ? <span className="text-xs text-[var(--text-secondary)]">Refreshing...</span> : null}
+                </div>
+                <div className="mt-3 max-h-72 space-y-2 overflow-auto">
+                  {allowedSiteTaskRows.length ? allowedSiteTaskRows.map((row) => (
+                    <div key={`${row.siteId}:${row.taskKey}`} className="rounded-2xl border border-[var(--border-color)] px-3 py-3">
+                      <p className="font-medium">{row.siteName}</p>
+                      <p className="text-xs text-[var(--text-secondary)]">{row.siteCode} • {row.taskKey}</p>
+                    </div>
+                  )) : (
+                    <div className="rounded-2xl border border-dashed border-[var(--border-color)] p-5 text-sm text-[var(--text-secondary)]">
+                      Select a user to see allowed sites and task mapping.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </section>
 
           <section className="rounded-[28px] border border-[var(--border-color)] bg-[var(--bg-secondary)] p-5 shadow-sm">
