@@ -9,7 +9,7 @@ import {
   submitSiteSitemapForIndexing,
   updateSitemapSubmissionForSite,
 } from "../sites/google-indexing";
-import { getSiteFrontendBaseUrl, isSiteTask, sanitizeSiteConfig, type SiteTask } from "../sites/site-contract";
+import { getManagedSiteConfig, getSiteFrontendBaseUrl, isSiteTask, sanitizeSiteConfig, type SiteTask } from "../sites/site-contract";
 import { enforceUserPostPolicy, logApiActivity } from "../users/user-access-service";
 import { isValidCategory, normalizeCategory } from "./category-constants";
 
@@ -171,7 +171,7 @@ export const createPublishedPost = async ({
     throw new ApiError(403, "API key is not allowed to post on this site.");
   }
 
-  const siteConfig = sanitizeSiteConfig(site.config);
+  const siteConfig = getManagedSiteConfig(site.code, site.config);
   const contentRecord =
     content && typeof content === "object" && !Array.isArray(content)
       ? ({ ...(content as Record<string, unknown>) } as Record<string, unknown>)

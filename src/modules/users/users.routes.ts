@@ -6,7 +6,7 @@ import { requireApiKey } from "../../middleware/auth";
 import { createApiKeyWithPermissions } from "../auth/api-key-service";
 import { ApiError } from "../../utils/api-error";
 import { asyncHandler } from "../../utils/async-handler";
-import { isSiteTask } from "../sites/site-contract";
+import { getManagedSiteConfig, isSiteTask } from "../sites/site-contract";
 
 const router = Router();
 
@@ -151,9 +151,7 @@ router.get("/site-capabilities/list", requireApiKey("sites:read"), asyncHandler(
   res.json({
     success: true,
     data: sites.map((site) => {
-      const config = site.config && typeof site.config === "object" && !Array.isArray(site.config)
-        ? site.config as Record<string, unknown>
-        : {};
+      const config = getManagedSiteConfig(site.code, site.config);
       return {
         id: site.id,
         code: site.code,

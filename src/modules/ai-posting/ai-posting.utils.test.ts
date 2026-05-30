@@ -43,11 +43,11 @@ test("validateAiPostingPayload enforces max target limit", () => {
 
 test("inferTaskForSite falls back from category or supportedTasks", () => {
   assert.equal(
-    inferTaskForSite({ category: SiteCategory.ARTICLE, config: { supportedTasks: [] } }),
+    inferTaskForSite({ code: "test-article", category: SiteCategory.ARTICLE, config: { supportedTasks: [] } }),
     "article"
   );
   assert.equal(
-    inferTaskForSite({ category: SiteCategory.MULTI_TASK, config: { supportedTasks: ["profile"] } }),
+    inferTaskForSite({ code: "test-multi", category: SiteCategory.MULTI_TASK, config: { supportedTasks: ["profile"] } }),
     "profile"
   );
 });

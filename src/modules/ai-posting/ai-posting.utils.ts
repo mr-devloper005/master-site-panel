@@ -1,6 +1,6 @@
 import { SiteCategory, type Site } from "@prisma/client";
 
-import { sanitizeSiteConfig, type SiteTask } from "../sites/site-contract";
+import { getManagedSiteConfig, type SiteTask } from "../sites/site-contract";
 
 export const AI_POSTING_MAX_TARGETS = 20;
 export const AI_POSTING_DEFAULT_WORD_COUNT = 600;
@@ -55,8 +55,8 @@ const resolveFallbackLabel = (brandName: string | null, title: string) => {
   return "this page";
 };
 
-export const inferTaskForSite = (site: Pick<Site, "category" | "config">): SiteTask | null => {
-  const config = sanitizeSiteConfig(site.config);
+export const inferTaskForSite = (site: Pick<Site, "category" | "config" | "code">): SiteTask | null => {
+  const config = getManagedSiteConfig(site.code, site.config);
   if (config.supportedTasks?.length === 1) return config.supportedTasks[0];
   switch (site.category) {
     case SiteCategory.ARTICLE:

@@ -16,7 +16,7 @@ import {
   updateSitemapSubmissionForSite,
 } from "./google-indexing";
 import { getIndexNowConfig, submitUrlsToIndexNow } from "./indexnow";
-import { buildSiteBlueprint, isSiteTask, sanitizeSiteConfig, type SiteTask } from "./site-contract";
+import { buildSiteBlueprint, getManagedSiteConfig, isSiteTask, sanitizeSiteConfig, type SiteTask } from "./site-contract";
 
 const router = Router();
 const backendBaseUrl = () => getBaseUrl();
@@ -482,7 +482,7 @@ router.get("/", requireApiKey("sites:read"), asyncHandler(async (req, res) => {
     data: sites.map((site) => ({
       ...site,
       runtimeStatuses: runtimeMap.get(site.id) ? [runtimeMap.get(site.id)] : [],
-      config: sanitizeSiteConfig(site.config),
+      config: getManagedSiteConfig(site.code, site.config),
       blueprint: buildSiteBlueprint(site.code, site.config, {
         backendBaseUrl: backendBaseUrl(),
         includeTaskCatalog: true,
@@ -639,7 +639,7 @@ router.get("/lookup/search", requireApiKey("sites:read"), asyncHandler(async (re
     success: true,
     data: sites.map((site) => ({
       ...site,
-      config: sanitizeSiteConfig(site.config),
+      config: getManagedSiteConfig(site.code, site.config),
     })),
     meta: {
       page,
@@ -682,7 +682,7 @@ router.get("/:siteId", requireApiKey("sites:read"), asyncHandler(async (req, res
     data: {
       ...site,
       runtimeStatuses,
-      config: sanitizeSiteConfig(site.config),
+      config: getManagedSiteConfig(site.code, site.config),
       blueprint: buildSiteBlueprint(site.code, site.config, {
         backendBaseUrl: backendBaseUrl(),
         includeTaskCatalog: true,
@@ -2057,7 +2057,7 @@ router.patch("/:siteId", requireApiKey("sites:write"), asyncHandler(async (req, 
     success: true,
     data: {
       ...site,
-      config: sanitizeSiteConfig(site.config),
+      config: getManagedSiteConfig(site.code, site.config),
       blueprint: buildSiteBlueprint(site.code, site.config, {
         backendBaseUrl: backendBaseUrl(),
         includeTaskCatalog: true,

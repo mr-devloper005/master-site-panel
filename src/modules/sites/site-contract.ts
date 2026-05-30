@@ -125,6 +125,27 @@ export type SiteConnectorConfig = {
 
 export const DEFAULT_CONNECTOR_VERSION = "2026-03-connector-v1";
 
+export const FORCED_ARTICLE_SITE_CODES = new Set([
+  "weblybd",
+  "chaojefe",
+  "coodect",
+  "truedispositions",
+  "fluideosolutions",
+  "incanova",
+  "intelloidea",
+  "zyvorapit",
+  "affordibly",
+  "dreamimportados",
+  "granelda",
+  "collectivebyte",
+  "lechantdelinos",
+  "gustorest",
+  "fanstgh",
+  "fitlloyd",
+  "lexertainment",
+  "flawlessnoises",
+]);
+
 export const isSiteTask = (value: unknown): value is SiteTask =>
   typeof value === "string" && SITE_TASKS.includes(value as SiteTask);
 
@@ -539,6 +560,27 @@ export const sanitizeSiteConfig = (value: unknown): SiteConnectorConfig => {
   };
 };
 
+export const getManagedSiteConfig = (
+  siteCode: string | null | undefined,
+  siteConfig: unknown
+): SiteConnectorConfig => {
+  const config = sanitizeSiteConfig(siteConfig);
+  const normalizedCode = String(siteCode || "").trim().toLowerCase();
+  if (!FORCED_ARTICLE_SITE_CODES.has(normalizedCode)) {
+    return config;
+  }
+
+  return {
+    ...config,
+    siteType: "article",
+    supportedTasks: ["article"],
+    taskViews: {
+      ...(config.taskViews || {}),
+      article: "/article",
+    },
+  };
+};
+
 export const getSiteFrontendBaseUrl = (siteConfig: unknown): string | null => {
   const config = sanitizeSiteConfig(siteConfig);
   if (config.frontendUrl || config.liveUrl || config.siteUrl) {
@@ -570,7 +612,7 @@ export const buildSiteBlueprint = (
     includeTaskCatalog?: boolean;
   }
 ) => {
-  const config = sanitizeSiteConfig(siteConfig);
+  const config = getManagedSiteConfig(siteCode, siteConfig);
 
   return {
     connectorVersion: config.connectorVersion || DEFAULT_CONNECTOR_VERSION,
