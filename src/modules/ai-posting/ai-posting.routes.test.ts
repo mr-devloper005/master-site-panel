@@ -77,13 +77,15 @@ test("POST /jobs returns queued batch response", async () => {
   }
 });
 
-test("GET /jobs/:jobId returns progress and live links", async () => {
+test("GET /jobs/:jobId returns public progress and live links without headers", async () => {
   const { server, baseUrl } = await buildTestServer({
     requireWrite: authStub,
-    requireRead: authStub,
+    requireRead: (_req, _res, _next) => { throw new Error("status endpoint should be public"); },
     createJob: async () => { throw new Error("not used"); },
     listJobs: async () => ({ data: [], meta: { page: 1, limit: 20, total: 0, totalPages: 1 } }),
-    getStatus: async () => ({
+    getStatus: async ({ apiKey }) => {
+      assert.equal(apiKey, null);
+      return {
       success: true,
       jobId: "job_123",
       status: "PARTIAL" as const,
@@ -95,7 +97,8 @@ test("GET /jobs/:jobId returns progress and live links", async () => {
         { taskId: "run_1", siteId: "site_1", siteCode: "aidteck", siteName: "Aidteck", taskKey: "article", status: "COMPLETED", liveUrl: "https://aidteck.com/article/x", message: "Post published successfully." },
         { taskId: "run_2", siteId: "site_2", siteCode: "veluzatom", siteName: "Veluzatom", taskKey: "article", status: "FAILED", liveUrl: null, message: "Given URL returned 404 and could not be reached after retry." },
       ],
-    }),
+    };
+    },
   });
 
   try {

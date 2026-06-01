@@ -78,17 +78,10 @@ export const createAiPostingRouter = (deps: AiPostingRouteDeps = defaultDeps) =>
 
   router.get(
     "/jobs/:jobId",
-    deps.requireRead,
     asyncHandler(async (req, res) => {
-      const apiKey = req.apiKey;
       const result = await deps.getStatus({
         jobId: String(req.params.jobId || "").trim(),
-        apiKey: {
-          id: apiKey!.id,
-          scopes: apiKey!.scopes,
-          userId: apiKey!.userId,
-          name: apiKey!.name,
-        },
+        apiKey: null,
       });
       res.json(result);
     })

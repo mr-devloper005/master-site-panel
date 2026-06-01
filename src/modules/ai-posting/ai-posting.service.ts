@@ -681,7 +681,7 @@ export const getAiPostingJobStatus = async ({
   apiKey,
 }: {
   jobId: string;
-  apiKey: ApiKeyContext;
+  apiKey?: ApiKeyContext | null;
 }) => {
   const job = await prisma.aiPostingJob.findUnique({
     where: { id: jobId },
@@ -699,7 +699,7 @@ export const getAiPostingJobStatus = async ({
     throw new ApiError(404, "AI posting job not found.");
   }
 
-  if (job.apiKeyId !== apiKey.id && !apiKey.scopes.includes("*")) {
+  if (apiKey && job.apiKeyId !== apiKey.id && !apiKey.scopes.includes("*")) {
     throw new ApiError(403, "You do not have access to this AI posting job.");
   }
 
